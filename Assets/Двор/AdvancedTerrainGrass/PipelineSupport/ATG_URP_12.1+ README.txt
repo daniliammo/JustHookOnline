@@ -1,0 +1,5 @@
+## ATG_URP_12.1+ unitypackage
+
+This package contains the ATG URP Shader Graph shaders for Unity 2021.3.21f1 and URP 12.1. and above.
+It also installs all URP demos so no further support packages are needed.
+The Grass manager will be updated to support Light Layers.
