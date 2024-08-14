@@ -1,0 +1,25 @@
+# Unity
+*Library/
+*Logs/
+*Temp/
+*obj/
+*bin/
+*TextMeshPro/
+*UserSettings/
+*MemoryCaptures/
+
+# Project
+*.sln
+*.csproj
+
+#IDE Settings
+*.vscode/
+*.vs/
+*.DotSettings.user
+
+# Mono crash files
+*.blob
+
+# Rider files
+.idea
+
