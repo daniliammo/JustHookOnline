@@ -18,7 +18,7 @@ namespace Explosion
         public byte maxDamageVehicle;
 
         public GameObject[] fragments;
-
+        
         private ExplosionLinks _eL;
 	    
 
@@ -59,9 +59,9 @@ namespace Explosion
 	            }
 	            
 	            if (!t.attachedRigidbody) continue;
-	            if (TryGetComponent<NetworkIdentity>(out var unused))
+	            if (TryGetComponent<NetworkIdentity>(out var unused) && t.TryGetComponent<Rigidbody>(out var rigidbodyComponent))
 	            {
-	                t.gameObject.GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, radius, 0);
+		            rigidbodyComponent.AddExplosionForce(explosionForce, transform.position, radius, 0);
 	                
 	                if (Vector3.Distance(transform.position, t.attachedRigidbody.position) < radius) 
 	                {
@@ -86,19 +86,25 @@ namespace Explosion
         {
 	        var position = transform.position;
 	        var rotation = transform.rotation;
+
+	        GameObject explosionGameObject = null;
 	        
             switch (explosionSize)
             {
 	            case ExplosionSize.Big:
-		            Instantiate(_eL.bigExplosionPrefab, position, rotation);
+		            explosionGameObject = Instantiate(_eL.bigExplosionPrefab, position, rotation);
 		            break;
 	            case ExplosionSize.Small:
-		            Instantiate(_eL.smallExplosionPrefab, position, rotation);
+		            explosionGameObject = Instantiate(_eL.smallExplosionPrefab, position, rotation);
 		            break;
 	            case ExplosionSize.Tiny:
-		            Instantiate(_eL.tinyExplosionPrefab, position, rotation);
+		            explosionGameObject = Instantiate(_eL.tinyExplosionPrefab, position, rotation);
 		            break;
             }
+
+            explosionGameObject!.AddComponent<AudioSource>().clip = _eL.audioClips[Random.Range(0, _eL.audioClips.Length)];
+            explosionGameObject!.GetComponent<AudioSource>().spatialBlend = 1;
+            explosionGameObject!.GetComponent<AudioSource>().Play();
             
             if(fireBehaviour != FireBehaviour.NoFire && Physics.Raycast(transform.position, Vector3.down, 0.15f))
             {
@@ -126,7 +132,7 @@ namespace Explosion
 
             foreach (var t in fragments)
 	            Instantiate(t, position, rotation).GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, radius, upwardsModifier);
-
+            
             NetworkServer.Destroy(gameObject);
             Destroy(gameObject);
         }

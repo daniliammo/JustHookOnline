@@ -12,5 +12,8 @@ namespace Explosion
         public GameObject largeFlamesPrefab;
         public GameObject mediumFlamesPrefab;
         public GameObject tinyFlamesPrefab;
+
+        public AudioClip[] audioClips;
+        public AudioSource impactGrenade;
     }
 }

@@ -40,6 +40,7 @@ public class ExplosiveBarrel : Explosion.Explosion
 		NetworkServer.Spawn(prefab);
 		prefab.transform.LookAt(rotation);
 		prefab.transform.SetParent(transform);
+		GetComponent<AudioSource>().Play();
 	}
 	
 }
