@@ -21,7 +21,7 @@ public class FPSController : MonoBehaviour
         #endif
         
         #if UNITY_EDITOR
-        Application.targetFrameRate = 144;
+        Application.targetFrameRate = 165;
 	    #endif
     }
     
