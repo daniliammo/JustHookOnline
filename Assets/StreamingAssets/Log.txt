@@ -1,0 +1,1323 @@
+24.08.2024 23:20:06 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+
+24.08.2024 23:20:06 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:20:11 Log: ThreadedKCP 7777: ended. UnityEngine.Debug:Log (object)
+Mirror.WorkerThread:Guard (string) (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:161)
+Mirror.WorkerThread/<>c__DisplayClass6_0:<.ctor>b__0 () (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:33)
+System.Threading.ThreadHelper:ThreadStart ()
+
+
+24.08.2024 23:20:06 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:20:11 Log: ThreadedKCP 7777: ended. UnityEngine.Debug:Log (object)
+Mirror.WorkerThread:Guard (string) (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:161)
+Mirror.WorkerThread/<>c__DisplayClass6_0:<.ctor>b__0 () (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:33)
+System.Threading.ThreadHelper:ThreadStart ()
+
+24.08.2024 23:20:11 Log: 4.488398 UnityEngine.MonoBehaviour:print (object)
+HourCounter:OnApplicationQuit () (at Assets/Scripts/HourCounter.cs:23)
+
+
+24.08.2024 23:21:29 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+
+24.08.2024 23:21:29 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:22:08 Log: ThreadedKCP 7777: ended. UnityEngine.Debug:Log (object)
+Mirror.WorkerThread:Guard (string) (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:161)
+Mirror.WorkerThread/<>c__DisplayClass6_0:<.ctor>b__0 () (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:33)
+System.Threading.ThreadHelper:ThreadStart ()
+
+
+24.08.2024 23:22:21 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+
+24.08.2024 23:22:21 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:22:32 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+
+24.08.2024 23:22:21 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:22:32 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:22:39 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:22:21 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:22:32 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:22:39 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:22:39 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:22:21 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:22:32 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:22:39 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:22:39 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:23:28 Log: ThreadedKCP 7777: ended. UnityEngine.Debug:Log (object)
+Mirror.WorkerThread:Guard (string) (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:161)
+Mirror.WorkerThread/<>c__DisplayClass6_0:<.ctor>b__0 () (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:33)
+System.Threading.ThreadHelper:ThreadStart ()
+
+
+24.08.2024 23:24:41 Log: ThreadedKCP 7777: started. UnityEngine.Debug:Log (object)
+Mirror.WorkerThread:Guard (string) (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:120)
+Mirror.WorkerThread/<>c__DisplayClass6_0:<.ctor>b__0 () (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:33)
+System.Threading.ThreadHelper:ThreadStart ()
+
+
+24.08.2024 23:24:41 Log: ThreadedKCP 7777: started. UnityEngine.Debug:Log (object)
+Mirror.WorkerThread:Guard (string) (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:120)
+Mirror.WorkerThread/<>c__DisplayClass6_0:<.ctor>b__0 () (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:33)
+System.Threading.ThreadHelper:ThreadStart ()
+
+24.08.2024 23:24:41 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+
+24.08.2024 23:24:41 Log: ThreadedKCP 7777: started. UnityEngine.Debug:Log (object)
+Mirror.WorkerThread:Guard (string) (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:120)
+Mirror.WorkerThread/<>c__DisplayClass6_0:<.ctor>b__0 () (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:33)
+System.Threading.ThreadHelper:ThreadStart ()
+
+24.08.2024 23:24:41 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:24:56 Log: ThreadedKCP 7777: ended. UnityEngine.Debug:Log (object)
+Mirror.WorkerThread:Guard (string) (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:161)
+Mirror.WorkerThread/<>c__DisplayClass6_0:<.ctor>b__0 () (at Assets/Tools/Mirror/Core/Threading/WorkerThread.cs:33)
+System.Threading.ThreadHelper:ThreadStart ()
+
+
+24.08.2024 23:25:48 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:28:11 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:28:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:28:30 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+
+24.08.2024 23:37:20 Exception: NullReferenceException: Object reference not set to an instance of an object GameSettings.Quality.LightSettings.SetToggleValueFromPlayerPrefs () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:26)
+GameSettings.Quality.LightSettings.Start () (at Assets/Scripts/GameSettings/Quality/LightSettings.cs:21)
+
+24.08.2024 23:37:22 Error: Could not register 'Hook' since it contains no NetworkIdentity component UnityEngine.Debug:LogError (object)
+Mirror.NetworkClient:RegisterPrefab (UnityEngine.GameObject) (at Assets/Tools/Mirror/Core/NetworkClient.cs:727)
+Mirror.NetworkManager:RegisterClientMessages () (at Assets/Tools/Mirror/Core/NetworkManager.cs:798)
+Mirror.NetworkManager:FinishStartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:589)
+Mirror.NetworkManager:StartHost () (at Assets/Tools/Mirror/Core/NetworkManager.cs:522)
+Utils.NetworkController:StartHost () (at Assets/Scripts/Utils/NetworkController.cs:49)
+UI.Menu:OnStartHostButtonClicked () (at Assets/Scripts/UI/Menu.cs:78)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventSystem.cs:530)
+
+24.08.2024 23:37:24 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:25 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:26 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+24.08.2024 23:37:50 Warning: Sub-emitters may not use stop actions. The Stop action will not be executed. 
+

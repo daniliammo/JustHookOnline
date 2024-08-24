@@ -20,7 +20,6 @@ public class HourCounter : MonoBehaviour
         _totalHoursPlayed += sessionDuration / 3600; // Обновляем общее время игры
         PlayerPrefs.SetFloat("TotalHoursPlayed", _totalHoursPlayed); // Сохраняем обновленное значение в PlayerPref
         PlayerPrefs.Save(); // Сохраняем изменения
-        print(_totalHoursPlayed);
     }
 
     private void OnApplicationPause(bool pauseStatus)
@@ -31,7 +30,6 @@ public class HourCounter : MonoBehaviour
             _totalHoursPlayed += sessionDuration / 3600; // Обновляем общее время игры
             PlayerPrefs.SetFloat("TotalHoursPlayed", _totalHoursPlayed); // Сохраняем обновленное значение в PlayerPref
             PlayerPrefs.Save(); // Сохраняем изменения
-            print(_totalHoursPlayed);
         }
     }
     

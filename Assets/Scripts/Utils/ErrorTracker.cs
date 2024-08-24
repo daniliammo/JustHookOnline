@@ -1,16 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using GameSettings;
 
 namespace Utils
 {
-	public class ErrorTracker : MonoBehaviour
+	public class ErrorTracker : GameSettingsClass
 	{
 
 		public GameObject errorCanvas;
-
-		[Header("Что показывать")]
+		
 		public bool showWarning;
 		public bool showError;
 		public bool showException;
@@ -21,24 +22,29 @@ namespace Utils
 		public TMP_Text conditionText;
 		public TMP_Text stackTraceText;
 
-		private readonly string _path = Application.streamingAssetsPath + "/LogMessages.txt";
+		private readonly string _path = Application.streamingAssetsPath + "/Log.txt";
 		private string _toWrite;
 		
-
-		private void Start()
+		
+		private void Awake()
 		{
-			if(Application.isEditor) return;
-
 			CreateLogFile();
-			CheckPlayerPrefs();
 			
-			// Подписка на событие logMessageReceived
-			Application.logMessageReceivedThreaded += LogMessage;
+			CheckOrWritePlayerPrefsKeysString(new Dictionary<string, string>{{"ErrorTracker:Logs", ""}}, false);
+			CheckOrWritePlayerPrefsKeysBoolean(new Dictionary<string, bool>
+			{
+				{"ErrorTracker:showWarning", false},
+				{"ErrorTracker:showError", true},
+				{"ErrorTracker:showException", true},
+				{"ErrorTracker:showAssert", true}
+			}, false);
 			
 			showWarning = PlayerPrefsBoolean.GetBool("ErrorTracker:showWarning");
 			showError = PlayerPrefsBoolean.GetBool("ErrorTracker:showError");
 			showException = PlayerPrefsBoolean.GetBool("ErrorTracker:showException");
 			showAssert = PlayerPrefsBoolean.GetBool("ErrorTracker:showAssert");
+			
+			Application.logMessageReceived += LogMessage;
 		}
 
 		private void CreateLogFile()
@@ -47,24 +53,6 @@ namespace Utils
 			if(!File.Exists(_path))
 				File.Create(_path);
 			#endif
-		}
-		
-		private static void CheckPlayerPrefs()
-		{
-			if(!PlayerPrefs.HasKey("Log:Logs"))
-				PlayerPrefs.SetString("Log:Logs", "");
-            
-			if(!PlayerPrefs.HasKey("ErrorTracker:showWarning"))
-				PlayerPrefsBoolean.SetBool("ErrorTracker:showWarning", false);
-			
-			if(!PlayerPrefs.HasKey("ErrorTracker:showError"))
-				PlayerPrefsBoolean.SetBool("ErrorTracker:showError", true);
-			
-			if(!PlayerPrefs.HasKey("ErrorTracker:showException"))
-				PlayerPrefsBoolean.SetBool("ErrorTracker:showException", true);
-			
-			if(!PlayerPrefs.HasKey("ErrorTracker:showAssert"))
-				PlayerPrefsBoolean.SetBool("ErrorTracker:showAssert", true);
 		}
         
 		public void DisableShowingAllMessages()
@@ -85,6 +73,7 @@ namespace Utils
 			var currentTime = DateTime.Now;
 			var stringToLog = $"{currentTime} {type}: {condition} {stackTrace}\n";
 			_toWrite += stringToLog;
+			
 			WriteLogs();
 			
 			log.text = $"{currentTime.Hour}:{currentTime.Minute}:{currentTime.Second} - {condition}";
@@ -115,14 +104,14 @@ namespace Utils
 
 		private void WriteLogs()
 		{
-			#if UNITY_LINUX || UNITY_WINDOWS
-			// Записываем сообщение в файл
+			#if UNITY_LINUX || UNITY_WINDOWS || UNITY_EDITOR
 			using var writer = new StreamWriter(_path, true);
 			writer.WriteLine(_toWrite);
+			PlayerPrefs.SetString("Log:Logs", $"{PlayerPrefs.GetString("ErrorTracker:Logs")} \n {_toWrite}");
 			#endif
 			
 			#if UNITY_ANDROID
-			PlayerPrefs.SetString("Log:Logs", PlayerPrefs.GetString("Log:Logs") + _toWrite);
+			PlayerPrefs.SetString("Log:Logs", PlayerPrefs.GetString("ErrorTracker:Logs") + _toWrite);
 			#endif
 		}
 		

@@ -102,10 +102,11 @@ namespace Explosion
 		            break;
             }
 
-            explosionGameObject!.AddComponent<AudioSource>().clip = _eL.audioClips[Random.Range(0, _eL.audioClips.Length)];
-            explosionGameObject!.GetComponent<AudioSource>().spatialBlend = 1;
-            explosionGameObject!.GetComponent<AudioSource>().Play();
+            var explosionGameObjectAudioSource = explosionGameObject!.GetComponent<AudioSource>();
             
+            explosionGameObjectAudioSource!.GetComponent<AudioSource>().clip = _eL.audioClips[Random.Range(0, _eL.audioClips.Length)];
+            explosionGameObjectAudioSource!.GetComponent<AudioSource>().Play();
+
             if(fireBehaviour != FireBehaviour.NoFire && Physics.Raycast(transform.position, Vector3.down, 0.15f))
             {
 	            GameObject fireGameObject = null;

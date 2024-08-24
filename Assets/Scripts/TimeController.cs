@@ -13,7 +13,7 @@ public class TimeController : NetworkBehaviour
 		_azureTimeController = FindObjectOfType<AzureTimeController>();
 	}
 	
-	[Command]
+	[Command (requiresAuthority = false)]
 	public void CmdSetTime(float time)
 	{
 		RpcSetTime(time);

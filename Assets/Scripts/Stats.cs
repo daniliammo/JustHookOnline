@@ -18,22 +18,26 @@ public class Stats : GameSettingsClass
     {
         CheckOrWritePlayerPrefsKeysInt(new Dictionary<string, int>
         {
-            {"Kills", 0},
-            {"Deads", 0}
+            {"Stats:Kills", 0},
+            {"Stats:Deads", 0},
+            {"Stats:FrameCount", 0}
         }, false);
+        
+        CheckOrWritePlayerPrefsKeysFloat(new Dictionary<string, float>
+        { {"Stats:TotalHoursPlayed", 0f} }, false);
     }
 
     private void OnEnable()
     {
-        var kills = PlayerPrefs.GetInt("Kills");
-        var deads = PlayerPrefs.GetInt("Deads");
+        var kills = PlayerPrefs.GetInt("Stats:Kills");
+        var deads = PlayerPrefs.GetInt("Stats:Deads");
         var kd = (float)kills / deads;
 
         killsText.text = kills.ToString();
         deadsText.text = deads.ToString();
         kdText.text = kd.ToString(CultureInfo.CurrentCulture);
         // TODO: Реализация
-        hoursInGameText.text = PlayerPrefs.GetFloat("TotalHoursPlayed").ToString(CultureInfo.CurrentCulture);
+        hoursInGameText.text = PlayerPrefs.GetFloat("Stats:TotalHoursPlayed").ToString(CultureInfo.CurrentCulture);
     }
     
 }

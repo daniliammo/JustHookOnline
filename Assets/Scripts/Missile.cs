@@ -83,6 +83,7 @@ public class Missile : Explosion.Explosion
         Gizmos.color = new Color(0, 255, 0, 1);
         Gizmos.DrawRay(transform.position, transform.forward * 100);
         
+        if(!Application.isPlaying) return;
         Gizmos.color = new Color(0, 0, 255, 1);
         Gizmos.DrawLine(transform.position, _predictTargetPosition);
     }
