@@ -1386,7 +1386,7 @@ namespace Mirror
             {
                 netId = identity.netId,
                 isOwner = identity.connectionToClient == conn,
-                isLocalPlayer = (conn.identity == identity && identity.connectionToClient == conn)
+                isLocalPlayer = conn.identity == identity && identity.connectionToClient == conn
             });
         }
 

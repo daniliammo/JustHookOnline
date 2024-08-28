@@ -127,7 +127,7 @@ namespace Mirror
             var targetRange = maxTarget - minTarget;
             var valueRange = (ushort)(maxValue - minValue);
             var valueRelative = (ushort)(value - minValue);
-            return minTarget + (valueRelative / (float)valueRange * targetRange);
+            return minTarget + valueRelative / (float)valueRange * targetRange;
         }
 
         // quaternion compression //////////////////////////////////////////////
@@ -509,37 +509,37 @@ namespace Mirror
             var a3 = reader.ReadByte();
             if (a0 == 250)
             {
-                return a1 + (((ulong)a2) << 8) + (((ulong)a3) << 16);
+                return a1 + ((ulong)a2 << 8) + ((ulong)a3 << 16);
             }
 
             var a4 = reader.ReadByte();
             if (a0 == 251)
             {
-                return a1 + (((ulong)a2) << 8) + (((ulong)a3) << 16) + (((ulong)a4) << 24);
+                return a1 + ((ulong)a2 << 8) + ((ulong)a3 << 16) + ((ulong)a4 << 24);
             }
 
             var a5 = reader.ReadByte();
             if (a0 == 252)
             {
-                return a1 + (((ulong)a2) << 8) + (((ulong)a3) << 16) + (((ulong)a4) << 24) + (((ulong)a5) << 32);
+                return a1 + ((ulong)a2 << 8) + ((ulong)a3 << 16) + ((ulong)a4 << 24) + ((ulong)a5 << 32);
             }
 
             var a6 = reader.ReadByte();
             if (a0 == 253)
             {
-                return a1 + (((ulong)a2) << 8) + (((ulong)a3) << 16) + (((ulong)a4) << 24) + (((ulong)a5) << 32) + (((ulong)a6) << 40);
+                return a1 + ((ulong)a2 << 8) + ((ulong)a3 << 16) + ((ulong)a4 << 24) + ((ulong)a5 << 32) + ((ulong)a6 << 40);
             }
 
             var a7 = reader.ReadByte();
             if (a0 == 254)
             {
-                return a1 + (((ulong)a2) << 8) + (((ulong)a3) << 16) + (((ulong)a4) << 24) + (((ulong)a5) << 32) + (((ulong)a6) << 40) + (((ulong)a7) << 48);
+                return a1 + ((ulong)a2 << 8) + ((ulong)a3 << 16) + ((ulong)a4 << 24) + ((ulong)a5 << 32) + ((ulong)a6 << 40) + ((ulong)a7 << 48);
             }
 
             var a8 = reader.ReadByte();
             if (a0 == 255)
             {
-                return a1 + (((ulong)a2) << 8) + (((ulong)a3) << 16) + (((ulong)a4) << 24) + (((ulong)a5) << 32) + (((ulong)a6) << 40) + (((ulong)a7) << 48)  + (((ulong)a8) << 56);
+                return a1 + ((ulong)a2 << 8) + ((ulong)a3 << 16) + ((ulong)a4 << 24) + ((ulong)a5 << 32) + ((ulong)a6 << 40) + ((ulong)a7 << 48)  + ((ulong)a8 << 56);
             }
 
             throw new IndexOutOfRangeException($"DecompressVarInt failure: {a0}");
@@ -550,7 +550,7 @@ namespace Mirror
         public static long DecompressVarInt(NetworkReader reader)
         {
             var data = DecompressVarUInt(reader);
-            return ((long)(data >> 1)) ^ -((long)data & 1);
+            return (long)(data >> 1) ^ -((long)data & 1);
         }
     }
 }

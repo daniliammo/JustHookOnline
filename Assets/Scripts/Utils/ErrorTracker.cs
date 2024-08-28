@@ -22,7 +22,7 @@ namespace Utils
 		public TMP_Text conditionText;
 		public TMP_Text stackTraceText;
 
-		private readonly string _path = Application.streamingAssetsPath + "/Log.txt";
+		public static readonly string LOGPath = $"{Application.streamingAssetsPath}/Log.JHLog";
 		private string _toWrite;
 		
 		
@@ -30,14 +30,14 @@ namespace Utils
 		{
 			CreateLogFile();
 			
-			CheckOrWritePlayerPrefsKeysString(new Dictionary<string, string>{{"ErrorTracker:Logs", ""}}, false);
-			CheckOrWritePlayerPrefsKeysBoolean(new Dictionary<string, bool>
+			CheckPlayerPrefsKeys(new Dictionary<string, string>{{"ErrorTracker:Logs", ""}});
+			CheckPlayerPrefsKeys(new Dictionary<string, bool>
 			{
 				{"ErrorTracker:showWarning", false},
 				{"ErrorTracker:showError", true},
 				{"ErrorTracker:showException", true},
 				{"ErrorTracker:showAssert", true}
-			}, false);
+			});
 			
 			showWarning = PlayerPrefsBoolean.GetBool("ErrorTracker:showWarning");
 			showError = PlayerPrefsBoolean.GetBool("ErrorTracker:showError");
@@ -45,13 +45,14 @@ namespace Utils
 			showAssert = PlayerPrefsBoolean.GetBool("ErrorTracker:showAssert");
 			
 			Application.logMessageReceived += LogMessage;
+			Application.quitting += WriteLogs;
 		}
 
-		private void CreateLogFile()
+		private static void CreateLogFile()
 		{
 			#if !UNITY_ANDROID
-			if(!File.Exists(_path))
-				File.Create(_path);
+			if(!File.Exists(LOGPath))
+				File.Create(LOGPath);
 			#endif
 		}
         
@@ -74,38 +75,16 @@ namespace Utils
 			var stringToLog = $"{currentTime} {type}: {condition} {stackTrace}\n";
 			_toWrite += stringToLog;
 			
-			WriteLogs();
+			// Запись логов во время игры отключена для производительности
+			// WriteLogs();
 			
-			log.text = $"{currentTime.Hour}:{currentTime.Minute}:{currentTime.Second} - {condition}";
-			
-			// switch (type)
-			// {
-			// 	case LogType.Exception when !showException:
-			// 	case LogType.Error when !showError:
-			// 	case LogType.Warning when !showWarning:
-			// 	case LogType.Assert when !showAssert:
-			// 	case LogType.Log:
-			// 		return;
-			// }
-
-			// var logType = type.ToString();
-			//
-			// CursorController.SetCursorLockState(CursorLockMode.Confined);
-			//
-			// if (errorCanvas.activeSelf)
-			// 	logType += " (Повторно)";
-			// 	
-			// errorCanvas.SetActive(true);
-			//
-			// logTypeText.text = logType;
-			// conditionText.text = condition;
-			// stackTraceText.text = stackTrace;
+			log.text = $"{type}: {condition}";
 		}
 
 		private void WriteLogs()
 		{
 			#if UNITY_LINUX || UNITY_WINDOWS || UNITY_EDITOR
-			using var writer = new StreamWriter(_path, true);
+			using var writer = new StreamWriter(LOGPath, true);
 			writer.WriteLine(_toWrite);
 			PlayerPrefs.SetString("Log:Logs", $"{PlayerPrefs.GetString("ErrorTracker:Logs")} \n {_toWrite}");
 			#endif

@@ -80,7 +80,7 @@ public class EnviroZone : MonoBehaviour {
 			UpdateZoneScale ();
 
 			nextUpdate = EnviroSkyMgr.instance.GetCurrentTimeInHours() + WeatherUpdateIntervall;
-			nextUpdateRealtime = Time.time + (WeatherUpdateIntervall * 60f); 
+			nextUpdateRealtime = Time.time + WeatherUpdateIntervall * 60f; 
 		}
 		else
 		{
@@ -95,7 +95,7 @@ public class EnviroZone : MonoBehaviour {
         else if (!isDefault && useMeshZone)
             transform.localScale = zoneScale;
         else if (isDefault && !useMeshZone)
-            zoneCollider.size = (Vector3.one * (1f / transform.localScale.y)) * 0.25f;
+            zoneCollider.size = Vector3.one * (1f / transform.localScale.y) * 0.25f;
     }
 
 	public void CreateZoneWeatherTypeList ()
@@ -292,7 +292,7 @@ public class EnviroZone : MonoBehaviour {
 	private void WeatherUpdate ()
 	{
 		nextUpdate = EnviroSkyMgr.instance.GetCurrentTimeInHours() + WeatherUpdateIntervall;
-		nextUpdateRealtime = Time.time + (WeatherUpdateIntervall * 60f); 
+		nextUpdateRealtime = Time.time + WeatherUpdateIntervall * 60f; 
 
 		BuildNewWeatherList ();
 
@@ -354,7 +354,7 @@ public class EnviroZone : MonoBehaviour {
         }
 
         if (isDefault && init && !useMeshZone)
-            zoneCollider.center = new Vector3(0f, ((EnviroSkyMgr.instance.Player.transform.position.y - transform.position.y) / transform.lossyScale.y), 0f);
+            zoneCollider.center = new Vector3(0f, (EnviroSkyMgr.instance.Player.transform.position.y - transform.position.y) / transform.lossyScale.y, 0f);
 
     }
 

@@ -6,7 +6,7 @@ public class CTI_AdvancedEdgeFluttering: MaterialPropertyDrawer {
 	override public void OnGUI (Rect position, MaterialProperty prop, string label, MaterialEditor editor) {
 		var material = editor.target as Material;
 		if (material.GetFloat("_EnableAdvancedEdgeBending") != 0 ) {
-			var halfHeight = (position.height * 0.5f - 4);
+			var halfHeight = position.height * 0.5f - 4;
 			var pos_1 = new Rect(position.position.x, position.position.y, position.width, halfHeight);
 			var pos_2 = new Rect(position.position.x, position.position.y + halfHeight + 2, position.width, halfHeight);
 

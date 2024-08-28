@@ -24,7 +24,7 @@ namespace Mirror
         public static bool? ReadBoolNullable(this NetworkReader reader)
         {
             var value = reader.ReadBlittableNullable<byte>();
-            return value.HasValue ? (value.Value != 0) : default(bool?);
+            return value.HasValue ? value.Value != 0 : default(bool?);
         }
 
         public static short ReadShort(this NetworkReader reader) => (short)reader.ReadUShort();
@@ -337,7 +337,7 @@ namespace Mirror
         public static Uri ReadUri(this NetworkReader reader)
         {
             var uriString = reader.ReadString();
-            return (string.IsNullOrWhiteSpace(uriString) ? null : new Uri(uriString));
+            return string.IsNullOrWhiteSpace(uriString) ? null : new Uri(uriString);
         }
 
         public static Texture2D ReadTexture2D(this NetworkReader reader)

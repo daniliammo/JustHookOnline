@@ -34,7 +34,7 @@ namespace StinkySteak.NetcodeBenchmark
         {
             var sin = Mathf.Sin(Time.time * _speed) * _amplitude;
 
-            transform.position = _initialPosition + (_targetPosition * sin);
+            transform.position = _initialPosition + _targetPosition * sin;
         }
     }
 }

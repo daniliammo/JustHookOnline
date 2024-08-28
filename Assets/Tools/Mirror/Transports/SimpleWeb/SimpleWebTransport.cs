@@ -143,7 +143,7 @@ namespace Mirror.SimpleWeb
 
         #region Client
 
-        private string GetClientScheme() => (sslEnabled || clientUseWss) ? SecureScheme : NormalScheme;
+        private string GetClientScheme() => sslEnabled || clientUseWss ? SecureScheme : NormalScheme;
 
         public override bool IsEncrypted => ClientConnected() && (clientUseWss || sslEnabled) || ServerActive() && sslEnabled;
 

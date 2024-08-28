@@ -333,7 +333,7 @@ public class EnviroInterior : MonoBehaviour {
                 }
                 else if (fadeOutFog)
                 {
-                EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorFogMod = Mathf.Lerp(EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorFogMod, 1, (fogFadeSpeed * 2) * Time.deltaTime);
+                EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorFogMod = Mathf.Lerp(EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorFogMod, 1, fogFadeSpeed * 2 * Time.deltaTime);
                    if (EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorFogMod >= 0.999)
                        fadeOutFog = false;
                 }
@@ -368,7 +368,7 @@ public class EnviroInterior : MonoBehaviour {
             }
             else if (fadeOutWeather)
             {
-                EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorWeatherEffectMod = Mathf.Lerp(EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorWeatherEffectMod, 1, (weatherFadeSpeed * 2) * Time.deltaTime);
+                EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorWeatherEffectMod = Mathf.Lerp(EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorWeatherEffectMod, 1, weatherFadeSpeed * 2 * Time.deltaTime);
                 if (EnviroSkyMgr.instance.InteriorZoneSettings.currentInteriorWeatherEffectMod >= 0.999)
                     fadeOutWeather = false;
             }

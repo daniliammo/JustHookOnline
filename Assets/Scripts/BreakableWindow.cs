@@ -232,14 +232,27 @@ public class BreakableWindow : NetworkBehaviour
             }
         }
 
-        if (breakingSound != null)
+        var audio = new GameObject("Breaking Sound (Temp)")
         {
-            var audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.clip = breakingSound;
-            audioSource.Play();
-        }
+            transform =
+            {
+                position = transform.position,
+                parent = null
+            }
+        };
 
+        var audioSource = audio.AddComponent<AudioSource>();
+        audioSource.clip = breakingSound;
+        audioSource.spatialBlend = 1;
+        audioSource.maxDistance = 150;
+        audioSource.rolloffMode = AudioRolloffMode.Linear;
+        audioSource.Play();
+
+        audio.AddComponent<TempAudioSource>();
+        
         _splinterParent.transform.SetParent(null);
+        
+        NetworkServer.Destroy(gameObject);
         Destroy(gameObject);
     }
 

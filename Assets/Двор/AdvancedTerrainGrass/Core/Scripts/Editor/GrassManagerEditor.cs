@@ -215,7 +215,7 @@ namespace AdvancedTerrainGrass {
 			var ter = script.GetComponent<Terrain>();
 			var terData = ter.terrainData;
 			var bucketSize = terData.size.x / terData.detailWidth;
-			var cellSize = (NumberOfBucketsPerCellEnum.intValue * bucketSize);
+			var cellSize = NumberOfBucketsPerCellEnum.intValue * bucketSize;
 			var numberOfCells = terData.size.x / cellSize;
 
             // -------------------
@@ -571,7 +571,7 @@ namespace AdvancedTerrainGrass {
 							LayerSelection.intValue = GUILayout.SelectionGrid(
 								LayerSelection.intValue,
 								previews,
-								(cols < 1) ? 1 : cols,
+								cols < 1 ? 1 : cols,
 								GUILayout.MaxWidth(cols * thumbSize),
 								GUILayout.MaxHeight(rows * thumbSize)
 							);
@@ -579,7 +579,7 @@ namespace AdvancedTerrainGrass {
 							var currentSelection = LayerSelection.intValue;
 
 						//	We might have deleted an element.
-							if (currentSelection > (items - 1) ) {
+							if (currentSelection > items - 1 ) {
 								LayerSelection.intValue = items - 1;
 								currentSelection = items - 1;
 							}
@@ -915,7 +915,7 @@ namespace AdvancedTerrainGrass {
 	            }
 
 	            var pbucketSize = terData.size.x / terData.detailWidth;
-	            var pcellSize = (NumberOfBucketsPerCellEnum.intValue * pbucketSize);
+	            var pcellSize = NumberOfBucketsPerCellEnum.intValue * pbucketSize;
 	            var pnumberOfCells = terData.size.x / pcellSize;
 
 	            proj.material.mainTextureScale = new Vector2(pnumberOfCells, pnumberOfCells);
@@ -966,7 +966,7 @@ namespace AdvancedTerrainGrass {
 	        for (var i = 0; i < NumberOfLayers; i ++) {
 
 	        //	Do we deal with a new entry?
-	        	var hasGrown = ( (oldNumberOfLayers < NumberOfLayers) && (i == NumberOfLayers - 1) ) ? true : false;
+	        	var hasGrown = oldNumberOfLayers < NumberOfLayers && i == NumberOfLayers - 1 ? true : false;
 
 	        	if(!FreezeSizeAndColor.boolValue) {	        
 	        		MinSize.GetArrayElementAtIndex(i).floatValue = terData.detailPrototypes[i].minHeight;
@@ -1065,7 +1065,7 @@ namespace AdvancedTerrainGrass {
 	        	}
 
 	        //	Handle simple texture based grass
-	        	if (!materialSet && (v_mat.GetArrayElementAtIndex(i).objectReferenceValue == null) ) {
+	        	if (!materialSet && v_mat.GetArrayElementAtIndex(i).objectReferenceValue == null ) {
 	        		prototypeTex = terData.detailPrototypes[i].prototypeTexture;
 	        		if (prototypeTex != null) {
 		        		var path = Path.GetDirectoryName(  AssetDatabase.GetAssetPath(prototypeTex)   );
@@ -1098,10 +1098,10 @@ namespace AdvancedTerrainGrass {
         			prototypeTex = terData.detailPrototypes[i].prototypeTexture;
         			var MeshToAssign = "Atg_BaseQuad";
         			if (prototypeTex != null) {
-        				if ( (prototypeTex.width / prototypeTex.height) <= 0.5f ) {
+        				if ( prototypeTex.width / prototypeTex.height <= 0.5f ) {
         					MeshToAssign = "Atg_BaseRectVertical";
         				}
-        				else if ( (prototypeTex.width / prototypeTex.height) >= 2.0f ) {
+        				else if ( prototypeTex.width / prototypeTex.height >= 2.0f ) {
         					MeshToAssign = "Atg_BaseRectHorizontal";
         				}
         			}
@@ -1197,7 +1197,7 @@ namespace AdvancedTerrainGrass {
                 var t_LayerToMergeWith = LayerToMergeWith.GetArrayElementAtIndex(i).intValue;
                 var index_LayerToMergeWith = t_LayerToMergeWith - 1;
                 
-                if( (t_LayerToMergeWith != 0) && (t_LayerToMergeWith != (i+1))  ) {
+                if( t_LayerToMergeWith != 0 && t_LayerToMergeWith != i+1  ) {
                     
                 //  Check if the Layer we want to merge with does not get merged itself..
                     if ( LayerToMergeWith.GetArrayElementAtIndex(index_LayerToMergeWith).intValue == 0 ) {
@@ -1288,19 +1288,19 @@ namespace AdvancedTerrainGrass {
                     normalizedPos.y = (z * CellSize + 0.5f * CellSize) * OneOverTerrainSize.z;
                     var sampledHeight = terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  lower left
-                    normalizedPos.x = (x * CellSize) * OneOverTerrainSize.x;
-                    normalizedPos.y = (z * CellSize) * OneOverTerrainSize.z;
+                    normalizedPos.x = x * CellSize * OneOverTerrainSize.x;
+                    normalizedPos.y = z * CellSize * OneOverTerrainSize.z;
                     sampledHeight += terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  upper left
                     normalizedPos.x = (x * CellSize + CellSize) * OneOverTerrainSize.x;
-                    normalizedPos.y = (z * CellSize) * OneOverTerrainSize.z;
+                    normalizedPos.y = z * CellSize * OneOverTerrainSize.z;
                     sampledHeight += terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  upper right
                     normalizedPos.x = (x * CellSize + CellSize) * OneOverTerrainSize.x;
                     normalizedPos.y = (z * CellSize + CellSize) * OneOverTerrainSize.z;
                     sampledHeight += terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  lower right
-                    normalizedPos.x = (x * CellSize) * OneOverTerrainSize.x;
+                    normalizedPos.x = x * CellSize * OneOverTerrainSize.x;
                     normalizedPos.y = (z * CellSize + CellSize) * OneOverTerrainSize.z;
                     sampledHeight += terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  average
@@ -1327,7 +1327,7 @@ namespace AdvancedTerrainGrass {
                                 for(var yp = 0; yp < NumberOfBucketsPerCell; yp++) {
                                     //	Here we are working on cells and buckets!
                                     tempBucketDensity = tmapByte[layer][
-	                                    (x * NumberOfBucketsPerCell) * (int)TerrainDetailSize.y + xp * (int)TerrainDetailSize.y 
+	                                    x * NumberOfBucketsPerCell * (int)TerrainDetailSize.y + xp * (int)TerrainDetailSize.y 
 	                                    + z * NumberOfBucketsPerCell + yp 
                                     ];
                                     if (tempBucketDensity > maxBucketDensity) {
@@ -1353,7 +1353,7 @@ namespace AdvancedTerrainGrass {
                                         for(var yp = 0; yp < NumberOfBucketsPerCell; yp++) {
                                         //  here we are working on cells and buckets!
                                             tempBucketDensity = tmapByte[softMergedLayer][
-	                                            (x * NumberOfBucketsPerCell) * (int)TerrainDetailSize.y + xp * (int)TerrainDetailSize.y 
+	                                            x * NumberOfBucketsPerCell * (int)TerrainDetailSize.y + xp * (int)TerrainDetailSize.y 
 	                                            + z * NumberOfBucketsPerCell + yp 
                                             ];
                                             softDensity += tempBucketDensity;

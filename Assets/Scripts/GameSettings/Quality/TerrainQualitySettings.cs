@@ -19,7 +19,7 @@ namespace GameSettings.Quality
 		
 		private void Awake()
 		{
-			CheckOrWritePlayerPrefsKeysFloat(new Dictionary<string, float>
+			CheckPlayerPrefsKeys(new Dictionary<string, float>
 			{
 				{ "QualitySettings:TerrainPixelError", 5 },
 				{ "QualitySettings:BaseMapDistance", 1000 },
@@ -28,7 +28,7 @@ namespace GameSettings.Quality
 				{ "QualitySettings:BillboardStart", 75 },
 				{ "QualitySettings:FadeLength", 1 },
 				{ "QualitySettings:MaxMeshTrees", 250 }
-			}, false);
+			});
 			SetSliderValuesFromPlayerPrefs();
 		}
 

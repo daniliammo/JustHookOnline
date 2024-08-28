@@ -104,8 +104,8 @@ namespace Explosion
 
             var explosionGameObjectAudioSource = explosionGameObject!.GetComponent<AudioSource>();
             
-            explosionGameObjectAudioSource!.GetComponent<AudioSource>().clip = _eL.audioClips[Random.Range(0, _eL.audioClips.Length)];
-            explosionGameObjectAudioSource!.GetComponent<AudioSource>().Play();
+            explosionGameObjectAudioSource.clip = _eL.audioClips[Random.Range(0, _eL.audioClips.Length)];
+            explosionGameObjectAudioSource.Play();
 
             if(fireBehaviour != FireBehaviour.NoFire && Physics.Raycast(transform.position, Vector3.down, 0.15f))
             {
@@ -125,10 +125,10 @@ namespace Explosion
 	            }
 
 	            if (fireBehaviour == FireBehaviour.SpreadFire)
-		            fireGameObject.AddComponent<Fire>();
+		            fireGameObject!.AddComponent<Fire>();
 	            
 	            else if (fireBehaviour == FireBehaviour.NoSpreadFire) 
-		            fireGameObject.AddComponent<Fire>();
+		            fireGameObject!.AddComponent<Fire>();
             }
 
             foreach (var t in fragments)

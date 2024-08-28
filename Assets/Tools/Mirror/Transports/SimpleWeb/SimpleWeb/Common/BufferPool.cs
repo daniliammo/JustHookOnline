@@ -62,7 +62,7 @@ namespace Mirror.SimpleWeb
 
         public void CopyTo(byte[] target, int offset)
         {
-            if (count > (target.Length + offset))
+            if (count > target.Length + offset)
                 throw new ArgumentException($"{nameof(count)} was greater than {nameof(target)}.length", nameof(target));
 
             Buffer.BlockCopy(array, 0, target, offset, count);

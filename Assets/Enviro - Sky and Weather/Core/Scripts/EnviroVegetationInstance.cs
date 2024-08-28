@@ -172,7 +172,7 @@ public class EnviroVegetationInstance : MonoBehaviour {
 		if (!stay) {
 			if (currentStage + 1 < GrowStages.Count) 
 			{
-				if ((maxAgeInHours * (GrowStages [currentStage + 1].minAgePercent / 100) <= ageInHours) && ageInHours > 0)
+				if (maxAgeInHours * (GrowStages [currentStage + 1].minAgePercent / 100) <= ageInHours && ageInHours > 0)
 				{ //Next Growth Stage 	
 					currentStage++;
 					VegetationChange ();
@@ -237,7 +237,7 @@ public class EnviroVegetationInstance : MonoBehaviour {
 			currentVegetationObject.transform.localScale = minScale;
 			rescale = false;
 		}
-			var agemod = (ageInHours / maxAgeInHours) * GrowSpeedMod;
+			var agemod = ageInHours / maxAgeInHours * GrowSpeedMod;
 
 		currentVegetationObject.transform.localScale = minScale + new Vector3((float)agemod,(float)agemod,(float)agemod);
 

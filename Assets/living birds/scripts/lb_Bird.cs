@@ -10,7 +10,7 @@ public class lb_Bird : MonoBehaviour {
 		hopForward,
 		hopBackward,
 		hopLeft,
-		hopRight,
+		hopRight
 	}
 
 	public AudioClip song1;
@@ -142,7 +142,7 @@ public class lb_Bird : MonoBehaviour {
 		}
 
 		//birds fly up and away from their perch for 1 second before orienting to the next target
-		GetComponent<Rigidbody>().AddForce((transform.forward * 50.0f*controller.birdScale)+(transform.up * 100.0f*controller.birdScale));
+		GetComponent<Rigidbody>().AddForce(transform.forward * 50.0f*controller.birdScale+transform.up * 100.0f*controller.birdScale);
 		var t = 0.0f;
 		while (t<1.0f){
 			if(!paused){
@@ -166,7 +166,7 @@ public class lb_Bird : MonoBehaviour {
 		//if the target is directly above the bird the bird needs to fly out before going up
 		//this should stop them from taking off like a rocket upwards
 		if(vectorDirectionToTarget.y>.5f){
-			tempTarget = transform.position + (new Vector3(transform.forward.x,.5f,transform.forward.z)*distanceToTarget);
+			tempTarget = transform.position + new Vector3(transform.forward.x,.5f,transform.forward.z)*distanceToTarget;
 
 			while(vectorDirectionToTarget.y>.5f){
 				//Debug.DrawLine (tempTarget,tempTarget+Vector3.up,Color.red);
@@ -198,7 +198,7 @@ public class lb_Bird : MonoBehaviour {
 					forwardStraight = transform.forward;
 					forwardStraight.y = 0.0f;
 					//Debug.DrawRay (transform.position+(transform.forward*.1f),forwardStraight*.75f,Color.green);
-					if (Physics.Raycast (transform.position+(transform.forward*.15f*controller.birdScale),forwardStraight,out hit,.75f*controller.birdScale)){
+					if (Physics.Raycast (transform.position+transform.forward*.15f*controller.birdScale,forwardStraight,out hit,.75f*controller.birdScale)){
 						if(!hit.collider.isTrigger){
 							AbortFlyToTarget();
 						}
@@ -243,7 +243,7 @@ public class lb_Bird : MonoBehaviour {
 					forwardStraight = transform.forward;
 					forwardStraight.y = 0.0f;
 					//Debug.DrawRay (transform.position+(transform.forward*.1f),forwardStraight*.75f,Color.green);
-					if (Physics.Raycast (transform.position+(transform.forward*.15f*controller.birdScale),forwardStraight,out hit,.75f*controller.birdScale)){
+					if (Physics.Raycast (transform.position+transform.forward*.15f*controller.birdScale,forwardStraight,out hit,.75f*controller.birdScale)){
 						if(!hit.collider.isTrigger){
 							AbortFlyToTarget();
 						}
@@ -273,7 +273,7 @@ public class lb_Bird : MonoBehaviour {
 					forwardStraight = transform.forward;
 					forwardStraight.y = 0.0f;
 					//Debug.DrawRay (transform.position+(transform.forward*.1f),forwardStraight*.75f,Color.green);
-					if (Physics.Raycast (transform.position+(transform.forward*.15f*controller.birdScale),forwardStraight,out hit,.75f*controller.birdScale)){
+					if (Physics.Raycast (transform.position+transform.forward*.15f*controller.birdScale,forwardStraight,out hit,.75f*controller.birdScale)){
 						if(!hit.collider.isTrigger){
 							AbortFlyToTarget();
 						}

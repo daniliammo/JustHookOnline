@@ -394,7 +394,7 @@ private void LateUpdate () {
 //  Custom Random function, changed to ulong for IL2CPP and Android
 
         public /*static*/ float GetATGRandomNext() {
-            ATGSeed = ((ATGSeed * 279470273) % 4294967291);
+            ATGSeed = ATGSeed * 279470273 % 4294967291;
             return ATGSeed * OneOverInt32MaxVal;
         }
 
@@ -440,7 +440,7 @@ private void LateUpdate () {
         //  Update fade distances in shaders
             GrassFadeProperties = new Vector4(
                 CurrentCullDistance * CurrentCullDistance,
-                1.0f / (CurrentFadeLength * CurrentFadeLength * ((CurrentCullDistance / CurrentFadeLength) * 2.0f)),
+                1.0f / (CurrentFadeLength * CurrentFadeLength * (CurrentCullDistance / CurrentFadeLength * 2.0f)),
                 CurrentDetailFadeStart * CurrentDetailFadeStart,
                 1.0f / (CurrentDetailFadeLength * CurrentDetailFadeLength)
             );
@@ -474,7 +474,7 @@ private void LateUpdate () {
 
         //  Update Compute Buffer
             if (UseCompute) {
-                var maxVisibleInstancesRatio = (CurrentCullDistance / CellSize);
+                var maxVisibleInstancesRatio = CurrentCullDistance / CellSize;
                 maxVisibleInstancesRatio = maxVisibleInstancesRatio * maxVisibleInstancesRatio;
                 
                 var finalLayerPointer = 0;
@@ -597,7 +597,7 @@ private void LateUpdate () {
                 var t_LayerToMergeWith = LayerToMergeWith[i];
                 var index_LayerToMergeWith = t_LayerToMergeWith - 1;
 
-                if( (t_LayerToMergeWith != 0) && (t_LayerToMergeWith != (i+1))  ) {
+                if( t_LayerToMergeWith != 0 && t_LayerToMergeWith != i+1  ) {
                 //  Check if the Layer we want to merge with does not get merged itself..
                     if ( LayerToMergeWith[ index_LayerToMergeWith  ] == 0 ) {
                         if ( MergeArray[ index_LayerToMergeWith ] == null ) {
@@ -713,19 +713,19 @@ temp[0,0] = Mathf.FloorToInt( (float)( (int)temp[0,0] * 3 + outerSamples) * 0.25
                     normalizedPos.y = (z * CellSize + 0.5f * CellSize) * OneOverTerrainSize.z;
                     var sampledHeight = terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  lower left
-                    normalizedPos.x = (x * CellSize) * OneOverTerrainSize.x;
-                    normalizedPos.y = (z * CellSize) * OneOverTerrainSize.z;
+                    normalizedPos.x = x * CellSize * OneOverTerrainSize.x;
+                    normalizedPos.y = z * CellSize * OneOverTerrainSize.z;
                     sampledHeight += terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  upper left
                     normalizedPos.x = (x * CellSize + CellSize) * OneOverTerrainSize.x;
-                    normalizedPos.y = (z * CellSize) * OneOverTerrainSize.z;
+                    normalizedPos.y = z * CellSize * OneOverTerrainSize.z;
                     sampledHeight += terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  upper right
                     normalizedPos.x = (x * CellSize + CellSize) * OneOverTerrainSize.x;
                     normalizedPos.y = (z * CellSize + CellSize) * OneOverTerrainSize.z;
                     sampledHeight += terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  lower right
-                    normalizedPos.x = (x * CellSize) * OneOverTerrainSize.x;
+                    normalizedPos.x = x * CellSize * OneOverTerrainSize.x;
                     normalizedPos.y = (z * CellSize + CellSize) * OneOverTerrainSize.z;
                     sampledHeight += terData.GetInterpolatedHeight(normalizedPos.x, normalizedPos.y);
                     //  average
@@ -752,7 +752,7 @@ temp[0,0] = Mathf.FloorToInt( (float)( (int)temp[0,0] * 3 + outerSamples) * 0.25
                                 for(var yp = 0; yp < NumberOfBucketsPerCell; yp++) {
                                     //  here we are working on cells and buckets!
                                     tempBucketDensity = mapByte[layer][
-                                        (x * NumberOfBucketsPerCell) * (int)TerrainDetailSize.y + xp * (int)TerrainDetailSize.y 
+                                        x * NumberOfBucketsPerCell * (int)TerrainDetailSize.y + xp * (int)TerrainDetailSize.y 
                                         + z * NumberOfBucketsPerCell + yp 
                                     ];
                                     if (tempBucketDensity > maxBucketDensity) {
@@ -778,7 +778,7 @@ temp[0,0] = Mathf.FloorToInt( (float)( (int)temp[0,0] * 3 + outerSamples) * 0.25
                                         for(var yp = 0; yp < NumberOfBucketsPerCell; yp++) {
                                             //  here we are working on cells and buckets!
                                             tempBucketDensity = mapByte[softMergedLayer][
-                                                (x * NumberOfBucketsPerCell) * (int)TerrainDetailSize.y + xp * (int)TerrainDetailSize.y 
+                                                x * NumberOfBucketsPerCell * (int)TerrainDetailSize.y + xp * (int)TerrainDetailSize.y 
                                                 + z * NumberOfBucketsPerCell + yp 
                                             ];
                                             softDensity += tempBucketDensity;
@@ -934,7 +934,7 @@ temp[0,0] = Mathf.FloorToInt( (float)( (int)temp[0,0] * 3 + outerSamples) * 0.25
         //  Update fade distances in shaders
             GrassFadeProperties = new Vector4(
                 CurrentCullDistance * CurrentCullDistance,
-                1.0f / (CurrentFadeLength * CurrentFadeLength * ((CurrentCullDistance / CurrentFadeLength) * 2.0f)),
+                1.0f / (CurrentFadeLength * CurrentFadeLength * (CurrentCullDistance / CurrentFadeLength * 2.0f)),
                 CurrentDetailFadeStart * CurrentDetailFadeStart,
                 1.0f / (CurrentDetailFadeLength * CurrentDetailFadeLength)
             );
@@ -1014,7 +1014,7 @@ temp[0,0] = Mathf.FloorToInt( (float)( (int)temp[0,0] * 3 + outerSamples) * 0.25
 
             // var side = (CellSize * 0.5f) * (CellSize * 0.5f);
             // The above code should be correct – but cells get rejected too early if the camera looks from steep angles?!
-            var side = (CellSize * 0.75f) * (CellSize * 0.75f) ;
+            var side = CellSize * 0.75f * (CellSize * 0.75f) ;
             var CullingRadius = Mathf.Sqrt( side * 2.0f );
 
             for (var i = 0; i < TotalCellCount; i++) {
@@ -1116,7 +1116,7 @@ temp[0,0] = Mathf.FloorToInt( (float)( (int)temp[0,0] * 3 + outerSamples) * 0.25
 
                 argsBuffer = new ComputeBuffer[NumberOfFinalLayers];
                 MergedMatrixBlock = new MaterialPropertyBlock[NumberOfFinalLayers];
-                var maxVisibleInstancesRatio = (CurrentCullDistance / (CellSize));
+                var maxVisibleInstancesRatio = CurrentCullDistance / CellSize;
                 maxVisibleInstancesRatio = maxVisibleInstancesRatio * maxVisibleInstancesRatio;
 
                 var finalLayerPointer = 0;
@@ -1138,7 +1138,7 @@ temp[0,0] = Mathf.FloorToInt( (float)( (int)temp[0,0] * 3 + outerSamples) * 0.25
                         MergedCellcontentsBuffer[finalLayerPointer] = new ComputeBuffer(size, 64, ComputeBufferType.Append);
                         MergedMatrixBlock[finalLayerPointer] = new MaterialPropertyBlock();
                         argsBuffer[finalLayerPointer] = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
-                        var numIndices = (v_mesh[i] != null) ? v_mesh[i].GetIndexCount(0) : 0;
+                        var numIndices = v_mesh[i] != null ? v_mesh[i].GetIndexCount(0) : 0;
                         args[0] = numIndices;
                         argsBuffer[finalLayerPointer].SetData(args);
                         finalLayerPointer++;
@@ -1308,7 +1308,7 @@ private void DrawGrass() {
 
         //  Handle Terrain Shift
             TerrainShift = TerrainPosition - CurrentTerrainPos;
-            Shader.SetGlobalVector(AtgTerrainShiftSurfacePID, new Vector4(TerrainShift.x, TerrainShift.y, TerrainShift.z, (UseCompute) ? 0.0f : 1.0f) );
+            Shader.SetGlobalVector(AtgTerrainShiftSurfacePID, new Vector4(TerrainShift.x, TerrainShift.y, TerrainShift.z, UseCompute ? 0.0f : 1.0f) );
 
             // This does not fix culling groups:
             // cullingGroup.SetDistanceReferencePoint(CamTransform.position + TerrainShift);
@@ -1665,16 +1665,16 @@ private void DrawGrass() {
 
         public float GetfilteredHeight(float normalizedHeightPos_x, float normalizedHeightPos_y) {
         //  NOTE: Using Floor and Ceil each take 0.8ms - so we go with (int) instead
-            var normalizedHeightPosLower_x = (int)(normalizedHeightPos_x);
-            var normalizedHeightPosLower_y = (int)(normalizedHeightPos_y);
+            var normalizedHeightPosLower_x = (int)normalizedHeightPos_x;
+            var normalizedHeightPosLower_y = (int)normalizedHeightPos_y;
             var normalizedHeightPosUpper_x = (int)(normalizedHeightPos_x + 1.0f);
             var normalizedHeightPosUpper_y = (int)(normalizedHeightPos_y + 1.0f); 
 
         //  Get weights
-            var Lowerx = (normalizedHeightPos_x - normalizedHeightPosLower_x);
-            var Upperx = (normalizedHeightPosUpper_x - normalizedHeightPos_x);
-            var Lowery = (normalizedHeightPos_y - normalizedHeightPosLower_y);
-            var Uppery = (normalizedHeightPosUpper_y - normalizedHeightPos_y);
+            var Lowerx = normalizedHeightPos_x - normalizedHeightPosLower_x;
+            var Upperx = normalizedHeightPosUpper_x - normalizedHeightPos_x;
+            var Lowery = normalizedHeightPos_y - normalizedHeightPosLower_y;
+            var Uppery = normalizedHeightPosUpper_y - normalizedHeightPos_y;
 
         //  Adjust x positions to match our array
             normalizedHeightPosLower_x *= TerrainHeightmapHeight; // "* height" as we sample height in the inner loop
@@ -1849,10 +1849,10 @@ density = (int)(density * Mathf.Min(1.0f, t_density/15));
                                 density = (int)/*Math.Ceiling*/(density                                         * CurrentDetailDensity);
 
                             //  When sampling the height map we may not go (x || y < 0). So we use clamped factors:
-                                var OneOverHeightmapWidthClamped = (terrainLocalPos.x < TerrainSizeOverHeightmap) ? 0.0f : OneOverHeightmapWidth;
-                                var OneOverHeightmapWidthClampedRight = (terrainLocalPos.x >= OneOverHeightmapWidthRight) ? 0.0f : OneOverHeightmapWidth;    
-                                var OneOverHeightmapHeightClamped = (terrainLocalPos.y < TerrainSizeOverHeightmap) ? 0.0f : OneOverHeightmapHeight;
-                                var OneOverHeightmapHeightClampedUp = (terrainLocalPos.y >= OneOverHeightmapHeightUp) ? 0.0f : OneOverHeightmapHeight;
+                                var OneOverHeightmapWidthClamped = terrainLocalPos.x < TerrainSizeOverHeightmap ? 0.0f : OneOverHeightmapWidth;
+                                var OneOverHeightmapWidthClampedRight = terrainLocalPos.x >= OneOverHeightmapWidthRight ? 0.0f : OneOverHeightmapWidth;    
+                                var OneOverHeightmapHeightClamped = terrainLocalPos.y < TerrainSizeOverHeightmap ? 0.0f : OneOverHeightmapHeight;
+                                var OneOverHeightmapHeightClampedUp = terrainLocalPos.y >= OneOverHeightmapHeightUp ? 0.0f : OneOverHeightmapHeight;
 
                             //  Now that we have the density for the Bucket we spawn x instances based on density within the given Bucket.
 
@@ -1881,15 +1881,15 @@ density = (int)(density * Mathf.Min(1.0f, t_density/15));
                                     var normalizedHeightPos_y = normalizedPos.y * (TerrainHeightmapHeight - 1);
                                 
                                 //  NOTE: Using Floor and Ceil each take 0.8ms - so we go with (int) instead
-                                    var normalizedHeightPosLower_x = (int)(normalizedHeightPos_x);
-                                    var normalizedHeightPosLower_y = (int)(normalizedHeightPos_y);
+                                    var normalizedHeightPosLower_x = (int)normalizedHeightPos_x;
+                                    var normalizedHeightPosLower_y = (int)normalizedHeightPos_y;
                                     var normalizedHeightPosUpper_x = normalizedHeightPosLower_x + 1;
                                     var normalizedHeightPosUpper_y = normalizedHeightPosLower_y + 1; 
 
                                 //  Get weights
-                                    var Lower_x = (normalizedHeightPos_x - normalizedHeightPosLower_x);
+                                    var Lower_x = normalizedHeightPos_x - normalizedHeightPosLower_x;
                                     //float Upperx = (normalizedHeightPosUpper_x - normalizedHeightPos_x);
-                                    var Lower_y = (normalizedHeightPos_y - normalizedHeightPosLower_y);
+                                    var Lower_y = normalizedHeightPos_y - normalizedHeightPosLower_y;
                                     //float Uppery = (normalizedHeightPosUpper_y - normalizedHeightPos_y);
 
                                 //  Adjust x positions to match our array
@@ -2106,8 +2106,8 @@ scale = Mathf.Lerp(tempMinSize * 0.75f, tempMinSize, t_density) + Mathf.PerlinNo
                                         var num2 = Sin * 2.0f;
                                         var num5 = Sin * num2;
                                         var num11 = Cos * num2;
-                                        rotatedTerrainNormal.x = (1.0f - (num5)) * normal.x + (num11) * normal.z;
-                                        rotatedTerrainNormal.z = (- num11) * normal.x + (1.0f - (num5)) * normal.z;
+                                        rotatedTerrainNormal.x = (1.0f - num5) * normal.x + num11 * normal.z;
+                                        rotatedTerrainNormal.z = - num11 * normal.x + (1.0f - num5) * normal.z;
                                     //  Add terrain normal to list
                                         tempMatrix.m30 = rotatedTerrainNormal.x;
                                         tempMatrix.m31 = rotatedTerrainNormal.y;
@@ -2164,7 +2164,7 @@ scale = Mathf.Lerp(tempMinSize * 0.75f, tempMinSize, t_density) + Mathf.PerlinNo
                 
                 //  cached cells
 
-                    var radius = (CellSize * 0.5f);
+                    var radius = CellSize * 0.5f;
                     radius *= radius;
                     radius *=2;
                     radius = Mathf.Sqrt(radius);

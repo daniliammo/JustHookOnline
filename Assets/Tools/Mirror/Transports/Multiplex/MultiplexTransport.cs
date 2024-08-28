@@ -262,12 +262,12 @@ namespace Mirror
                 var transportIndex = i;
                 var transport = transports[i];
 
-                transport.OnServerConnected = (originalConnectionId =>
+                transport.OnServerConnected = originalConnectionId =>
                 {
                     // invoke Multiplex event with multiplexed connectionId
                     var multiplexedId = AddToLookup(originalConnectionId, transportIndex);
                     OnServerConnected.Invoke(multiplexedId);
-                });
+                };
 
                 transport.OnServerDataReceived = (originalConnectionId, data, channel) =>
                 {

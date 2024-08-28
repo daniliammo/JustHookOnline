@@ -847,7 +847,7 @@ namespace Mirror
                 var component = components[i];
 
                 var dirty = component.IsDirty();
-                ulong nthBit = (1u << i);
+                ulong nthBit = 1u << i;
 
                 // owner needs to be considered for both SyncModes, because
                 // Observers mode always includes the Owner.
@@ -893,7 +893,7 @@ namespace Mirror
                 {
                     // set the n-th bit if dirty
                     // shifting from small to large numbers is varint-efficient.
-                    if (component.IsDirty()) mask |= (1u << i);
+                    if (component.IsDirty()) mask |= 1u << i;
                 }
             }
 

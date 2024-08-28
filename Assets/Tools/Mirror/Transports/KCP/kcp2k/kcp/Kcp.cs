@@ -678,10 +678,10 @@ namespace kcp2k
                     else
                     {
                         if (incr < mss) incr = mss;
-                        incr += (mss * mss) / incr + (mss / 16);
+                        incr += mss * mss / incr + mss / 16;
                         if ((cwnd + 1) * mss <= incr)
                         {
-                            cwnd = (incr + mss - 1) / ((mss > 0) ? mss : 1);
+                            cwnd = (incr + mss - 1) / (mss > 0 ? mss : 1);
                         }
                     }
                     if (cwnd > rmt_wnd)
@@ -864,7 +864,7 @@ namespace kcp2k
                     }
                     else
                     {
-                        var step = (nodelay < 2) ? segment.rto : rx_rto;
+                        var step = nodelay < 2 ? segment.rto : rx_rto;
                         segment.rto += step / 2;
                     }
                     segment.resendts = current + (uint)segment.rto;

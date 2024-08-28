@@ -800,7 +800,7 @@ public class EnviroSkyLite : EnviroCore
         if (!serverMode && PlayerCamera != null && Player != null)
         {
             transform.position = Player.transform.position;
-            var scale = PlayerCamera.farClipPlane - (PlayerCamera.farClipPlane * 0.1f);
+            var scale = PlayerCamera.farClipPlane - PlayerCamera.farClipPlane * 0.1f;
             transform.localScale = new Vector3(scale, scale, scale);
 
             if (EffectsHolder != null)
@@ -905,7 +905,7 @@ public class EnviroSkyLite : EnviroCore
         Shader.SetGlobalVector("_SunDir", -Components.Sun.transform.forward);
         Shader.SetGlobalColor("_EnviroLighting", lightSettings.LightColor.Evaluate(GameTime.solarTime));
         // Moon 
-        Shader.SetGlobalVector("_SunPosition", Components.Sun.transform.localPosition + (-Components.Sun.transform.forward * 10000f));
+        Shader.SetGlobalVector("_SunPosition", Components.Sun.transform.localPosition + -Components.Sun.transform.forward * 10000f);
         Shader.SetGlobalVector("_MoonPosition", Components.Moon.transform.localPosition);
         //Color Mods
         Shader.SetGlobalColor("_weatherSkyMod", Color.Lerp(currentWeatherSkyMod, interiorZoneSettings.currentInteriorSkyboxMod, interiorZoneSettings.currentInteriorSkyboxMod.a));

@@ -3,8 +3,8 @@ using UnityEngine.EventSystems;
 
 public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    public float Horizontal { get { return (snapX) ? SnapFloat(input.x, AxisOptions.Horizontal) : input.x; } }
-    public float Vertical { get { return (snapY) ? SnapFloat(input.y, AxisOptions.Vertical) : input.y; } }
+    public float Horizontal { get { return snapX ? SnapFloat(input.x, AxisOptions.Horizontal) : input.x; } }
+    public float Vertical { get { return snapY ? SnapFloat(input.y, AxisOptions.Vertical) : input.y; } }
     public Vector2 Direction { get { return new Vector2(Horizontal, Vertical); } }
 
     public float HandleRange
@@ -106,14 +106,14 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
                 if (angle < 22.5f || angle > 157.5f)
                     return 0;
                 else
-                    return (value > 0) ? 1 : -1;
+                    return value > 0 ? 1 : -1;
             }
             else if (snapAxis == AxisOptions.Vertical)
             {
                 if (angle > 67.5f && angle < 112.5f)
                     return 0;
                 else
-                    return (value > 0) ? 1 : -1;
+                    return value > 0 ? 1 : -1;
             }
             return value;
         }
@@ -139,7 +139,7 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(baseRect, screenPosition, cam, out localPoint))
         {
             var pivotOffset = baseRect.pivot * baseRect.sizeDelta;
-            return localPoint - (background.anchorMax * baseRect.sizeDelta) + pivotOffset;
+            return localPoint - background.anchorMax * baseRect.sizeDelta + pivotOffset;
         }
         return Vector2.zero;
     }

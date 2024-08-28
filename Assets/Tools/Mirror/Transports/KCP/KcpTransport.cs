@@ -286,12 +286,12 @@ namespace kcp2k
                 return $"{bytes} B";
             // kilobytes
             else if (bytes < 1024L * 1024L)
-                return $"{(bytes / 1024f):F2} KB";
+                return $"{bytes / 1024f:F2} KB";
             // megabytes
             else if (bytes < 1024 * 1024L * 1024L)
-                return $"{(bytes / (1024f * 1024f)):F2} MB";
+                return $"{bytes / (1024f * 1024f):F2} MB";
             // gigabytes
-            return $"{(bytes / (1024f * 1024f * 1024f)):F2} GB";
+            return $"{bytes / (1024f * 1024f * 1024f):F2} GB";
         }
 
         protected virtual void OnGUIStatistics()

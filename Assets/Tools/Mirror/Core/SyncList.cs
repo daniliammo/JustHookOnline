@@ -349,7 +349,7 @@ namespace Mirror
         public T Find(Predicate<T> match)
         {
             var i = FindIndex(match);
-            return (i != -1) ? objects[i] : default;
+            return i != -1 ? objects[i] : default;
         }
 
         public List<T> FindAll(Predicate<T> match)

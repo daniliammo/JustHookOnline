@@ -865,7 +865,7 @@ public class EnviroSky : EnviroCore
         satCamera.fieldOfView = PlayerCamera.fieldOfView;
         satCamera.clearFlags = CameraClearFlags.SolidColor;
         satCamera.backgroundColor = new Color(0f, 0f, 0f, 0f);
-        satCamera.cullingMask = (1 << satelliteRenderingLayer);
+        satCamera.cullingMask = 1 << satelliteRenderingLayer;
         satCamera.depth = PlayerCamera.depth + 1;
         satCamera.enabled = true;
         PlayerCamera.cullingMask &= ~(1 << satelliteRenderingLayer);
@@ -1213,7 +1213,7 @@ public class EnviroSky : EnviroCore
             if (EffectsHolder != null)
             {
 #if ENVIRO_HD
-                if (cloudsSettings.cloudsQualitySettings != null && Player.transform.position.y > (cloudsSettings.cloudsQualitySettings.bottomCloudHeight + cloudsSettings.cloudsHeightMod))
+                if (cloudsSettings.cloudsQualitySettings != null && Player.transform.position.y > cloudsSettings.cloudsQualitySettings.bottomCloudHeight + cloudsSettings.cloudsHeightMod)
                     EffectsHolder.transform.position = new Vector3(Player.transform.position.x, cloudsSettings.cloudsQualitySettings.bottomCloudHeight + cloudsSettings.cloudsHeightMod, Player.transform.position.z);
                 else
 #endif
@@ -1526,7 +1526,7 @@ public class EnviroSky : EnviroCore
         Shader.SetGlobalColor("_EnviroLighting", lightSettings.LightColor.Evaluate(GameTime.solarTime));
         Shader.SetGlobalVector("_SunDirection", -Components.Sun.transform.forward);
 
-        Shader.SetGlobalVector("_SunPosition", Components.Sun.transform.localPosition + (-Components.Sun.transform.forward * 10000f));
+        Shader.SetGlobalVector("_SunPosition", Components.Sun.transform.localPosition + -Components.Sun.transform.forward * 10000f);
         Shader.SetGlobalVector("_MoonPosition", Components.Moon.transform.localPosition);
         Shader.SetGlobalVector("_SunDir", -Components.Sun.transform.forward);
         Shader.SetGlobalVector("_MoonDir", -Components.Moon.transform.forward);

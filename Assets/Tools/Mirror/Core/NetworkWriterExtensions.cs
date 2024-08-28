@@ -20,7 +20,7 @@ namespace Mirror
 
         // bool is not blittable. convert to byte.
         public static void WriteBool(this NetworkWriter writer, bool value) => writer.WriteBlittable((byte)(value ? 1 : 0));
-        public static void WriteBoolNullable(this NetworkWriter writer, bool? value) => writer.WriteBlittableNullable(value.HasValue ? ((byte)(value.Value ? 1 : 0)) : new byte?());
+        public static void WriteBoolNullable(this NetworkWriter writer, bool? value) => writer.WriteBlittableNullable(value.HasValue ? (byte)(value.Value ? 1 : 0) : new byte?());
 
         public static void WriteShort(this NetworkWriter writer, short value) => writer.WriteBlittable(value);
         public static void WriteShortNullable(this NetworkWriter writer, short? value) => writer.WriteBlittableNullable(value);

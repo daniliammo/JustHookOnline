@@ -93,14 +93,14 @@ namespace Mirror.SimpleWeb
             {
                 // header is 8 bytes 
                 ulong value = 0;
-                value |= ((ulong)buffer[offset + 2] << 56);
-                value |= ((ulong)buffer[offset + 3] << 48);
-                value |= ((ulong)buffer[offset + 4] << 40);
-                value |= ((ulong)buffer[offset + 5] << 32);
-                value |= ((ulong)buffer[offset + 6] << 24);
-                value |= ((ulong)buffer[offset + 7] << 16);
-                value |= ((ulong)buffer[offset + 8] << 8);
-                value |= ((ulong)buffer[offset + 9] << 0);
+                value |= (ulong)buffer[offset + 2] << 56;
+                value |= (ulong)buffer[offset + 3] << 48;
+                value |= (ulong)buffer[offset + 4] << 40;
+                value |= (ulong)buffer[offset + 5] << 32;
+                value |= (ulong)buffer[offset + 6] << 24;
+                value |= (ulong)buffer[offset + 7] << 16;
+                value |= (ulong)buffer[offset + 8] << 8;
+                value |= (ulong)buffer[offset + 9] << 0;
 
                 if (value > int.MaxValue)
                     throw new NotSupportedException($"Can't receive payloads larger that int.max: {int.MaxValue}");

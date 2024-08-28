@@ -209,14 +209,14 @@ public class EnviroPostProcessing : MonoBehaviour
             lrColorB = RenderTexture.GetTemporary(descriptor);
             Graphics.Blit(lrDepthBuffer, lrColorB, mat, 1);
             RenderTexture.ReleaseTemporary(lrDepthBuffer);
-            ofs = EnviroSkyMgr.instance.LightShaftsSettings.blurRadius * (((it2 * 2.0f + 1.0f) * 6.0f)) / 768.0f;
+            ofs = EnviroSkyMgr.instance.LightShaftsSettings.blurRadius * ((it2 * 2.0f + 1.0f) * 6.0f) / 768.0f;
             mat.SetVector("_BlurRadius4", new Vector4(ofs, ofs, 0.0f, 0.0f));
 
             lrDepthBuffer = RenderTexture.GetTemporary(descriptor);
 
             Graphics.Blit(lrColorB, lrDepthBuffer, mat, 1);
             RenderTexture.ReleaseTemporary(lrColorB);
-            ofs = EnviroSkyMgr.instance.LightShaftsSettings.blurRadius * (((it2 * 2.0f + 2.0f) * 6.0f)) / 768.0f;
+            ofs = EnviroSkyMgr.instance.LightShaftsSettings.blurRadius * ((it2 * 2.0f + 2.0f) * 6.0f) / 768.0f;
             mat.SetVector("_BlurRadius4", new Vector4(ofs, ofs, 0.0f, 0.0f));
         }
 
@@ -229,7 +229,7 @@ public class EnviroPostProcessing : MonoBehaviour
 
         mat.SetTexture("_ColorBuffer", lrDepthBuffer);
 
-        Graphics.Blit(source, destination, mat, (EnviroSkyMgr.instance.LightShaftsSettings.screenBlendMode == ShaftsScreenBlendMode.Screen) ? 0 : 4);
+        Graphics.Blit(source, destination, mat, EnviroSkyMgr.instance.LightShaftsSettings.screenBlendMode == ShaftsScreenBlendMode.Screen ? 0 : 4);
         RenderTexture.ReleaseTemporary(lrDepthBuffer);
     }
 

@@ -31,7 +31,7 @@ namespace Mirror.Examples.MultipleMatch
                     everyoneReady = false;
             }
 
-            startButton.interactable = everyoneReady && owner && (playerInfos.Length > 1);
+            startButton.interactable = everyoneReady && owner && playerInfos.Length > 1;
         }
 
         [ClientCallback]

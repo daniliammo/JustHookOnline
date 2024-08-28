@@ -48,7 +48,7 @@ public class SampleHUDFPS : MonoBehaviour
 			sFPS = fps.ToString( "f" + Mathf.Clamp( nbDecimal, 0, 10 ) );
 			
 			//Update the color
-			color = (fps >= 30) ? Color.green : ((fps > 10) ? Color.red : Color.yellow);
+			color = fps >= 30 ? Color.green : fps > 10 ? Color.red : Color.yellow;
 			
 			accum = 0.0F;
 			frames = 0;

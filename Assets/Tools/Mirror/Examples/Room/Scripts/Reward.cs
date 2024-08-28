@@ -41,7 +41,7 @@ namespace Mirror.Examples.NetworkRoom
 
                 // calculate the points from the color ... lighter scores higher as the average approaches 255
                 // UnityEngine.Color RGB values are float fractions of 255
-                var points = (uint)(((color.r) + (color.g) + (color.b)) / 3);
+                var points = (uint)((color.r + color.g + color.b) / 3);
 
                 // award the points via SyncVar on the PlayerController
                 player.GetComponent<PlayerScore>().score += points;

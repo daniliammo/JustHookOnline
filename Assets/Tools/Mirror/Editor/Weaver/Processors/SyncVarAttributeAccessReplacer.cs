@@ -24,7 +24,7 @@ namespace Mirror.Weaver
                 }
             }
 
-            Console.WriteLine($"  ProcessSitesModule {moduleDef.Name} elapsed time:{(DateTime.Now - startTime)}");
+            Console.WriteLine($"  ProcessSitesModule {moduleDef.Name} elapsed time:{DateTime.Now - startTime}");
         }
 
         private static void ProcessClass(Logger Log, SyncVarAccessLists syncVarAccessLists, TypeDefinition td)

@@ -119,7 +119,7 @@ namespace AdvancedTerrainGrass {
             if (m_LODCount == 0)
                 return;
 
-            if (m_HiZ == null || (m_HiZ.width != sizeX || m_HiZ.height != sizeY)) {
+            if (m_HiZ == null || m_HiZ.width != sizeX || m_HiZ.height != sizeY) {
                 if (m_HiZ != null)
                     m_HiZ.Release();
 // was Float

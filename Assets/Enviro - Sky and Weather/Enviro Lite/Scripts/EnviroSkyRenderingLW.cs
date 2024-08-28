@@ -184,13 +184,13 @@ public class EnviroSkyRenderingLW : MonoBehaviour
     private void RenderFog(RenderTexture source, RenderTexture destination)
     {
         var FdotC = myCam.transform.position.y - EnviroSkyLite.instance.fogSettings.height;
-        var paramK = (FdotC <= 0.0f ? 1.0f : 0.0f);
+        var paramK = FdotC <= 0.0f ? 1.0f : 0.0f;
         var sceneMode = RenderSettings.fogMode;
         var sceneDensity = RenderSettings.fogDensity;
         var sceneStart = RenderSettings.fogStartDistance;
         var sceneEnd = RenderSettings.fogEndDistance;
         Vector4 sceneParams;
-        var linear = (sceneMode == FogMode.Linear);
+        var linear = sceneMode == FogMode.Linear;
         var diff = linear ? sceneEnd - sceneStart : 0.0f;
         var invDiff = Mathf.Abs(diff) > 0.0001f ? 1.0f / diff : 0.0f;
         sceneParams.x = sceneDensity * 1.2011224087f; // density / sqrt(ln(2)), used by Exp2 fog mode

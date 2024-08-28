@@ -69,7 +69,7 @@ namespace Mirror
                         return true;
                 }
 
-                return (isOwned && clientAuthority);
+                return isOwned && clientAuthority;
             }
         }
 
@@ -321,7 +321,7 @@ namespace Mirror
             var parameterCount = (byte)parameters.Length;
             writer.WriteByte(parameterCount);
 
-            var dirtyBits = forceAll ? (~0ul) : NextDirtyBits();
+            var dirtyBits = forceAll ? ~0ul : NextDirtyBits();
             writer.WriteULong(dirtyBits);
 
             // iterate on byte count. if it's >256, it won't break

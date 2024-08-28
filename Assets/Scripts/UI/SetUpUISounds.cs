@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UI
@@ -12,7 +11,7 @@ namespace UI
 		private TMP_InputField[] _inputFields;
 		private Slider[] _sliders;
 		private Toggle[] _toggles;
-		
+
 		private ButtonSounds _buttonSounds;
 		
 
@@ -20,7 +19,7 @@ namespace UI
 		{
 			GetComponents();
 			SetUp();
-			Destroy(gameObject);
+			Destroy(this);
 		}
 
 		private void GetComponents()
@@ -32,47 +31,28 @@ namespace UI
 			_sliders = Resources.FindObjectsOfTypeAll<Slider>();
 
 			_toggles = Resources.FindObjectsOfTypeAll<Toggle>();
-			
+
 			_buttonSounds = FindObjectOfType<ButtonSounds>();
 		}
 		
 		private void SetUp()
 		{
 			foreach (var button in _buttons)
-			{
-				var eventTrigger = button.gameObject.AddComponent<EventTrigger>();
-				var entry = new EventTrigger.Entry 
-					{ eventID = EventTriggerType.PointerEnter };
-				entry.callback.AddListener(_ => { _buttonSounds.PlayHoverSound1(); });
-				eventTrigger.triggers.Add(entry);
-			}
+				SetSounds(button.gameObject);
 			
 			foreach (var slider in _sliders)
-			{
-				var eventTrigger = slider.gameObject.AddComponent<EventTrigger>();
-				var entry = new EventTrigger.Entry 
-					{ eventID = EventTriggerType.PointerEnter };
-				entry.callback.AddListener(_ => { _buttonSounds.PlayHoverSound1(); });
-				eventTrigger.triggers.Add(entry);
-			}
+				SetSounds(slider.gameObject);
 			
 			foreach (var inputField in _inputFields)
-			{
-				var eventTrigger = inputField.gameObject.AddComponent<EventTrigger>();
-				var entry = new EventTrigger.Entry 
-					{ eventID = EventTriggerType.PointerEnter };
-				entry.callback.AddListener(_ => { _buttonSounds.PlayHoverSound1(); });
-				eventTrigger.triggers.Add(entry);
-			}
+				SetSounds(inputField.gameObject);
 			
 			foreach (var toggle in _toggles)
-			{
-				var eventTrigger = toggle.gameObject.AddComponent<EventTrigger>();
-				var entry = new EventTrigger.Entry 
-					{ eventID = EventTriggerType.PointerEnter };
-				entry.callback.AddListener(_ => { _buttonSounds.PlayHoverSound1(); });
-				eventTrigger.triggers.Add(entry);
-			}
+				SetSounds(toggle.gameObject);
+		}
+		
+		private void SetSounds(GameObject target)
+		{
+			target.AddComponent<UISounds>().buttonSounds = _buttonSounds;
 		}
 		
 	}

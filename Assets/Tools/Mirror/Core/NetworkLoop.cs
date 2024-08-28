@@ -55,7 +55,7 @@ namespace Mirror
         {
             // did we find the type? e.g. EarlyUpdate/PreLateUpdate/etc.
             if (playerLoop.type == playerLoopSystemType)
-                return Array.FindIndex(playerLoop.subSystemList, (elem => elem.updateDelegate == function));
+                return Array.FindIndex(playerLoop.subSystemList, elem => elem.updateDelegate == function);
 
             // recursively keep looking
             if (playerLoop.subSystemList != null)
@@ -102,14 +102,14 @@ namespace Mirror
                 // make sure the function wasn't added yet.
                 // with domain reload disabled, it would otherwise be added twice:
                 // fixes: https://github.com/MirrorNetworking/Mirror/issues/3392
-                if (Array.FindIndex(playerLoop.subSystemList, (s => s.updateDelegate == function)) != -1)
+                if (Array.FindIndex(playerLoop.subSystemList, s => s.updateDelegate == function) != -1)
                 {
                     // loop contains the function, so return true.
                     return true;
                 }
 
                 // resize & expand subSystemList to fit one more entry
-                var oldListLength = (playerLoop.subSystemList != null) ? playerLoop.subSystemList.Length : 0;
+                var oldListLength = playerLoop.subSystemList != null ? playerLoop.subSystemList.Length : 0;
                 Array.Resize(ref playerLoop.subSystemList, oldListLength + 1);
 
                 // IMPORTANT: always insert a FRESH PlayerLoopSystem!

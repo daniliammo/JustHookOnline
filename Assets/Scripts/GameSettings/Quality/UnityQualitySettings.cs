@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 
 namespace GameSettings.Quality
 {
@@ -15,38 +16,42 @@ namespace GameSettings.Quality
         public Slider lodBiasSlider;
         public Slider maximumLODLevelSlider;
         public Toggle lodCrossfadeToggle;
+        
         public Dropdown antiAliasingDropdown;
         public Dropdown anisotropicTexturesDropdown;
         public Dropdown shadowmaskModeDropdown;
+        public Dropdown shadowsDropdown;
+        public Dropdown shadowResolutionDropdown;
+        public Dropdown shadowProjectionDropdown;
         
         
         private void Awake()
         {
-            CheckOrWritePlayerPrefsKeysInt(new Dictionary<string, int>
+            CheckPlayerPrefsKeys(new Dictionary<string, int>
             {
                 { "QualitySettings:QualityLevel", 0 },
                 { "QualitySettings:AntiAliasing", 0 },
-                { "QualitySettings:RealtimeGICPUUsage", 25 },
+                { "QualitySettings:RealtimeGICPUUsage", 50 },
                 { "QualitySettings:Shadows:ShadowDistance", 150 },
                 { "QualitySettings:Shadows:ShadowNearPlaneOffset", 5 },
                 { "QualitySettings:Shadows:ShadowCascades", 4 },
                 { "QualitySettings:LOD:LODBias", 2 },
                 { "QualitySettings:LOD:MaximumLODLevel", 0 }
-            }, false);
+            });
             
-            CheckOrWritePlayerPrefsKeysBoolean(new Dictionary<string, bool>
+            CheckPlayerPrefsKeys(new Dictionary<string, bool>
             {
                 { "QualitySettings:LOD:LODCrossFade", false }
-            }, false);
+            });
 
-            CheckOrWritePlayerPrefsKeysString(new Dictionary<string, string>
+            CheckPlayerPrefsKeys(new Dictionary<string, string>
             {
                 { "QualitySettings:AnisotropicTextures", "Forced On" },
                 { "QualitySettings:Shadows:ShadowmaskMode", "Distance Shadowmask" },
                 { "QualitySettings:Shadows:Shadows", "Hard and Soft Shadows" },
                 { "QualitySettings:Shadows:ShadowResolution", "Very High Resolution" },
                 { "QualitySettings:Shadows:ShadowProjection", "Stable Fit" }
-            }, false);
+            });
             
             SetSliderValuesFromPlayerPrefs();
             SetQualitySettingsFromPlayerPrefs();
@@ -66,35 +71,53 @@ namespace GameSettings.Quality
             QualitySettings.antiAliasing = PlayerPrefs.GetInt("QualitySettings:AntiAliasing");
             
             QualitySettings.realtimeGICPUUsage = PlayerPrefs.GetInt("QualitySettings:RealtimeGICPUUsage");
-        }
 
+            QualitySettings.shadowDistance = PlayerPrefs.GetInt("QualitySettings:Shadows:ShadowDistance");
+
+            QualitySettings.shadowNearPlaneOffset = PlayerPrefs.GetFloat("QualitySettings:Shadows:ShadowNearPlaneOffset");
+            
+            QualitySettings.shadowCascades = PlayerPrefs.GetInt("QualitySettings:Shadows:ShadowCascades");
+
+            QualitySettings.lodBias = PlayerPrefs.GetFloat("QualitySettings:LOD:LODBias");
+
+            QualitySettings.maximumLODLevel = PlayerPrefs.GetInt("QualitySettings:LOD:LODBias");
+
+            QualitySettings.enableLODCrossFade = PlayerPrefsBoolean.GetBool("QualitySettings:LOD:LODCrossFade");
+        }
+        
         public void SaveQualitySettings()
         {
-            CheckOrWritePlayerPrefsKeysInt(new Dictionary<string, int>
-            {
-                { "QualitySettings:QualityLevel", (int)(qualityLevelSlider.value * 10)},
-                { "QualitySettings:AntiAliasing", 0 },
-                { "QualitySettings:RealtimeGICPUUsage", (int)(realtimeGICPUUsageSlider.value * 10) },
-                { "QualitySettings:Shadows:ShadowDistance", (int)(shadowDistanceSlider.value * 10) },
-                { "QualitySettings:Shadows:ShadowNearPlaneOffset", (int)(shadowNearPlaneOffsetSlider.value * 10) },
-                { "QualitySettings:Shadows:ShadowCascades", (int)(shadowCascadesSlider.value * 40) },
-                { "QualitySettings:LOD:LODBias", (int)(lodBiasSlider.value * 10)},
-                { "QualitySettings:LOD:MaximumLODLevel", (int)(maximumLODLevelSlider.value * 10)}
-            }, true);
-            
-            CheckOrWritePlayerPrefsKeysBoolean(new Dictionary<string, bool>
-            {
-                { "QualitySettings:LOD:LODCrossFade", lodCrossfadeToggle.isOn }
-            }, true);
-            
-            CheckOrWritePlayerPrefsKeysString(new Dictionary<string, string>
+            WritePlayerPrefsKeys(new Dictionary<string, string>
             {
                 { "QualitySettings:AnisotropicTextures", "Forced On" },
                 { "QualitySettings:Shadows:ShadowmaskMode", "Distance Shadowmask" },
                 { "QualitySettings:Shadows:Shadows", "Hard and Soft Shadows" },
                 { "QualitySettings:Shadows:ShadowResolution", "Very High Resolution" },
                 { "QualitySettings:Shadows:ShadowProjection", "Stable Fit" }
-            }, true);
+            });
+            
+            WritePlayerPrefsKeys(new Dictionary<string, int>
+            {
+                { "QualitySettings:QualityLevel", (int)qualityLevelSlider.value},
+                { "QualitySettings:AntiAliasing", antiAliasingDropdown.value },
+                { "QualitySettings:RealtimeGICPUUsage", (int)realtimeGICPUUsageSlider.value },
+                { "QualitySettings:Shadows:ShadowCascades", (int)(shadowCascadesSlider.value * 40) },
+                { "QualitySettings:LOD:MaximumLODLevel", (int)(maximumLODLevelSlider.value * 10)}
+            });
+            
+            WritePlayerPrefsKeys(new Dictionary<string, float>
+            {
+                { "QualitySettings:Shadows:ShadowDistance", shadowDistanceSlider.value * 10 },
+                { "QualitySettings:Shadows:ShadowNearPlaneOffset", shadowNearPlaneOffsetSlider.value * 10 },
+                { "QualitySettings:LOD:LODBias", lodBiasSlider.value * 10},
+            });
+            
+            WritePlayerPrefsKeys(new Dictionary<string, bool>
+            {
+                { "QualitySettings:LOD:LODCrossFade", lodCrossfadeToggle.isOn }
+            });
+            
+            SetQualitySettingsFromPlayerPrefs();
         }
         
     }

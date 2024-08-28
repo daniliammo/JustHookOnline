@@ -14,7 +14,7 @@ namespace GameSettings.Quality
 		
 		private void Start()
 		{
-			CheckOrWritePlayerPrefsKeysBoolean(new Dictionary<string, bool>{{"PostProcessSettings:IsEnabled", true}}, false);
+			CheckPlayerPrefsKeys(new Dictionary<string, bool>{{"PostProcessSettings:IsEnabled", true}});
 			EnableOrDisablePostProcessing(PlayerPrefsBoolean.GetBool("PostProcessSettings:IsEnabled"));
 			SetToggleValueFromPlayerPrefs();
 		}
@@ -26,7 +26,7 @@ namespace GameSettings.Quality
 
 		public void SavePostProcessingSettings()
 		{
-			CheckOrWritePlayerPrefsKeysBoolean(new Dictionary<string, bool>{{"PostProcessSettings:IsEnabled", postProcessingToggle.isOn}}, true);
+			WritePlayerPrefsKeys(new Dictionary<string, bool>{{"PostProcessSettings:IsEnabled", postProcessingToggle.isOn}});
 			EnableOrDisablePostProcessing(PlayerPrefsBoolean.GetBool("PostProcessSettings:IsEnabled"));
 		}
 		

@@ -325,7 +325,7 @@ namespace UnityEngine.AzureSky
                 m_localWeatherZoneInterpolationFactor = 1f;
 
                 if (m_localWeatherZoneBlendDistanceSqr > 0f)
-                    m_localWeatherZoneInterpolationFactor = 1f - (m_localWeatherZoneClosestDistanceSqr / m_localWeatherZoneBlendDistanceSqr);
+                    m_localWeatherZoneInterpolationFactor = 1f - m_localWeatherZoneClosestDistanceSqr / m_localWeatherZoneBlendDistanceSqr;
 
                 // No need to clamp01 the interpolation factor as it'll always be in [0;1[ range
                 ApplyWeatherZonesInfluence(weatherZone.profile, m_localWeatherZoneInterpolationFactor);

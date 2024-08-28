@@ -789,9 +789,9 @@ public class EnviroCore : MonoBehaviour
 
         var realWavelength = waveLength * 1.0e-9f;
 
-        Br.x = (((8.0f * Mathf.Pow(pi, 3.0f) * (Mathf.Pow(Mathf.Pow(n, 2.0f) - 1.0f, 2.0f))) * (6.0f + 3.0f * pn)) / ((3.0f * N * Mathf.Pow(realWavelength.x, 4.0f)) * (6.0f - 7.0f * pn))) * 2000f;
-        Br.y = (((8.0f * Mathf.Pow(pi, 3.0f) * (Mathf.Pow(Mathf.Pow(n, 2.0f) - 1.0f, 2.0f))) * (6.0f + 3.0f * pn)) / ((3.0f * N * Mathf.Pow(realWavelength.y, 4.0f)) * (6.0f - 7.0f * pn))) * 2000f;
-        Br.z = (((8.0f * Mathf.Pow(pi, 3.0f) * (Mathf.Pow(Mathf.Pow(n, 2.0f) - 1.0f, 2.0f))) * (6.0f + 3.0f * pn)) / ((3.0f * N * Mathf.Pow(realWavelength.z, 4.0f)) * (6.0f - 7.0f * pn))) * 2000f;
+        Br.x = 8.0f * Mathf.Pow(pi, 3.0f) * Mathf.Pow(Mathf.Pow(n, 2.0f) - 1.0f, 2.0f) * (6.0f + 3.0f * pn) / (3.0f * N * Mathf.Pow(realWavelength.x, 4.0f) * (6.0f - 7.0f * pn)) * 2000f;
+        Br.y = 8.0f * Mathf.Pow(pi, 3.0f) * Mathf.Pow(Mathf.Pow(n, 2.0f) - 1.0f, 2.0f) * (6.0f + 3.0f * pn) / (3.0f * N * Mathf.Pow(realWavelength.y, 4.0f) * (6.0f - 7.0f * pn)) * 2000f;
+        Br.z = 8.0f * Mathf.Pow(pi, 3.0f) * Mathf.Pow(Mathf.Pow(n, 2.0f) - 1.0f, 2.0f) * (6.0f + 3.0f * pn) / (3.0f * N * Mathf.Pow(realWavelength.z, 4.0f) * (6.0f - 7.0f * pn)) * 2000f;
 
         return Br;
     }
@@ -801,11 +801,11 @@ public class EnviroCore : MonoBehaviour
     {
         Vector3 Bm;
 
-        var c = (0.2f * turbidity) * 10.0f;
+        var c = 0.2f * turbidity * 10.0f;
 
-        Bm.x = (434.0f * c * pi * Mathf.Pow((2.0f * pi) / waveLength.x, 2.0f) * K.x);
-        Bm.y = (434.0f * c * pi * Mathf.Pow((2.0f * pi) / waveLength.y, 2.0f) * K.y);
-        Bm.z = (434.0f * c * pi * Mathf.Pow((2.0f * pi) / waveLength.z, 2.0f) * K.z);
+        Bm.x = 434.0f * c * pi * Mathf.Pow(2.0f * pi / waveLength.x, 2.0f) * K.x;
+        Bm.y = 434.0f * c * pi * Mathf.Pow(2.0f * pi / waveLength.y, 2.0f) * K.y;
+        Bm.z = 434.0f * c * pi * Mathf.Pow(2.0f * pi / waveLength.z, 2.0f) * K.z;
 
         Bm.x = Mathf.Pow(Bm.x, -1.0f);
         Bm.y = Mathf.Pow(Bm.y, -1.0f);
@@ -846,9 +846,9 @@ public class EnviroCore : MonoBehaviour
 
 
             if (!isNight)
-                t = (24.0f / 60.0f) / (timeProgressionSpeed * GameTime.dayLengthModifier);
+                t = 24.0f / 60.0f / (timeProgressionSpeed * GameTime.dayLengthModifier);
             else
-                t = (24.0f / 60.0f) / (timeProgressionSpeed * GameTime.nightLengthModifier);
+                t = 24.0f / 60.0f / (timeProgressionSpeed * GameTime.nightLengthModifier);
 
             hourTime = t * Time.deltaTime;
 
@@ -882,7 +882,7 @@ public class EnviroCore : MonoBehaviour
         //else if (customMoonPhase > 1) customMoonPhase -= 2;
 
         //Fire OnHour Event
-        if (internalHour > (lastHourUpdate + 1f))
+        if (internalHour > lastHourUpdate + 1f)
         {
             lastHourUpdate = internalHour;
             EnviroSkyMgr.instance.NotifyHourPassed();
@@ -909,7 +909,7 @@ public class EnviroCore : MonoBehaviour
         GameTime.Days = dayOfYear;
         GameTime.Minutes = minute;
         GameTime.Hours = hour;
-        internalHour = hour + (minute * 0.0166667f) + (seconds * 0.000277778f);
+        internalHour = hour + minute * 0.0166667f + seconds * 0.000277778f;
     }
 
     /// <summary>
@@ -941,7 +941,7 @@ public class EnviroCore : MonoBehaviour
         }
 
         var inHours = internalHour;
-        GameTime.Hours = (int)(inHours);
+        GameTime.Hours = (int)inHours;
         inHours -= GameTime.Hours;
         GameTime.Minutes = (int)(inHours * 60f);
         inHours -= GameTime.Minutes * 0.0166667f;
@@ -958,7 +958,7 @@ public class EnviroCore : MonoBehaviour
         GameTime.Minutes = date.Minute;
         GameTime.Seconds = date.Second;
         GameTime.Hours = date.Hour;
-        internalHour = date.Hour + (date.Minute * 0.0166667f) + (date.Second * 0.000277778f);
+        internalHour = date.Hour + date.Minute * 0.0166667f + date.Second * 0.000277778f;
     }
 
     /// <summary>
@@ -979,7 +979,7 @@ public class EnviroCore : MonoBehaviour
         GameTime.Minutes = minute;
         GameTime.Hours = hour;
         GameTime.Seconds = seconds;
-        internalHour = hour + (minute * 0.0166667f) + (seconds * 0.000277778f);
+        internalHour = hour + minute * 0.0166667f + seconds * 0.000277778f;
     }
 
     /// <summary>
@@ -988,7 +988,7 @@ public class EnviroCore : MonoBehaviour
     public void SetInternalTimeOfDay(float inHours)
     {
         internalHour = inHours;
-        GameTime.Hours = (int)(inHours);
+        GameTime.Hours = (int)inHours;
         inHours -= GameTime.Hours;
         GameTime.Minutes = (int)(inHours * 60f);
         inHours -= GameTime.Minutes * 0.0166667f;
@@ -1073,7 +1073,7 @@ public class EnviroCore : MonoBehaviour
         var decl_sin = Mathf.Sin(decl_rad);
         var decl_cos = Mathf.Cos(decl_rad);
 
-        var GMST0 = (l + 180);
+        var GMST0 = l + 180;
         var GMST = GMST0 + GetUniversalTimeOfDay() * 15;
         LST = GMST + GameTime.Longitude;
 
@@ -1096,7 +1096,7 @@ public class EnviroCore : MonoBehaviour
         var azimuth = Mathf.Atan2(yhor, xhor) + Mathf.Deg2Rad * 180;
         var altitude = Mathf.Atan2(zhor, Mathf.Sqrt(xhor * xhor + yhor * yhor));
 
-        var sunTheta = (90 * Mathf.Deg2Rad) - altitude;
+        var sunTheta = 90 * Mathf.Deg2Rad - altitude;
         var sunPhi = azimuth;
 
         //Set SolarTime: 1 = mid-day (sun directly above you), 0.5 = sunset/dawn, 0 = midnight;
@@ -1174,7 +1174,7 @@ public class EnviroCore : MonoBehaviour
         var azimuth = Mathf.Atan2(yhor, xhor) + Mathf.Deg2Rad * 180f;
         var altitude = Mathf.Atan2(zhor, Mathf.Sqrt(xhor * xhor + yhor * yhor));
 
-        var MoonTheta = (90f * Mathf.Deg2Rad) - altitude;
+        var MoonTheta = 90f * Mathf.Deg2Rad - altitude;
         var MoonPhi = azimuth;
 
         Components.Moon.transform.localPosition = OrbitalToLocal(MoonTheta, MoonPhi);
@@ -1243,7 +1243,7 @@ public class EnviroCore : MonoBehaviour
         var azimuth = Mathf.Atan2(yhor, xhor) + Mathf.Deg2Rad * 180f;
         var altitude = Mathf.Atan2(zhor, Mathf.Sqrt(xhor * xhor + yhor * yhor));
 
-        var MoonTheta = (90f * Mathf.Deg2Rad) - altitude;
+        var MoonTheta = 90f * Mathf.Deg2Rad - altitude;
         var MoonPhi = azimuth;
 
         sat.localPosition = OrbitalToLocal(MoonTheta, MoonPhi);
@@ -1272,7 +1272,7 @@ public class EnviroCore : MonoBehaviour
         var date = CreateSystemDate();
         float d = 367 * date.Year - 7 * (date.Year + (date.Month / 12 + 9) / 12) / 4 + 275 * date.Month / 9 + date.Day - 730530;
 
-        d += (GetUniversalTimeOfDay() / 24f);
+        d += GetUniversalTimeOfDay() / 24f;
 
         var ecl = 23.4393f - 3.563E-7f * d;
 
@@ -1313,7 +1313,7 @@ public class EnviroCore : MonoBehaviour
     /// <returns>The the current date in hours.</returns>
     public double GetInHours(float hours, float days, float years, int daysInYear)
     {
-        double inHours = hours + (days * 24f) + ((years * daysInYear) * 24f);
+        double inHours = hours + days * 24f + years * daysInYear * 24f;
         return inHours;
     }
 
@@ -1833,13 +1833,13 @@ public class EnviroCore : MonoBehaviour
             cloudsSettings.cloudsWindDirectionY = -Components.windZone.transform.forward.z;
         }
 
-        cloudAnim += new Vector3(((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX)) * cloudsSettings.cloudsWindIntensity) * Time.deltaTime, ((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY)) * cloudsSettings.cloudsWindIntensity) * Time.deltaTime, ((cloudsSettings.cloudsTimeScale * -1) * cloudsSettings.cloudsUpwardsWindIntensity) * Time.deltaTime);
-        cloudAnimNonScaled += new Vector2(((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX)) * cloudsSettings.cloudsWindIntensity) * Time.deltaTime * 0.1f, ((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY)) * cloudsSettings.cloudsWindIntensity) * Time.deltaTime * 0.1f);
+        cloudAnim += new Vector3(cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX) * cloudsSettings.cloudsWindIntensity * Time.deltaTime, cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY) * cloudsSettings.cloudsWindIntensity * Time.deltaTime, cloudsSettings.cloudsTimeScale * -1 * cloudsSettings.cloudsUpwardsWindIntensity * Time.deltaTime);
+        cloudAnimNonScaled += new Vector2(cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX) * cloudsSettings.cloudsWindIntensity * Time.deltaTime * 0.1f, cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY) * cloudsSettings.cloudsWindIntensity * Time.deltaTime * 0.1f);
 
-        cloudFlatBaseAnim += new Vector2(((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX)) * cloudsSettings.cloudsWindIntensity) * Time.deltaTime * 0.1f, ((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY)) * cloudsSettings.cloudsWindIntensity) * Time.deltaTime * 0.1f);
-        cloudFlatDetailAnim += new Vector2(((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX)) * cloudsSettings.cloudsDetailWindIntensity) * Time.deltaTime, ((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY)) * cloudsSettings.cloudsDetailWindIntensity) * Time.deltaTime);
+        cloudFlatBaseAnim += new Vector2(cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX) * cloudsSettings.cloudsWindIntensity * Time.deltaTime * 0.1f, cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY) * cloudsSettings.cloudsWindIntensity * Time.deltaTime * 0.1f);
+        cloudFlatDetailAnim += new Vector2(cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX) * cloudsSettings.cloudsDetailWindIntensity * Time.deltaTime, cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY) * cloudsSettings.cloudsDetailWindIntensity * Time.deltaTime);
 
-        cirrusAnim += new Vector2(((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX)) * cloudsSettings.cirrusWindIntensity) * Time.deltaTime * 0.1f, ((cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY)) * cloudsSettings.cirrusWindIntensity) * Time.deltaTime * 0.1f);
+        cirrusAnim += new Vector2(cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionX) * cloudsSettings.cirrusWindIntensity * Time.deltaTime * 0.1f, cloudsSettings.cloudsTimeScale * (windIntensity * cloudsSettings.cloudsWindDirectionY) * cloudsSettings.cirrusWindIntensity * Time.deltaTime * 0.1f);
 
         if (cloudAnim.x > 1f)
             cloudAnim.x = -1f;
@@ -2044,7 +2044,7 @@ public class EnviroCore : MonoBehaviour
         }
         else if (EnviroSkyMgr.instance != null && EnviroSkyMgr.instance.currentEnviroSkyVersion == EnviroSkyMgr.EnviroSkyVersion.LW)
         {
-            if ((cloudsConfig.particleLayer1Alpha >= Weather.currentActiveWeatherPreset.cloudsConfig.particleLayer1Alpha - 0.01f) && (cloudsConfig.particleLayer2Alpha >= Weather.currentActiveWeatherPreset.cloudsConfig.particleLayer2Alpha - 0.01f))
+            if (cloudsConfig.particleLayer1Alpha >= Weather.currentActiveWeatherPreset.cloudsConfig.particleLayer1Alpha - 0.01f && cloudsConfig.particleLayer2Alpha >= Weather.currentActiveWeatherPreset.cloudsConfig.particleLayer2Alpha - 0.01f)
                 changed = true;
             else
                 changed = false;

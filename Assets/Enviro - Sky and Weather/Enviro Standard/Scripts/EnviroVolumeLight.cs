@@ -213,7 +213,7 @@ public class EnviroVolumeLight : MonoBehaviour
         _material.SetInt("_SampleCount", SampleCount);
         _material.SetVector("_NoiseVelocity", new Vector4(EnviroSky.instance.volumeLightSettings.noiseVelocity.x, EnviroSky.instance.volumeLightSettings.noiseVelocity.y) * EnviroSky.instance.volumeLightSettings.noiseScale);
         _material.SetVector("_NoiseData", new Vector4(EnviroSky.instance.volumeLightSettings.noiseScale, EnviroSky.instance.volumeLightSettings.noiseIntensity, EnviroSky.instance.volumeLightSettings.noiseIntensityOffset));
-        _material.SetVector("_MieG", new Vector4(1 - (Anistropy * Anistropy), 1 + (Anistropy * Anistropy), 2 * Anistropy, 1.0f / (4.0f * Mathf.PI)));
+        _material.SetVector("_MieG", new Vector4(1 - Anistropy * Anistropy, 1 + Anistropy * Anistropy, 2 * Anistropy, 1.0f / (4.0f * Mathf.PI)));
         var scatter = ScatteringCoef;
         if (scaleWithTime)
             scatter = ScatteringCoef * (1 - EnviroSky.instance.GameTime.solarTime);
@@ -543,7 +543,7 @@ public class EnviroVolumeLight : MonoBehaviour
     {
         var distanceSqr = (_light.transform.position - EnviroSky.instance.PlayerCamera.transform.position).sqrMagnitude;
         var extendedRange = _light.range + 1;
-        if (distanceSqr < (extendedRange * extendedRange))
+        if (distanceSqr < extendedRange * extendedRange)
             return true;
         return false;
     }
@@ -555,14 +555,14 @@ public class EnviroVolumeLight : MonoBehaviour
     private bool IsCameraInSpotLightBounds()
     {
         // check range
-        var distance = Vector3.Dot(_light.transform.forward, (Camera.current.transform.position - _light.transform.position));
+        var distance = Vector3.Dot(_light.transform.forward, Camera.current.transform.position - _light.transform.position);
         var extendedRange = _light.range + 1;
-        if (distance > (extendedRange))
+        if (distance > extendedRange)
             return false;
 
         // check angle
         var cosAngle = Vector3.Dot(transform.forward, (Camera.current.transform.position - _light.transform.position).normalized);
-        if ((Mathf.Acos(cosAngle) * Mathf.Rad2Deg) > (_light.spotAngle + 3) * 0.5f)
+        if (Mathf.Acos(cosAngle) * Mathf.Rad2Deg > (_light.spotAngle + 3) * 0.5f)
             return false;
 
         return true;

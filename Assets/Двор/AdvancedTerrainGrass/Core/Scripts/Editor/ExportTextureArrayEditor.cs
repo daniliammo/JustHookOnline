@@ -44,11 +44,11 @@ public class ExportTextureArrayEditor {
             // Check for fail on different properties
             var error = "";
             for (var i = 1; i < textures.Length; i++) {
-                error += (textures[0].width != textures[i].width) ?             textures[i].name + " has a divergent width of: " + textures[i].width +"\n" : "";
-                error += (textures[0].height != textures[i].height) ?           textures[i].name + " has a divergent height of: " + textures[i].height +"\n" : "";
-                error += (textures[0].format != textures[i].format) ?           textures[i].name + " uses a divergent format: " + textures[i].format + "\n" : "";
-                error += (textures[0].anisoLevel != textures[i].anisoLevel) ?   textures[i].name + " uses a divergent aniso level.\n" : "";
-                error += (textures[0].dimension != textures[i].dimension) ?     textures[i].name + " has a divergent dimension.\n" : "";
+                error += textures[0].width != textures[i].width ?             textures[i].name + " has a divergent width of: " + textures[i].width +"\n" : "";
+                error += textures[0].height != textures[i].height ?           textures[i].name + " has a divergent height of: " + textures[i].height +"\n" : "";
+                error += textures[0].format != textures[i].format ?           textures[i].name + " uses a divergent format: " + textures[i].format + "\n" : "";
+                error += textures[0].anisoLevel != textures[i].anisoLevel ?   textures[i].name + " uses a divergent aniso level.\n" : "";
+                error += textures[0].dimension != textures[i].dimension ?     textures[i].name + " has a divergent dimension.\n" : "";
                 //error += (textures[0].mipmapCount != textures[i].mipmapCount) ? textures[i].name + " has a divergent mipmap count.\n" : "";
                 //error += (textures[0].wrapMode != textures[i].wrapMode) ?       textures[i].name + " uses a divergent wrap mode.\n" : "";
             }

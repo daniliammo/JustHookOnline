@@ -346,7 +346,7 @@
             var n2 = n * n;
             //float N = 2.545E25f;
             var N = molecularDensity * 1E25f;
-            var temp = (8.0f * Mathf.PI * Mathf.PI * Mathf.PI * ((n2 - 1.0f) * (n2 - 1.0f))) / (3.0f * N) * ((6.0f + 3.0f * pn) / (6.0f - 7.0f * pn));
+            var temp = 8.0f * Mathf.PI * Mathf.PI * Mathf.PI * ((n2 - 1.0f) * (n2 - 1.0f)) / (3.0f * N) * ((6.0f + 3.0f * pn) / (6.0f - 7.0f * pn));
 
             rayleigh.x = temp / Mathf.Pow(lambda.x, 4.0f);
             rayleigh.y = temp / Mathf.Pow(lambda.y, 4.0f);
@@ -366,9 +366,9 @@
             var c = (0.6544f * 5.0f - 0.6510f) * 10f * 1e-9f;
             var k = new Vector3(686.0f, 678.0f, 682.0f);
 
-            mie.x = (434.0f * c * Mathf.PI * Mathf.Pow((4.0f * Mathf.PI) / wavelengthR, 2.0f) * k.x);
-            mie.y = (434.0f * c * Mathf.PI * Mathf.Pow((4.0f * Mathf.PI) / wavelengthG, 2.0f) * k.y);
-            mie.z = (434.0f * c * Mathf.PI * Mathf.Pow((4.0f * Mathf.PI) / wavelengthB, 2.0f) * k.z);
+            mie.x = 434.0f * c * Mathf.PI * Mathf.Pow(4.0f * Mathf.PI / wavelengthR, 2.0f) * k.x;
+            mie.y = 434.0f * c * Mathf.PI * Mathf.Pow(4.0f * Mathf.PI / wavelengthG, 2.0f) * k.y;
+            mie.z = 434.0f * c * Mathf.PI * Mathf.Pow(4.0f * Mathf.PI / wavelengthB, 2.0f) * k.z;
 
             //float c = (6544f * 5.0f - 6510f) * 10.0f * 1.0e-9f;
             //mie.x = (0.434f * c * Mathf.PI * Mathf.Pow((2.0f * Mathf.PI) / wavelengthR, 2.0f) * k.x) / 3.0f;

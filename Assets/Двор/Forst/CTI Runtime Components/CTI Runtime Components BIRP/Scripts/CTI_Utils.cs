@@ -17,7 +17,7 @@ namespace CTI {
 			Shader.SetGlobalVector ("_CTI_TransFade", 
 				new Vector2( 
 					TranslucentLightingRange * TranslucentLightingRange,
-					FadeLength * FadeLength * ( (TranslucentLightingRange / FadeLength) * 2.0f )
+					FadeLength * FadeLength * ( TranslucentLightingRange / FadeLength * 2.0f )
 				)
 			);
 		}

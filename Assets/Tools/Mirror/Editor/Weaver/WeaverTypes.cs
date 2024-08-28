@@ -147,11 +147,11 @@ namespace Mirror.Weaver
             ReturnWriterReference = Resolvers.ResolveMethod(NetworkWriterPoolType, assembly, Log, "Return", ref WeavingFailed);
 
             var readerExtensions = Import(typeof(NetworkReaderExtensions));
-            readNetworkBehaviourGeneric = Resolvers.ResolveMethod(readerExtensions, assembly, Log, (md =>
-            {
-                return md.Name == nameof(NetworkReaderExtensions.ReadNetworkBehaviour) &&
-                       md.HasGenericParameters;
-            }),
+            readNetworkBehaviourGeneric = Resolvers.ResolveMethod(readerExtensions, assembly, Log, md =>
+                {
+                    return md.Name == nameof(NetworkReaderExtensions.ReadNetworkBehaviour) &&
+                           md.HasGenericParameters;
+                },
             ref WeavingFailed);
 
             // [InitializeOnLoadMethod]

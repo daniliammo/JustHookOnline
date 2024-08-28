@@ -30,7 +30,7 @@ public class ATGStandaloneGrassFadeParams : MonoBehaviour
 
         var GrassFadeProperties = new Vector4(
             _cullDistance * _cullDistance,
-            1.0f / (_cullFadeLength * _cullFadeLength * ((_cullDistance / _cullDistance) * 2.0f)),
+            1.0f / (_cullFadeLength * _cullFadeLength * (_cullDistance / _cullDistance * 2.0f)),
             _detailFadeStart * _detailFadeStart,
             1.0f / (_detailFadeLength * _detailFadeLength)
         );

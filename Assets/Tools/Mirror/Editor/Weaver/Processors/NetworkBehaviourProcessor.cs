@@ -325,7 +325,7 @@ namespace Mirror.Weaver
         // we need to inject several initializations into NetworkBehaviour ctor
         private void InjectIntoInstanceConstructor(ref bool WeavingFailed)
         {
-            if ((syncObjects.Count == 0) && (syncVarHookDelegates.Count == 0))
+            if (syncObjects.Count == 0 && syncVarHookDelegates.Count == 0)
                 return;
 
             // find instance constructor

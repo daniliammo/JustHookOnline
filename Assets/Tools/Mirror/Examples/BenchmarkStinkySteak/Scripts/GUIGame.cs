@@ -55,11 +55,11 @@ namespace StinkySteak.MirrorBenchmark
 
             if (_networkManager.mode == NetworkManagerMode.ServerOnly)
             {
-                _textLatency = ("Latency: 0ms (Server)"); // MIRROR CHANGE: Canvas + TextMeshPro -> OnGUI
+                _textLatency = "Latency: 0ms (Server)"; // MIRROR CHANGE: Canvas + TextMeshPro -> OnGUI
                 return;
             }
 
-            _textLatency = ($"Latency: {NetworkTime.rtt * 1_000}ms"); // MIRROR CHANGE: Canvas + TextMeshPro -> OnGUI
+            _textLatency = $"Latency: {NetworkTime.rtt * 1_000}ms"; // MIRROR CHANGE: Canvas + TextMeshPro -> OnGUI
         }
     }
 }

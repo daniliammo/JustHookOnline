@@ -332,7 +332,7 @@ namespace UnityEditor.AzureSky
                         var v = EditorGUIUtility.standardVerticalSpacing + 3f;
                         var innerList = element.FindPropertyRelative("overridePropertySetupList");
                         var h = EditorGUIUtility.singleLineHeight;
-                        if (element.isExpanded) return Mathf.Max(100f, (h * 6f) * (innerList.arraySize + 1f) - 50f); else return h + v;
+                        if (element.isExpanded) return Mathf.Max(100f, h * 6f * (innerList.arraySize + 1f) - 50f); else return h + v;
                     }
                     else return 25f;
                 },

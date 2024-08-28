@@ -18,7 +18,7 @@ public class CTI_DetailsEnum : MaterialPropertyDrawer {
 		
 		var material = editor.target as Material;
 
-		status = (detailMode)((int)prop.floatValue);
+		status = (detailMode)(int)prop.floatValue;
 		status = (detailMode)EditorGUI.EnumPopup(position, label, status);
 		prop.floatValue = (float)status;
 

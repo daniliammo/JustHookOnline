@@ -54,17 +54,17 @@ namespace Player
         {
             CursorController.SetCursorLockState(CursorLockMode.Locked);
             
-            _sensitivity = PlayerPrefs.GetFloat("ControlSettings:Sensivity");
+            _sensitivity = PlayerPrefs.GetFloat("ControlSettings:Sensitivity");
             
             _controlSettings = FindObjectOfType<ControlSettings>();
             _ui = FindObjectOfType<UIObjectsLinks>();
 
-            _controlSettings.OnSensivityChanged += ChangeSensivityTo;
+            _controlSettings.OnSensitivityChanged += ChangeSensitivityTo;
         }
         
-        private void ChangeSensivityTo(float newSensivity)
+        private void ChangeSensitivityTo(float newSensitivity)
         {
-            _sensitivity = newSensivity;
+            _sensitivity = newSensitivity;
         }
         
         private void Update()
@@ -79,7 +79,7 @@ namespace Player
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.F) && _isFlashLightAllowed)
+            if (Input.GetKeyDown(KeyCode.F))
                 CmdEnableFlashlight();
             
             // Get smooth velocity.
@@ -100,6 +100,7 @@ namespace Player
         [ClientRpc]
         private void RpcEnableFlashlight()
         {
+            if(!_isFlashLightAllowed) return;
             spotLight.enabled = !spotLight.enabled;
         }
         

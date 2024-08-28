@@ -272,7 +272,7 @@ namespace UnityEngine.AzureSky
         private float GetTimeProgressionStep()
         {
             if (m_dayLength > 0.0f)
-                return (24.0f / 60.0f) / m_dayLength;
+                return 24.0f / 60.0f / m_dayLength;
             else
                 return 0.0f;
         }
@@ -535,7 +535,7 @@ namespace UnityEngine.AzureSky
 
                     // The time scale
                     float d = 367 * m_year - 7 * (m_year + (m_month + 9) / 12) / 4 + 275 * m_month / 9 + m_day - 730530;
-                    d = d + (hour / 24.0f);
+                    d = d + hour / 24.0f;
 
                     // Obliquity of the ecliptic: The tilt of earth's axis of rotation
                     var ecl = 23.4393f - 3.563E-7f * d;
@@ -555,9 +555,9 @@ namespace UnityEngine.AzureSky
 
                     // Sun's distance (r) and its true anomaly (v)
                     var xv = Mathf.Cos(E) - e;
-                    var yv = Mathf.Sqrt(1.0f - (e * e)) * Mathf.Sin(E);
+                    var yv = Mathf.Sqrt(1.0f - e * e) * Mathf.Sin(E);
                     var v = Mathf.Atan2(yv, xv) * deg;
-                    var r = Mathf.Sqrt((xv * xv) + (yv * yv));
+                    var r = Mathf.Sqrt(xv * xv + yv * yv);
 
                     // Sun's true longitude
                     var lonsun = (v + w) * rad;
@@ -574,12 +574,12 @@ namespace UnityEngine.AzureSky
 
                     // Sun's right ascension (RA) and declination (Decl):
                     var RA = Mathf.Atan2(ye, xe);
-                    var Decl = Mathf.Atan2(ze, Mathf.Sqrt((xe * xe) + (ye * ye)));
+                    var Decl = Mathf.Atan2(ze, Mathf.Sqrt(xe * xe + ye * ye));
 
                     // The sidereal time
                     var Ls = v + w;
                     var GMST0 = Ls + 180.0f;
-                    var GMST = GMST0 + (hour * 15.0f);
+                    var GMST = GMST0 + hour * 15.0f;
                     var LST = (GMST + m_longitude) * rad;
 
                     // Azimuthal coordinates
@@ -589,9 +589,9 @@ namespace UnityEngine.AzureSky
                     var y = Mathf.Sin(HA) * Mathf.Cos(Decl);
                     var z = Mathf.Sin(Decl);
 
-                    var xhor = (x * Mathf.Sin(latitude)) - (z * Mathf.Cos(latitude));
+                    var xhor = x * Mathf.Sin(latitude) - z * Mathf.Cos(latitude);
                     var yhor = y;
-                    var zhor = (x * Mathf.Cos(latitude)) + (z * Mathf.Sin(latitude));
+                    var zhor = x * Mathf.Cos(latitude) + z * Mathf.Sin(latitude);
 
                     var azimuth = Mathf.Atan2(yhor, xhor);
                     var altitude = Mathf.Asin(zhor);
@@ -982,14 +982,14 @@ namespace UnityEngine.AzureSky
             for (var i = 0; i < m_dayNumberList.Length; i++)
             {
                 // Make null all the calendar buttons
-                if (i < m_dayOfWeek || i >= (m_dayOfWeek + m_daysInMonth))
+                if (i < m_dayOfWeek || i >= m_dayOfWeek + m_daysInMonth)
                 {
                     m_dayNumberList[i] = "";
                     continue;
                 }
 
                 // Sets the day number only on the valid buttons of the current month in use by the calendar.
-                m_dateTime = new DateTime(m_year, m_month, (i - m_dayOfWeek) + 1);
+                m_dateTime = new DateTime(m_year, m_month, i - m_dayOfWeek + 1);
                 m_dayNumberList[i] = m_dateTime.Day.ToString();
             }
         }
@@ -1258,7 +1258,7 @@ namespace UnityEngine.AzureSky
         /// </summary>
         private Quaternion GetSunSimpleRotation()
         {
-            return Quaternion.Euler(0.0f, m_longitude, -m_latitude) * Quaternion.Euler(((m_timeOfDay + m_utc) * 360.0f / 24.0f) - 90.0f, 180.0f, 0.0f);
+            return Quaternion.Euler(0.0f, m_longitude, -m_latitude) * Quaternion.Euler((m_timeOfDay + m_utc) * 360.0f / 24.0f - 90.0f, 180.0f, 0.0f);
         }
 
         #if UNITY_EDITOR

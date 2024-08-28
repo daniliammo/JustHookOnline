@@ -298,7 +298,7 @@ public class lb_BirdController : MonoBehaviour {
 				return Vector3.zero;
 			}
 		}
-		return currentCamera.transform.position+(ray*dist);
+		return currentCamera.transform.position+ray*dist;
 	}
 	
 	void BirdFindTarget(GameObject bird){

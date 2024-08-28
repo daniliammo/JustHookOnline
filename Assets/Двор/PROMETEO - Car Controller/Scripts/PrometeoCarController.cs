@@ -268,7 +268,7 @@ public class PrometeoCarController : MonoBehaviour
       //CAR DATA
 
       // We determine the speed of the car.
-      carSpeed = (2 * Mathf.PI * frontLeftCollider.radius * frontLeftCollider.rpm * 60) / 1000;
+      carSpeed = 2 * Mathf.PI * frontLeftCollider.radius * frontLeftCollider.rpm * 60 / 1000;
       // Save the local velocity of the car in the x axis. Used to know if the car is drifting.
       localVelocityX = transform.InverseTransformDirection(carRigidbody.velocity).x;
       // Save the local velocity of the car in the z axis. Used to know if the car is going forward or backwards.
@@ -313,10 +313,10 @@ public class PrometeoCarController : MonoBehaviour
         if(!handbrakePTI.buttonPressed){
           RecoverTraction();
         }
-        if((!throttlePTI.buttonPressed && !reversePTI.buttonPressed)){
+        if(!throttlePTI.buttonPressed && !reversePTI.buttonPressed){
           ThrottleOff();
         }
-        if((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed && !deceleratingCar){
+        if(!reversePTI.buttonPressed && !throttlePTI.buttonPressed && !handbrakePTI.buttonPressed && !deceleratingCar){
           InvokeRepeating(nameof(DecelerateCar), 0f, 0.1f);
           deceleratingCar = true;
         }
@@ -351,10 +351,10 @@ public class PrometeoCarController : MonoBehaviour
         if(Input.GetKeyUp(KeyCode.Space)){
           RecoverTraction();
         }
-        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))){
+        if(!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)){
           ThrottleOff();
         }
-        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)) && !Input.GetKey(KeyCode.Space) && !deceleratingCar){
+        if(!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.Space) && !deceleratingCar){
           InvokeRepeating(nameof(DecelerateCar), 0f, 0.1f);
           deceleratingCar = true;
         }
@@ -393,14 +393,14 @@ public class PrometeoCarController : MonoBehaviour
       if(useSounds){
         try{
           if(carEngineSound != null){
-            var engineSoundPitch = initialCarEngineSoundPitch + (Mathf.Abs(carRigidbody.velocity.magnitude) / 25f);
+            var engineSoundPitch = initialCarEngineSoundPitch + Mathf.Abs(carRigidbody.velocity.magnitude) / 25f;
             carEngineSound.pitch = engineSoundPitch;
           }
-          if((isDrifting) || (isTractionLocked && Mathf.Abs(carSpeed) > 12f)){
+          if(isDrifting || (isTractionLocked && Mathf.Abs(carSpeed) > 12f)){
             if(!tireScreechSound.isPlaying){
               tireScreechSound.Play();
             }
-          }else if((!isDrifting) && (!isTractionLocked || Mathf.Abs(carSpeed) < 12f)){
+          }else if(!isDrifting && (!isTractionLocked || Mathf.Abs(carSpeed) < 12f)){
             tireScreechSound.Stop();
           }
         }catch(Exception ex){
@@ -423,7 +423,7 @@ public class PrometeoCarController : MonoBehaviour
 
     //The following method turns the front car wheels to the left. The speed of this movement will depend on the steeringSpeed variable.
     public void TurnLeft(){
-      steeringAxis = steeringAxis - (Time.deltaTime * 10f * steeringSpeed);
+      steeringAxis = steeringAxis - Time.deltaTime * 10f * steeringSpeed;
       if(steeringAxis < -1f){
         steeringAxis = -1f;
       }
@@ -434,7 +434,7 @@ public class PrometeoCarController : MonoBehaviour
 
     //The following method turns the front car wheels to the right. The speed of this movement will depend on the steeringSpeed variable.
     public void TurnRight(){
-      steeringAxis = steeringAxis + (Time.deltaTime * 10f * steeringSpeed);
+      steeringAxis = steeringAxis + Time.deltaTime * 10f * steeringSpeed;
       if(steeringAxis > 1f){
         steeringAxis = 1f;
       }
@@ -447,9 +447,9 @@ public class PrometeoCarController : MonoBehaviour
     // on the steeringSpeed variable.
     public void ResetSteeringAngle(){
       if(steeringAxis < 0f){
-        steeringAxis = steeringAxis + (Time.deltaTime * 10f * steeringSpeed);
+        steeringAxis = steeringAxis + Time.deltaTime * 10f * steeringSpeed;
       }else if(steeringAxis > 0f){
-        steeringAxis = steeringAxis - (Time.deltaTime * 10f * steeringSpeed);
+        steeringAxis = steeringAxis - Time.deltaTime * 10f * steeringSpeed;
       }
       if(Mathf.Abs(frontLeftCollider.steerAngle) < 1f){
         steeringAxis = 0f;
@@ -506,7 +506,7 @@ public class PrometeoCarController : MonoBehaviour
         DriftCarPS();
       }
       // The following part sets the throttle power to 1 smoothly.
-      throttleAxis = throttleAxis + (Time.deltaTime * 3f);
+      throttleAxis = throttleAxis + Time.deltaTime * 3f;
       if(throttleAxis > 1f){
         throttleAxis = 1f;
       }
@@ -519,13 +519,13 @@ public class PrometeoCarController : MonoBehaviour
         if(Mathf.RoundToInt(carSpeed) < maxSpeed){
           //Apply positive torque in all wheels to go forward if maxSpeed has not been reached.
           frontLeftCollider.brakeTorque = 0;
-          frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+          frontLeftCollider.motorTorque = accelerationMultiplier * 50f * throttleAxis;
           frontRightCollider.brakeTorque = 0;
-          frontRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+          frontRightCollider.motorTorque = accelerationMultiplier * 50f * throttleAxis;
           rearLeftCollider.brakeTorque = 0;
-          rearLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+          rearLeftCollider.motorTorque = accelerationMultiplier * 50f * throttleAxis;
           rearRightCollider.brakeTorque = 0;
-          rearRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+          rearRightCollider.motorTorque = accelerationMultiplier * 50f * throttleAxis;
         }else {
           // If the maxSpeed has been reached, then stop applying torque to the wheels.
           // IMPORTANT: The maxSpeed variable should be considered as an approximation; the speed of the car
@@ -550,7 +550,7 @@ public class PrometeoCarController : MonoBehaviour
         DriftCarPS();
       }
       // The following part sets the throttle power to -1 smoothly.
-      throttleAxis = throttleAxis - (Time.deltaTime * 3f);
+      throttleAxis = throttleAxis - Time.deltaTime * 3f;
       if(throttleAxis < -1f){
         throttleAxis = -1f;
       }
@@ -563,13 +563,13 @@ public class PrometeoCarController : MonoBehaviour
         if(Mathf.Abs(Mathf.RoundToInt(carSpeed)) < maxReverseSpeed){
           //Apply negative torque in all wheels to go in reverse if maxReverseSpeed has not been reached.
           frontLeftCollider.brakeTorque = 0;
-          frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+          frontLeftCollider.motorTorque = accelerationMultiplier * 50f * throttleAxis;
           frontRightCollider.brakeTorque = 0;
-          frontRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+          frontRightCollider.motorTorque = accelerationMultiplier * 50f * throttleAxis;
           rearLeftCollider.brakeTorque = 0;
-          rearLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+          rearLeftCollider.motorTorque = accelerationMultiplier * 50f * throttleAxis;
           rearRightCollider.brakeTorque = 0;
-          rearRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
+          rearRightCollider.motorTorque = accelerationMultiplier * 50f * throttleAxis;
         }else {
           //If the maxReverseSpeed has been reached, then stop applying torque to the wheels.
           // IMPORTANT: The maxReverseSpeed variable should be considered as an approximation; the speed of the car
@@ -604,15 +604,15 @@ public class PrometeoCarController : MonoBehaviour
       // The following part resets the throttle power to 0 smoothly.
       if(throttleAxis != 0f){
         if(throttleAxis > 0f){
-          throttleAxis = throttleAxis - (Time.deltaTime * 10f);
+          throttleAxis = throttleAxis - Time.deltaTime * 10f;
         }else if(throttleAxis < 0f){
-            throttleAxis = throttleAxis + (Time.deltaTime * 10f);
+            throttleAxis = throttleAxis + Time.deltaTime * 10f;
         }
         if(Mathf.Abs(throttleAxis) < 0.15f){
           throttleAxis = 0f;
         }
       }
-      carRigidbody.velocity = carRigidbody.velocity * (1f / (1f + (0.025f * decelerationMultiplier)));
+      carRigidbody.velocity = carRigidbody.velocity * (1f / (1f + 0.025f * decelerationMultiplier));
       // Since we want to decelerate the car, we are going to remove the torque from the wheels of the car.
       frontLeftCollider.motorTorque = 0;
       frontRightCollider.motorTorque = 0;
@@ -642,7 +642,7 @@ public class PrometeoCarController : MonoBehaviour
       // We are going to start losing traction smoothly, there is were our 'driftingAxis' variable takes
       // place. This variable will start from 0 and will reach a top value of 1, which means that the maximum
       // drifting value has been reached. It will increase smoothly by using the variable Time.deltaTime.
-      driftingAxis = driftingAxis + (Time.deltaTime);
+      driftingAxis = driftingAxis + Time.deltaTime;
       var secureStartingPoint = driftingAxis * FLWextremumSlip * handbrakeDriftMultiplier;
 
       if(secureStartingPoint < FLWextremumSlip){
@@ -730,7 +730,7 @@ public class PrometeoCarController : MonoBehaviour
     // This function is used to recover the traction of the car when the user has stopped using the car's handbrake.
     public void RecoverTraction(){
       isTractionLocked = false;
-      driftingAxis = driftingAxis - (Time.deltaTime / 1.5f);
+      driftingAxis = driftingAxis - Time.deltaTime / 1.5f;
       if(driftingAxis < 0f){
         driftingAxis = 0f;
       }

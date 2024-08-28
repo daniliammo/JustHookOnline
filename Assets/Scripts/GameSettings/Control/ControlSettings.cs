@@ -11,34 +11,28 @@ namespace GameSettings.Control
     public class ControlSettings : GameSettingsClass
     {
         
-        public delegate void SensivityChanged(float sensivity);
-        public event SensivityChanged OnSensivityChanged;
+        public delegate void SensitivityChanged(float sensitivity);
+        public event SensitivityChanged OnSensitivityChanged;
         
-        public Slider sensivitySlider;
-        public TMP_Text sensivityValue;
+        public Slider sensitivitySlider;
         
         
         private void Start()
         {
-            CheckOrWritePlayerPrefsKeysFloat(new Dictionary<string, float>{{"ControlSettings:Sensivity", 2}}, false);
+            CheckPlayerPrefsKeys(new Dictionary<string, float>{{"ControlSettings:Sensitivity", 2}});
             SetSliderValuesFromPlayerPrefs();
         }
 
         private void SetSliderValuesFromPlayerPrefs()
         {
-            sensivitySlider.value = PlayerPrefs.GetFloat("ControlSettings:Sensivity") / 15;
-        }
-
-        public void OnSliderSensivityValueChanged()
-        {
-            sensivityValue.text = Math.Round(sensivitySlider.value * 15, 2).ToString(CultureInfo.InvariantCulture);
+            sensitivitySlider.value = PlayerPrefs.GetFloat("ControlSettings:Sensitivity");
         }
         
         public void SaveControlSettings()
         {
-            var sensivity = sensivitySlider.value * 15;
-            PlayerPrefs.SetFloat("ControlSettings:Sensivity", sensivity);
-            OnSensivityChanged?.Invoke(sensivity);
+            var sensitivity = sensitivitySlider.value;
+            PlayerPrefs.SetFloat("ControlSettings:Sensitivity", sensitivity);
+            OnSensitivityChanged?.Invoke(sensitivity);
         }
         
     }

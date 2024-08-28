@@ -11,7 +11,7 @@ namespace AdvancedTerrainGrass {
 
             Shader.SetGlobalVector("_AtgGrassFadeProps", new Vector4(
                     80.0f * 80.0f,
-                    1.0f / (20.0f * 20.0f * ((80.0f / 20.0f) * 2.0f)),
+                    1.0f / (20.0f * 20.0f * (80.0f / 20.0f * 2.0f)),
                     50.0f * 50.0f,
                     1.0f / (20.0f * 20.0f)
                 ));

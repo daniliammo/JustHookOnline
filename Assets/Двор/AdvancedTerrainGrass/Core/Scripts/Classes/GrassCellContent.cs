@@ -104,7 +104,7 @@ namespace AdvancedTerrainGrass {
                 #endif
 
                 UnityEngine.Profiling.Profiler.BeginSample("Set Args Buffer");
-                var numIndices = (v_mesh != null) ? v_mesh.GetIndexCount(0) : 0;
+                var numIndices = v_mesh != null ? v_mesh.GetIndexCount(0) : 0;
              
                 args[0] = numIndices;
 			//  When using single pass instanced stereo rendering we have to double the number of instances?!

@@ -361,7 +361,7 @@ namespace Mirror
             rotationChanged = Quaternion.Angle(lastSnapshot.rotation, currentSnapshot.rotation) > rotationSensitivity;
             scaleChanged = Vector3.SqrMagnitude(lastSnapshot.scale - currentSnapshot.scale) > scaleSensitivity * scaleSensitivity;
 
-            return (!positionChanged && !rotationChanged && !scaleChanged);
+            return !positionChanged && !rotationChanged && !scaleChanged;
         }
 
         // cmd /////////////////////////////////////////////////////////////////
@@ -638,25 +638,25 @@ namespace Mirror
                 // because if not syncing position, NT will not apply any position data
                 // to the target during Apply().
 
-                syncData.position.x = (syncData.changedDataByte & Changed.PosX) > 0 ? syncData.position.x : (snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].position.x : GetPosition().x);
-                syncData.position.y = (syncData.changedDataByte & Changed.PosY) > 0 ? syncData.position.y : (snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].position.y : GetPosition().y);
-                syncData.position.z = (syncData.changedDataByte & Changed.PosZ) > 0 ? syncData.position.z : (snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].position.z : GetPosition().z);
+                syncData.position.x = (syncData.changedDataByte & Changed.PosX) > 0 ? syncData.position.x : snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].position.x : GetPosition().x;
+                syncData.position.y = (syncData.changedDataByte & Changed.PosY) > 0 ? syncData.position.y : snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].position.y : GetPosition().y;
+                syncData.position.z = (syncData.changedDataByte & Changed.PosZ) > 0 ? syncData.position.z : snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].position.z : GetPosition().z;
 
                 // If compressRot is true, we already have the Quat in syncdata.
                 if ((syncData.changedDataByte & Changed.CompressRot) == 0)
                 {
-                    syncData.vecRotation.x = (syncData.changedDataByte & Changed.RotX) > 0 ? syncData.vecRotation.x : (snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].rotation.eulerAngles.x : GetRotation().eulerAngles.x);
-                    syncData.vecRotation.y = (syncData.changedDataByte & Changed.RotY) > 0 ? syncData.vecRotation.y : (snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].rotation.eulerAngles.y : GetRotation().eulerAngles.y); ;
-                    syncData.vecRotation.z = (syncData.changedDataByte & Changed.RotZ) > 0 ? syncData.vecRotation.z : (snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].rotation.eulerAngles.z : GetRotation().eulerAngles.z);
+                    syncData.vecRotation.x = (syncData.changedDataByte & Changed.RotX) > 0 ? syncData.vecRotation.x : snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].rotation.eulerAngles.x : GetRotation().eulerAngles.x;
+                    syncData.vecRotation.y = (syncData.changedDataByte & Changed.RotY) > 0 ? syncData.vecRotation.y : snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].rotation.eulerAngles.y : GetRotation().eulerAngles.y; ;
+                    syncData.vecRotation.z = (syncData.changedDataByte & Changed.RotZ) > 0 ? syncData.vecRotation.z : snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].rotation.eulerAngles.z : GetRotation().eulerAngles.z;
 
                     syncData.quatRotation = Quaternion.Euler(syncData.vecRotation);
                 }
                 else
                 {
-                    syncData.quatRotation = (syncData.changedDataByte & Changed.Rot) > 0 ? syncData.quatRotation : (snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].rotation : GetRotation());
+                    syncData.quatRotation = (syncData.changedDataByte & Changed.Rot) > 0 ? syncData.quatRotation : snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].rotation : GetRotation();
                 }
 
-                syncData.scale = (syncData.changedDataByte & Changed.Scale) > 0 ? syncData.scale : (snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].scale : GetScale());
+                syncData.scale = (syncData.changedDataByte & Changed.Scale) > 0 ? syncData.scale : snapshots.Count > 0 ? snapshots.Values[snapshots.Count - 1].scale : GetScale();
             }
         }
 

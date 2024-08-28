@@ -57,7 +57,7 @@ namespace Mirror
             // bucketLimit via '/' cuts off remainder.
             // that's what we want, since we always have a 'currentBucket'.
             this.boundsPerBucket = boundsPerBucket;
-            this.bucketLimit = (boundsLimit / boundsPerBucket);
+            this.bucketLimit = boundsLimit / boundsPerBucket;
 
             // initialize queue with maximum capacity to avoid runtime resizing
             // capacity +1 because it makes the code easier if we insert first, and then remove.

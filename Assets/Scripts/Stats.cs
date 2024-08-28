@@ -16,15 +16,15 @@ public class Stats : GameSettingsClass
     
     private void Start()
     {
-        CheckOrWritePlayerPrefsKeysInt(new Dictionary<string, int>
+        CheckPlayerPrefsKeys(new Dictionary<string, int>
         {
             {"Stats:Kills", 0},
             {"Stats:Deads", 0},
             {"Stats:FrameCount", 0}
-        }, false);
+        });
         
-        CheckOrWritePlayerPrefsKeysFloat(new Dictionary<string, float>
-        { {"Stats:TotalHoursPlayed", 0f} }, false);
+        CheckPlayerPrefsKeys(new Dictionary<string, float>
+        { {"Stats:TotalHoursPlayed", 0f} });
     }
 
     private void OnEnable()

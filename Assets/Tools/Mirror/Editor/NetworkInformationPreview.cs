@@ -300,7 +300,7 @@ namespace Mirror
             return new NetworkIdentityInfo
             {
                 name = new GUIContent(name),
-                value = new GUIContent((value ? "Yes" : "No"))
+                value = new GUIContent(value ? "Yes" : "No")
             };
         }
     }

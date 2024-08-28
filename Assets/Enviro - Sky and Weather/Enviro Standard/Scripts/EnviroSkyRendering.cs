@@ -1009,13 +1009,13 @@ public class EnviroSkyRendering : MonoBehaviour
     {
         //////////////// FOG
         var FdotC = myCam.transform.position.y - EnviroSky.instance.fogSettings.height;
-        var paramK = (FdotC <= 0.0f ? 1.0f : 0.0f);
+        var paramK = FdotC <= 0.0f ? 1.0f : 0.0f;
         var sceneMode = RenderSettings.fogMode;
         var sceneDensity = RenderSettings.fogDensity;
         var sceneStart = RenderSettings.fogStartDistance;
         var sceneEnd = RenderSettings.fogEndDistance;
         Vector4 sceneParams;
-        var linear = (sceneMode == FogMode.Linear);
+        var linear = sceneMode == FogMode.Linear;
         var diff = linear ? sceneEnd - sceneStart : 0.0f;
         var invDiff = Mathf.Abs(diff) > 0.0001f ? 1.0f / diff : 0.0f;
         sceneParams.x = sceneDensity * 1.2011224087f; // density / sqrt(ln(2)), used by Exp2 fog mode
@@ -1166,7 +1166,7 @@ public class EnviroSkyRendering : MonoBehaviour
             volumeLightMat.SetInt("_SampleCount", EnviroSky.instance.volumeLightSettings.SampleCount);
             volumeLightMat.SetVector("_NoiseVelocity", new Vector4(-EnviroSky.instance.Components.windZone.transform.forward.x * EnviroSky.instance.windIntensity * 10, -EnviroSky.instance.Components.windZone.transform.forward.z * EnviroSky.instance.windIntensity * 10) * EnviroSky.instance.volumeLightSettings.noiseScale);
             volumeLightMat.SetVector("_NoiseData", new Vector4(EnviroSky.instance.volumeLightSettings.noiseScale, EnviroSky.instance.volumeLightSettings.noiseIntensity, EnviroSky.instance.volumeLightSettings.noiseIntensityOffset));
-            volumeLightMat.SetVector("_MieG", new Vector4(1 - (EnviroSky.instance.volumeLightSettings.Anistropy * EnviroSky.instance.volumeLightSettings.Anistropy), 1 + (EnviroSky.instance.volumeLightSettings.Anistropy * EnviroSky.instance.volumeLightSettings.Anistropy), 2 * EnviroSky.instance.volumeLightSettings.Anistropy, 1.0f / (4.0f * Mathf.PI)));
+            volumeLightMat.SetVector("_MieG", new Vector4(1 - EnviroSky.instance.volumeLightSettings.Anistropy * EnviroSky.instance.volumeLightSettings.Anistropy, 1 + EnviroSky.instance.volumeLightSettings.Anistropy * EnviroSky.instance.volumeLightSettings.Anistropy, 2 * EnviroSky.instance.volumeLightSettings.Anistropy, 1.0f / (4.0f * Mathf.PI)));
             volumeLightMat.SetVector("_VolumetricLight", new Vector4(EnviroSky.instance.volumeLightSettings.ScatteringCoef.Evaluate(EnviroSky.instance.GameTime.solarTime), EnviroSky.instance.volumeLightSettings.ExtinctionCoef, _light.range, 1.0f));// - SkyboxExtinctionCoef));
             volumeLightMat.SetTexture("_CameraDepthTexture", GetVolumeLightDepthBuffer());
             // volumeLightMat.SetVector("_DensityParams", new Vector4(EnviroSky.instance.volumeFogSettings.skyDensity, EnviroSky.instance.volumeFogSettings.groundDensity, EnviroSky.instance.volumeFogSettings.groundFogHeight, heightDensity * 0.5f));
@@ -1301,7 +1301,7 @@ public class EnviroSkyRendering : MonoBehaviour
 
             _blurBuffer1[level] = RenderTexture.GetTemporary(lastDescriptor);
 
-            pass = (level == 0) ? (EnviroSky.instance.distanceBlurSettings.antiFlicker ? 3 : 2) : 4;
+            pass = level == 0 ? EnviroSky.instance.distanceBlurSettings.antiFlicker ? 3 : 2 : 4;
             Graphics.Blit(last, _blurBuffer1[level], postProcessMat, pass);
 
             last = _blurBuffer1[level];
@@ -1662,7 +1662,7 @@ public class EnviroSkyRendering : MonoBehaviour
         if (!EnviroSky.instance.cloudsSettings.useLessSteps)
             cloudsMat.SetVector("_Steps", new Vector4(usedCloudsQuality.raymarchSteps * EnviroSky.instance.cloudsConfig.raymarchingScale, usedCloudsQuality.raymarchSteps * EnviroSky.instance.cloudsConfig.raymarchingScale, 0.0f, 0.0f));
         else
-            cloudsMat.SetVector("_Steps", new Vector4((usedCloudsQuality.raymarchSteps * EnviroSky.instance.cloudsConfig.raymarchingScale) * 0.75f, (usedCloudsQuality.raymarchSteps * EnviroSky.instance.cloudsConfig.raymarchingScale) * 0.75f, 0.0f, 0.0f));
+            cloudsMat.SetVector("_Steps", new Vector4(usedCloudsQuality.raymarchSteps * EnviroSky.instance.cloudsConfig.raymarchingScale * 0.75f, usedCloudsQuality.raymarchSteps * EnviroSky.instance.cloudsConfig.raymarchingScale * 0.75f, 0.0f, 0.0f));
         cloudsMat.SetFloat("_BaseNoiseUV", usedCloudsQuality.baseNoiseUV);
         cloudsMat.SetFloat("_DetailNoiseUV", usedCloudsQuality.detailNoiseUV);
         cloudsMat.SetFloat("_AmbientSkyColorIntensity", EnviroSky.instance.cloudsSettings.ambientLightIntensity.Evaluate(EnviroSky.instance.GameTime.solarTime));

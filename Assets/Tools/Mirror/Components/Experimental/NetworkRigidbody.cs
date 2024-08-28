@@ -165,8 +165,8 @@ namespace Mirror.Experimental
             var currentVelocity = syncVelocity ? target.velocity : default;
             var currentAngularVelocity = syncAngularVelocity ? target.angularVelocity : default;
 
-            var velocityChanged = syncVelocity && ((previousValue.velocity - currentVelocity).sqrMagnitude > velocitySensitivity * velocitySensitivity);
-            var angularVelocityChanged = syncAngularVelocity && ((previousValue.angularVelocity - currentAngularVelocity).sqrMagnitude > angularVelocitySensitivity * angularVelocitySensitivity);
+            var velocityChanged = syncVelocity && (previousValue.velocity - currentVelocity).sqrMagnitude > velocitySensitivity * velocitySensitivity;
+            var angularVelocityChanged = syncAngularVelocity && (previousValue.angularVelocity - currentAngularVelocity).sqrMagnitude > angularVelocitySensitivity * angularVelocitySensitivity;
 
             if (velocityChanged)
             {
@@ -213,8 +213,8 @@ namespace Mirror.Experimental
             var currentVelocity = syncVelocity ? target.velocity : default;
             var currentAngularVelocity = syncAngularVelocity ? target.angularVelocity : default;
 
-            var velocityChanged = syncVelocity && ((previousValue.velocity - currentVelocity).sqrMagnitude > velocitySensitivity * velocitySensitivity);
-            var angularVelocityChanged = syncAngularVelocity && ((previousValue.angularVelocity - currentAngularVelocity).sqrMagnitude > angularVelocitySensitivity * angularVelocitySensitivity);
+            var velocityChanged = syncVelocity && (previousValue.velocity - currentVelocity).sqrMagnitude > velocitySensitivity * velocitySensitivity;
+            var angularVelocityChanged = syncAngularVelocity && (previousValue.angularVelocity - currentAngularVelocity).sqrMagnitude > angularVelocitySensitivity * angularVelocitySensitivity;
 
             // if angularVelocity has changed it is likely that velocity has also changed so just sync both values
             // however if only velocity has changed just send velocity

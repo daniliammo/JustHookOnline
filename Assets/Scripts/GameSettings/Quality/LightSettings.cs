@@ -7,33 +7,23 @@ namespace GameSettings.Quality
     public class LightSettings : GameSettingsClass
     {
 
-        public Toggle flashLightToggle;
-        public Toggle fireLightToggle;
+        public Toggle dynamicLightToggle;
 
         
         private void Start()
         {
-            CheckOrWritePlayerPrefsKeysBoolean(new Dictionary<string, bool>
-            {
-                {"LightSettings:IsFlashLightAllowed", true},
-                {"LightSettings:IsFireLightAllowed", true}
-            }, false);
+            CheckPlayerPrefsKeys(new Dictionary<string, bool> { {"LightSettings:IsDynamicLightAllowed", true} });
             SetToggleValueFromPlayerPrefs();
         }
         
         private void SetToggleValueFromPlayerPrefs()
         {
-            flashLightToggle.isOn = PlayerPrefsBoolean.GetBool("LightSettings:IsFlashLightAllowed");
-            fireLightToggle.isOn = PlayerPrefsBoolean.GetBool("LightSettings:IsFireLightAllowed");
+            dynamicLightToggle.isOn = PlayerPrefsBoolean.GetBool("LightSettings:IsDynamicLightAllowed");
         }
         
         public void SaveLightSettings()
         {
-            CheckOrWritePlayerPrefsKeysBoolean(new Dictionary<string, bool>
-            {
-                {"LightSettings:IsFlashLightAllowed", flashLightToggle.isOn},
-                {"LightSettings:IsFireLightAllowed", fireLightToggle.isOn}
-            }, true);
+            WritePlayerPrefsKeys(new Dictionary<string, bool> { {"LightSettings:IsDynamicLightAllowed", dynamicLightToggle.isOn} });
         }
         
     }

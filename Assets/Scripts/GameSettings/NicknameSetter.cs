@@ -54,13 +54,16 @@ namespace GameSettings
 
         private void Start()
         {
-            CheckOrWritePlayerPrefsKeysString(new Dictionary<string, string>{{"Nickname", _randomNicknames[Random.Range(0, _randomNicknames.Length)]}}, false);
+            if(_randomNicknames.Contains(PlayerPrefs.GetString("Nickname")))
+                PlayerPrefs.SetString("Nickname", _randomNicknames[Random.Range(0, _randomNicknames.Length)]);
+            
             SetNicknameTextFromPlayerPrefs();
         }
         
         public void SaveNickname()
         {
             var nickname = nicknameInputField.text;
+            if(nickname.Length == 0) return;
             OnNicknameChanged?.Invoke(nickname);
             PlayerPrefs.SetString("Nickname", nickname);
         }
