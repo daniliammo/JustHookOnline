@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using UnityEngine;
 
@@ -6,6 +7,8 @@ namespace Cars
 {
     public class Vehicle : NetworkBehaviour
     {
+
+        private List<GameObject> _missiles;
         
         public bool rocketAlert;
 
@@ -51,15 +54,62 @@ namespace Cars
         public List<Player.Player> passengers;
 
         public Rigidbody rigidbody;
+
+
+        [Command(requiresAuthority = false)]
+        public void CmdPlayMissileAimAlert()
+        {
+            RpcPlayMissileAlert(0);
+        }
+
+        [ClientRpc]
+        public void RpcPlayMissileAlert(byte s)
+        {
+            
+        }
         
+        [Command (requiresAuthority = false)]
+        public void CmdPlayMissileAlert()
+        {
+            if(_missiles.Count < 0 && !rocketAlert) return;
+
+            var distances = _missiles.Select(missile => Vector3.Distance(missile.transform.position, transform.position)).ToList();
+
+            var min = distances[0];
+            var minDistance = distances.Prepend(min).Min();
+
+            if(minDistance < 15)
+                RpcPlayMissileAlert(5);
+            
+            if(minDistance < 30)
+                RpcPlayMissileAlert(4);
+            
+            if(minDistance < 40)
+                RpcPlayMissileAlert(3);
+            
+            if(minDistance < 65)
+                RpcPlayMissileAlert(2);
+            
+            if(minDistance < 90)
+                RpcPlayMissileAlert(1);
+            
+            print(minDistance);
+        }
+
+        public void AddMissile(GameObject missile)
+        {
+            _missiles.Add(missile);
+        }
         
-        public void TryToSitOnADriverPlace(Player.Player passenger)
+        [Command (requiresAuthority = false)]
+        public void CmdTryToSitOnADriverPlace(Player.Player passenger)
         {
             if(!driverPlace.isEmployed)
                 PutThePlayerInThePlace(driverPlace, passenger);
         }
 
-        public void TryToSitOnAPassengerPlace(Player.Player passenger)
+        [Command (requiresAuthority = false)]
+        public void CmdTryToSitOnAPassengerPlace(Player.Player passenger)
         {
             foreach (var passengerPlace in passengerPlaces)
             {
@@ -69,7 +119,8 @@ namespace Cars
             }
         }
 
-        public void TryToAChangeAPassengerPlace(Player.Player passenger)
+        [Command (requiresAuthority = false)]
+        public void CmdTryToAChangeAPassengerPlace(Player.Player passenger)
         {
             foreach (var passengerPlace in passengerPlaces)
             {
