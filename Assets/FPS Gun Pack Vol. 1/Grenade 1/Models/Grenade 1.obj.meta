@@ -65,7 +65,7 @@ ModelImporter:
       name: sphereMat
     second: {fileID: 2100000, guid: 2e91ee408cf993a4d977789b748aeccf, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
