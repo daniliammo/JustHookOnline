@@ -21,9 +21,11 @@ namespace Player
 
 		private float _reloadTime;
 		
-		private int _fullAmmo;
-		private int _ammo;
+		private byte _fullAmmo;
+		private byte _ammo;
 
+		private byte _damage;
+		
 		private Player _player;
 		
 		public GameObject gun;
@@ -93,6 +95,7 @@ namespace Player
 			_ammo = _fullAmmo;
 			_reloadTime = 1.5f;
 			_fireRate = 0.08f;
+			_damage = 15;
 			
 			_ui.fullAmmoText.text = _fullAmmo.ToString();
 			_ui.ammoText.text = _ammo.ToString();
@@ -153,9 +156,10 @@ namespace Player
 			Invoke(nameof(StopFire), _fireRate);
 		}
 
-		private void BreakingThrough(Vector3 direction)
+		private void BreakingThrough(Vector3 direction, byte damageModifier)
 		{
 			var adjustedPoint = _hit.point + _camera.forward / 10; // Отодвигаем точку на 1 вперед по направлению рэйкаста
+			_damage -= damageModifier;
 			CastRayCast(adjustedPoint, direction);
 		}
 		
@@ -168,25 +172,28 @@ namespace Player
 			if (_hit.collider.CompareTag("Glass"))
 			{
 				_hit.collider.GetComponent<BreakableWindow>().CmdBreakWindow();
-				BreakingThrough(direction);
+				BreakingThrough(direction, 1);
 				return;
 			}
 
 			if(_hit.collider.CompareTag("Lamp"))
 			{
 				_hit.collider.GetComponent<Lamp>().CmdBreakLamp();
-				BreakingThrough(direction);
+				BreakingThrough(direction, 2);
 				return;
 			}
 
 			if (_hit.transform.CompareTag("Player") && !_hit.collider.CompareTag("PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
-				DamagePlayer(_hit, 15);
+			{
+				DamagePlayer(_hit, _damage);
+				BreakingThrough(direction, 7);
+			}
 
 			if (_hit.collider.CompareTag("PlayerBulletFlyBy"))
 			{
 				_bulletFlyBySoundSpawner.CmdSpawnBulletFlyBySound(_hit.point, new Quaternion());
 				
-				BreakingThrough(direction);
+				BreakingThrough(direction, 0);
 				return;
 			}
 
@@ -200,7 +207,7 @@ namespace Player
 			{
 				_hit.rigidbody.velocity = _camera.forward * 20;
 				
-				BreakingThrough(direction);
+				BreakingThrough(direction, 3);
 				return;
 			}
 
@@ -208,7 +215,7 @@ namespace Player
 			{
 				_hit.rigidbody.velocity = _camera.forward * 20;
 				
-				BreakingThrough(direction);
+				BreakingThrough(direction, 5);
 				return;
 			}
 
