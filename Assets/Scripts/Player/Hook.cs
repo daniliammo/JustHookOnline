@@ -424,7 +424,7 @@ namespace Player
         [ClientRpc]
         private void RpcSetPositionCount(int positionCount) => _lr.positionCount = positionCount;
         
-        [Command]
+        [Command (requiresAuthority = false)]
         private void CmdSetLineRendererPosition(Vector3 start, Vector3 end) =>
             RpcUpdateLineRendererPosition(start, end);
 
