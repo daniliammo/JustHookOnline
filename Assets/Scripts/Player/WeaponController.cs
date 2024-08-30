@@ -179,7 +179,7 @@ namespace Player
 				return;
 			}
 
-			if (_hit.transform.CompareTag("Player")) // Если обьект в который попали имеет тэг игрока
+			if (_hit.transform.CompareTag("Player") && !_hit.collider.CompareTag("PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
 				DamagePlayer(_hit, 15);
 
 			if (_hit.collider.CompareTag("PlayerBulletFlyBy"))

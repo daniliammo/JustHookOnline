@@ -23,11 +23,11 @@ namespace Player
 		[SyncVar] 
 		public bool isDeath;
 
-		// public delegate void PlayerDied(Transform killer);
-		// public event PlayerDied OnDeath;
-		//
-		// public delegate void PlayerRevived();
-		// public event PlayerRevived OnRevive;
+		public delegate void PlayerDied(Transform killer);
+		public event PlayerDied OnDeath;
+		
+		public delegate void PlayerRevived();
+		public event PlayerRevived OnRevive;
 
 		[SyncVar]
 		public bool isAlreadyDeath;
@@ -141,13 +141,12 @@ namespace Player
 		[TargetRpc]
 		private void UpdateHpText()
 		{
-			_ui.sliderValueChanger.ChangeSliderValue((float)hp / maxHp, _ui.hpSlider);
-			_ui.hpText.text = hp.ToString();
+			_ui.sliderValueChanger.ChangeSliderValue(hp, _ui.hpSlider);
 		}
 		
 		public void Death(string killerName, Transform killer = null)
 		{
-			// OnDeath?.Invoke(killer);
+			OnDeath?.Invoke(killer);
 			isDeath = true;
 			_animator.Play("Death");
 			Invoke(nameof(Revive), 2);
@@ -174,7 +173,7 @@ namespace Player
 			
 			isDeath = false;
 			isAlreadyDeath = false;
-			// OnRevive?.Invoke();
+			OnRevive?.Invoke();
 		}
 		
 		[Command (requiresAuthority = false)]

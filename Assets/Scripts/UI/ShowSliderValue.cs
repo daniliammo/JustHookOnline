@@ -16,7 +16,7 @@ namespace UI
             _text = GetComponent<TMP_Text>();
         }
 
-        public void OnSliderSensitivityValueChanged(float value)
+        public void OnSliderValueChanged(float value)
         {
             _text.text = Math.Round(value, 2).ToString(CultureInfo.InvariantCulture);
         }

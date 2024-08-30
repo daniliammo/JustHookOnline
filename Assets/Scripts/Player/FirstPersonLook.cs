@@ -36,6 +36,8 @@ namespace Player
         
         private Camera _camera;
         
+        private bool _isPlayerInVehicle;
+        
         
         public override void OnStartLocalPlayer()
         {

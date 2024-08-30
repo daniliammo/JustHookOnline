@@ -25,11 +25,12 @@ namespace Cars
         [Tooltip("Добавьте сюда объекты которые могут оторваться при взрыве.")]
         public GameObject[] components;
 
+        [Range(25, 100)]
+        [Tooltip("Шанс отрыва объектов")]
+        public int chance = 25;
+        
         [Tooltip("Добавьте сюда места где будет появлятся огонь после взрыва.")]
         public Transform[] firePlaces;
-        
-        [Range(25, 100)]
-        public int chance;
         
         #nullable enable
         public Light[]? farLights;
@@ -100,7 +101,7 @@ namespace Cars
         {
             _missiles.Add(missile);
         }
-        
+
         [Command (requiresAuthority = false)]
         public void CmdTryToSitOnADriverPlace(Player.Player passenger)
         {
@@ -133,7 +134,6 @@ namespace Cars
                 if (passengerPlace.isEmployed == false)
                     PutThePlayerInThePlace(passengerPlace, passenger);
             }
-            
         }
 
         private static void FreeUpPlace(PlaceInTheVehicle place)

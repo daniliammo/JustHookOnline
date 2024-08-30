@@ -8,7 +8,6 @@ namespace UI
 	public class UIObjectsLinks : MonoBehaviour
 	{
 		public Slider hpSlider;
-		public TMP_Text hpText;
 		public TMP_Text ammoText;
 		public TMP_Text fullAmmoText;
 		public GameObject reloadText;
