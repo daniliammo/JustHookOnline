@@ -1,4 +1,3 @@
-using System;
 using Mirror;
 using UnityEngine.AzureSky;
 
@@ -12,14 +11,12 @@ public class TimeController : NetworkBehaviour
 	private void Start()
 	{
 		_azureTimeController = FindObjectOfType<AzureTimeController>();
-		InvokeRepeating(nameof(SyncTime), 1, 7);
 	}
 	
-	[Server]
-	private void SyncTime()
+	[Command (requiresAuthority = false)]
+	public void CmdSyncTime()
 	{
-		if(isServer)
-			CmdSetTime(_azureTimeController.GetTimeline());
+		CmdSetTime(_azureTimeController.GetTimeline());
 	}
 	
 	[Command (requiresAuthority = false)]

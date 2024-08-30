@@ -176,7 +176,7 @@ namespace Cars
                 neonSet.enabled = true;
         }
 
-        [Command]
+        [Command (requiresAuthority = false)]
         private void CmdDisableAllLights()
         {
             RpcDisableAllLights();

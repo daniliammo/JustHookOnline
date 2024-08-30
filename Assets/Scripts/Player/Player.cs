@@ -58,6 +58,7 @@ namespace Player
 				CmdSendName(PlayerPrefs.GetString("Nickname"));
 				_nicknameSetter.OnNicknameChanged += CmdSendName;
 				_playerJoinMessages.CmdSendPlayerJoinMessage(PlayerPrefs.GetString("Nickname"));
+				FindObjectOfType<TimeController>().CmdSyncTime();
 			}
 
 			InvokeRepeating(nameof(Regeneration), 1, 1);
@@ -82,7 +83,7 @@ namespace Player
 			_killMessages = FindObjectOfType<KillMessages>();
 		}
 		
-		[Command]
+		[Command (requiresAuthority = false)]
 		private void CmdSendName(string playerNickname)
 		{
 			playerDisplayName = playerNickname;
