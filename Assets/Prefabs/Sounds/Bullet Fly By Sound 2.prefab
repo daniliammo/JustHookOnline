@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7769121077094823225}
   - component: {fileID: 77395065345117239}
   - component: {fileID: 2319755827137668506}
+  - component: {fileID: 6026099749742924900}
   m_Layer: 0
   m_Name: Bullet Fly By Sound 2
   m_TagString: Garbage
@@ -71,7 +72,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 15
+  MaxDistance: 20
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -146,3 +147,15 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6026099749742924900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266542846727391997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 389822ed8f014448adb024eec2d0de6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

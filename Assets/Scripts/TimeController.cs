@@ -14,7 +14,13 @@ public class TimeController : NetworkBehaviour
 	}
 	
 	[Command (requiresAuthority = false)]
-	public void CmdSetTime(float time)
+	public void CmdSyncTime()
+	{
+		CmdSetTime(_azureTimeController.GetTimeline());
+	}
+	
+	[Command (requiresAuthority = false)]
+	private void CmdSetTime(float time)
 	{
 		RpcSetTime(time);
 	}

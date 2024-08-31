@@ -312,7 +312,7 @@ namespace Player
             _hookGameObject.transform.LookAt(_camera);
             _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
             
-            if (_hit.collider.CompareTag("Player"))
+            if (_hit.collider.CompareTag("Player") && !_hit.collider.CompareTag("PlayerBulletFlyBy"))
                 _weaponController.DamagePlayer(_hit, 5);
             
             if (!_hit.collider.CompareTag("Player"))
@@ -424,7 +424,7 @@ namespace Player
         [ClientRpc]
         private void RpcSetPositionCount(int positionCount) => _lr.positionCount = positionCount;
         
-        [Command]
+        [Command (requiresAuthority = false)]
         private void CmdSetLineRendererPosition(Vector3 start, Vector3 end) =>
             RpcUpdateLineRendererPosition(start, end);
 

@@ -36,13 +36,15 @@ namespace Player
         
         private Camera _camera;
         
+        private bool _isPlayerInVehicle;
+        
         
         public override void OnStartLocalPlayer()
         {
             _camera = Camera.main;
             // ReSharper disable once PossibleNullReferenceException
             _camera.transform.SetParent(transform, false);
-            _camera.transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), new Quaternion());
+            _camera.transform.SetLocalPositionAndRotation(Vector3.zero, new Quaternion());
         }
 
         public override void OnStartClient()

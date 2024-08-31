@@ -11,7 +11,7 @@ public class Missile : Explosion.Explosion
     public float speed = 40;
     public float minSpeed = 20;
 
-    public Vector3 _predictTargetPosition;
+    private Vector3 _predictTargetPosition;
     
     public bool allowPrediction;
     

@@ -54,7 +54,11 @@ namespace GameSettings
 
         private void Start()
         {
-            if(_randomNicknames.Contains(PlayerPrefs.GetString("Nickname")))
+            var nickname = PlayerPrefs.GetString("Nickname");
+            
+            if (_randomNicknames.Contains(nickname) ||
+                nickname.Length < 1 ||
+                nickname.All(char.IsWhiteSpace))
                 PlayerPrefs.SetString("Nickname", _randomNicknames[Random.Range(0, _randomNicknames.Length)]);
             
             SetNicknameTextFromPlayerPrefs();

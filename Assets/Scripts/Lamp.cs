@@ -11,14 +11,16 @@ public class Lamp : NetworkBehaviour
     public BreakableWindow breakableWindow;
     private AzureTimeController _azureTimeController;
 
+    [Header("Время отключения")]
     public int hour;
     public int minute;
 
+    [Header("Время включения")]
     public int hour2;
     public int minute2;
 
 
-    private void Start()
+    public override void OnStartClient()
     {
         _azureTimeController = FindObjectOfType<AzureTimeController>();
         _azureTimeController.m_onMinuteChange.AddListener(OnMinuteChange);
