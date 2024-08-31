@@ -1,4 +1,5 @@
-﻿using GameSettings.Control;
+﻿using Cars;
+using GameSettings.Control;
 using Mirror;
 using UI;
 using UnityEngine;
@@ -37,6 +38,8 @@ namespace Player
         private Camera _camera;
         
         private bool _isPlayerInVehicle;
+
+        private Player _player;
         
         
         public override void OnStartLocalPlayer()
@@ -61,12 +64,40 @@ namespace Player
             _controlSettings = FindObjectOfType<ControlSettings>();
             _ui = FindObjectOfType<UIObjectsLinks>();
 
+            _player = GetComponent<Player>();
+            
+            _player.OnGotIntoTheVehicle += SetVehicleCameraPosition;
+            _player.OnExitOutOfVehicle += RestoreCameraPosition;
+            _player.OnDeath += RestoreCameraPosition;
+
             _controlSettings.OnSensitivityChanged += ChangeSensitivityTo;
         }
-        
+
+        private void RestoreCameraPosition()
+        {
+            _camera.transform.SetParent(null, false);
+            _camera.transform.SetLocalPositionAndRotation(Vector3.zero, new Quaternion());
+            _camera.transform.SetParent(transform, false);
+        }
+
+        private void RestoreCameraPosition(Transform killer)
+        {
+            _camera.transform.SetParent(null, false);
+            _camera.transform.SetLocalPositionAndRotation(Vector3.zero, new Quaternion());
+            _camera.transform.SetParent(transform, false);
+        }
+
         private void ChangeSensitivityTo(float newSensitivity)
         {
             _sensitivity = newSensitivity;
+        }
+        
+        private void SetVehicleCameraPosition(Vehicle vehicle)
+        {
+            _camera.transform.SetParent(null, true);
+            _camera.transform.position = vehicle.transform.position;
+            _camera.transform.rotation = vehicle.transform.rotation;
+            _camera.transform.SetParent(transform, true);
         }
         
         private void Update()

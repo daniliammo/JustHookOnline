@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
@@ -5,13 +6,15 @@ using UnityEngine;
 
 namespace Cars
 {
-    public class Vehicle : NetworkBehaviour
+    public class Vehicle : Explosion.Explosion
     {
 
         private List<GameObject> _missiles;
         
         public bool rocketAlert;
 
+        public Transform cameraPosition;
+        
         public CarEngine[] engines;
         
         public Transform[] wheels;
@@ -136,19 +139,46 @@ namespace Cars
             }
         }
 
+        private PlaceInTheVehicle SearchPlaceByOwner(Player.Player owner)
+        {
+            foreach (var passengerPlace in passengerPlaces)
+            {
+                if (passengerPlace.owner == owner)
+                    return passengerPlace;
+            }
+
+            throw new Exception($"Не удалось найти место по владельцу {owner.playerDisplayName}");
+        }
+        
+        private void Exit(Player.Player player)
+        {
+            var place = SearchPlaceByOwner(player);
+            
+            player.transform.position = place.exitPlace;
+            player.transform.rotation = place.transform.rotation;
+            
+            FreeUpPlace(place);
+
+            player.ExitOutOfVehicle();
+        }
+        
         private static void FreeUpPlace(PlaceInTheVehicle place)
         {
             place.isEmployed = false;
             place.owner = null;
         }
         
-        private static void PutThePlayerInThePlace(PlaceInTheVehicle place, Player.Player player)
+        private void PutThePlayerInThePlace(PlaceInTheVehicle place, Player.Player player)
         {
             place.isEmployed = true;
             place.owner = player;
             
-            player.transform.position = place.transform.position;
-            player.transform.rotation = place.transform.rotation;
+            player.transform.position = place.exitPlace;
+            player.transform.rotation = transform.rotation;
+            
+            player.transform.SetParent(transform, true);
+
+            player.GotIntoVehicle(this);
         }
         
         [Command (requiresAuthority = false)]
@@ -208,16 +238,25 @@ namespace Cars
         public void CmdExplode(Player.Player killer)
         {
             driver.CmdChangeHp((byte)driver.maxHp, killer.transform, killer.playerDisplayName);
+            Exit(driver);
+            
             foreach (var passenger in passengers)
+            {
                 passenger.CmdChangeHp((byte)passenger.maxHp, killer.transform, killer.playerDisplayName);
+                Exit(passenger);
+            }
 
             RpcDisableAllLights();
 
             foreach (var component in components)
             {
-                if(RandomBoolean.GetRandomBoolean(chance))
-                    component.transform.SetParent(null);
+                if (!RandomBoolean.GetRandomBoolean(chance)) continue;
+                component.transform.SetParent(null);
+                component.GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, radius, upwardsModifier, ForceMode.Impulse);
             }
+            
+            CmdExplode();
+            
         }
         
     }

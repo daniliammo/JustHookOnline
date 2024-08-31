@@ -29,5 +29,10 @@ namespace UI
 		public GameObject killMarker;
 		public SliderValueChanger sliderValueChanger;
 		public Menu menu;
+
+		public GameObject simpleInteract;
+		public TMP_Text simpleInteractText;
+		public GameObject passwordEntry;
+		public TMP_Text passwordEntryText;
 	}
 }

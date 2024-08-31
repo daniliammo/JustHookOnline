@@ -187,6 +187,7 @@ namespace Player
 			{
 				DamagePlayer(_hit, _damage);
 				BreakingThrough(direction, 7);
+				return;
 			}
 
 			if (_hit.collider.CompareTag("PlayerBulletFlyBy"))

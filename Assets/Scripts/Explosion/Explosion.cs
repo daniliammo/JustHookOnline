@@ -28,7 +28,7 @@ namespace Explosion
         }
 
         [Command (requiresAuthority = false)]
-        public void CmdExplode()
+        protected void CmdExplode()
         {
             RpcExplode();
             
@@ -45,7 +45,7 @@ namespace Explosion
 	                        out var hit, radius, Physics.DefaultRaycastLayers,
 	                        QueryTriggerInteraction.Ignore))
 	                {
-		                if(hit.collider.CompareTag("Player"))
+		                if(hit.collider.CompareTag("Player") || hit.collider.CompareTag("Glass"))
 		                {
 			                var normalizedDistance = Mathf.Clamp01(Vector3.Distance(t.transform.position, transform.position) / radius);
 			                

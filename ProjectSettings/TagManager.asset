@@ -15,6 +15,7 @@ TagManager:
   - Glass
   - PhysicalBody
   - Lamp
+  - Interactable
   layers:
   - Default
   - TransparentFX

@@ -1,3 +1,4 @@
+using Cars;
 using GameSettings;
 using Mirror;
 using UI;
@@ -25,6 +26,12 @@ namespace Player
 
 		public delegate void PlayerDied(Transform killer);
 		public event PlayerDied OnDeath;
+		
+		public delegate void PlayerGotIntoTheVehicle(Vehicle vehicle);
+		public event PlayerGotIntoTheVehicle OnGotIntoTheVehicle;
+		
+		public delegate void PlayerExitOutOfVehicle();
+		public event PlayerExitOutOfVehicle OnExitOutOfVehicle;
 		
 		public delegate void PlayerRevived();
 		public event PlayerRevived OnRevive;
@@ -176,6 +183,22 @@ namespace Player
 			isAlreadyDeath = false;
 			OnRevive?.Invoke();
 		}
+
+		#region Vehicle
+
+		public void GotIntoVehicle(Vehicle vehicle)
+		{
+			OnGotIntoTheVehicle?.Invoke(vehicle);
+		}
+		
+		public void ExitOutOfVehicle()
+		{
+			OnExitOutOfVehicle?.Invoke();
+		}
+
+		#endregion
+		
+
 		
 		[Command (requiresAuthority = false)]
 		private void CmdInvokeRpcMethod(string methodName, float time)
