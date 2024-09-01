@@ -36,7 +36,6 @@ public class Stats : GameSettingsClass
         killsText.text = kills.ToString();
         deadsText.text = deads.ToString();
         kdText.text = kd.ToString(CultureInfo.CurrentCulture);
-        // TODO: Реализация
         hoursInGameText.text = PlayerPrefs.GetFloat("Stats:TotalHoursPlayed").ToString(CultureInfo.CurrentCulture);
     }
     

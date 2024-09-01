@@ -64,7 +64,7 @@ namespace Player
             _controlSettings = FindObjectOfType<ControlSettings>();
             _ui = FindObjectOfType<UIObjectsLinks>();
 
-            _player = GetComponent<Player>();
+            _player = GetComponentInParent<Player>();
             
             _player.OnGotIntoTheVehicle += SetVehicleCameraPosition;
             _player.OnExitOutOfVehicle += RestoreCameraPosition;

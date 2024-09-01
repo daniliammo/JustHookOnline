@@ -10,49 +10,62 @@ namespace UI
 	{
 
 		public FirstPersonLook firstPersonLook;
+		private UIObjectsLinks _ui;
+		private WeaponController _weaponController;
+		private InteractController _interactController;
+		private Jump _jump;
+		private Hook _hookController;
 		
 		
 		private void Start()
 		{
-			
-			var ui = FindObjectOfType<UIObjectsLinks>();
+			GetComponents();
+			SetButtonsActions();
+			Destroy(this);
+		}
 
-			var weapon = GetComponent<WeaponController>();
-			
+		private void SetButtonsActions()
+		{
 			// Fire button
 			var entry = new EventTrigger.Entry
-			{ eventID = EventTriggerType.PointerDown };
-			entry.callback.AddListener(_ => { weapon.OnFireButtonDown(); });
-			var shootButoonEventTrigger = ui.shootButton.gameObject.AddComponent<EventTrigger>();
+				{ eventID = EventTriggerType.PointerDown };
+			entry.callback.AddListener(_ => { _weaponController.OnFireButtonDown(); });
+			var shootButoonEventTrigger = _ui.shootButton.gameObject.AddComponent<EventTrigger>();
 			shootButoonEventTrigger.triggers.Add(entry);
 			
 			
 			var entry2 = new EventTrigger.Entry
-			{ eventID = EventTriggerType.PointerUp };
-			entry2.callback.AddListener(_ => { weapon.OnFireButtonUp(); });
+				{ eventID = EventTriggerType.PointerUp };
+			entry2.callback.AddListener(_ => { _weaponController.OnFireButtonUp(); });
 			shootButoonEventTrigger.triggers.Add(entry2);
 
 			// Reload button
-			ui.reloadButton.onClick.AddListener(weapon.Reload);
+			_ui.reloadButton.onClick.AddListener(_weaponController.Reload);
 			
 			
 			// Hook
-			var hook = GetComponent<Hook>();
 			// Start Hook button
-			ui.hookButton.onClick.AddListener(hook.JustHook);
+			_ui.hookButton.onClick.AddListener(_hookController.JustHook);
 			// Cancel Hook button
-			ui.cancelHookingButton.GetComponent<Button>().onClick.AddListener(hook.StopGrapple);
+			_ui.cancelHookingButton.GetComponent<Button>().onClick.AddListener(_hookController.StopGrapple);
 
 			// Jump
-			var jump = GetComponent<Jump>();
-			ui.jumpButton.onClick.AddListener(jump.AddForce);
+			_ui.jumpButton.onClick.AddListener(_jump.AddForce);
 			
 			// Spotlight
-			ui.spotlightButton.onClick.AddListener(firstPersonLook.CmdEnableFlashlight);
+			_ui.spotlightButton.onClick.AddListener(firstPersonLook.CmdEnableFlashlight);
 			
-			Destroy(this);
-			
+			_ui.simpleInteract.GetComponent<Button>().onClick.AddListener(_interactController.Interact);
 		}
-    
+		
+		private void GetComponents()
+		{
+			_ui = FindObjectOfType<UIObjectsLinks>();
+			_weaponController = GetComponent<WeaponController>();
+			_interactController = GetComponent<InteractController>();
+			_jump = GetComponent<Jump>();
+			_hookController = GetComponent<Hook>();
+		}
+        
 	}
 }

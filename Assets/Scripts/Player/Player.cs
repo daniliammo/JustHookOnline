@@ -37,10 +37,9 @@ namespace Player
 		public event PlayerRevived OnRevive;
 
 		[SyncVar]
-		public bool isAlreadyDeath;
-
-		[SyncVar]
 		private bool _allowRegeneration = true;
+
+		public float regenerationRepeatRate;
 		
 		private NetworkStartPosition[] _spawnPoints;
 
@@ -66,9 +65,10 @@ namespace Player
 				_nicknameSetter.OnNicknameChanged += CmdSendName;
 				_playerJoinMessages.CmdSendPlayerJoinMessage(PlayerPrefs.GetString("Nickname"));
 				FindObjectOfType<TimeController>().CmdSyncTime();
+				_ui.localPlayer = this;
 			}
 
-			InvokeRepeating(nameof(Regeneration), 1, 1);
+			InvokeRepeating(nameof(Regeneration), 1, regenerationRepeatRate); // Вызываем регенерацию каждую секунду
 			CheckPlayerPrefsKeys();
 		}
 		
@@ -118,14 +118,10 @@ namespace Player
 			_allowRegeneration = true;
 		}
 
-		[Command(requiresAuthority = false)]
+		[Command (requiresAuthority = false)]
 		public void CmdChangeHp(byte amount, Transform damager, string damagerName)
 		{
-			if (isDeath)
-			{
-				isAlreadyDeath = true;
-				return;
-			}
+			if (isDeath) return;
 
 			if(hp <= 0) return;
 			_allowRegeneration = false;
@@ -133,7 +129,7 @@ namespace Player
 			RpcChangeHp(amount, damager, damagerName);
 			
 			CancelInvoke(nameof(AllowRegeneration)); // Останавливаем вызовы метода AllowRegeneration
-			Invoke(nameof(AllowRegeneration), 4);
+			Invoke(nameof(AllowRegeneration), 4); // Разрешаем регенерацию через 4 секунды
 			
 			UpdateHpText();
 		}
@@ -180,7 +176,6 @@ namespace Player
 			CmdInvokeRpcMethod(nameof(UpdateHpText), 0);
 			
 			isDeath = false;
-			isAlreadyDeath = false;
 			OnRevive?.Invoke();
 		}
 

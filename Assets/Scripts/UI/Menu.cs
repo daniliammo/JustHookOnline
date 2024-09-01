@@ -88,10 +88,19 @@ namespace UI
             joiningToIpAddress.text = ip;
         }
 
+        public void OnCancelConnectionButtonClicked()
+        {
+            _networkController.StopNetwork();
+        }
+        
         public void OnJoinToRandomGameButtonClicked()
         {
             if (!_networkController.discoveredServers.TryGetValue(Random.Range(0, _networkController.discoveredServers.Count), out var server)) return;
             var address = server.EndPoint.Address.ToString();
+            
+            joiningToGamePanel.SetActive(true);
+            joiningToIpAddress.text = address;
+            
             joiningToIpAddress.text = address;
             _networkController.StartClient(address);
         }

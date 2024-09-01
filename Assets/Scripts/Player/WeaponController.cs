@@ -158,7 +158,14 @@ namespace Player
 
 		private void BreakingThrough(Vector3 direction, byte damageModifier)
 		{
-			var adjustedPoint = _hit.point + _camera.forward / 10; // Отодвигаем точку на 1 вперед по направлению рэйкаста
+			Vector3 multiplier;
+			
+			if (_hit.collider.CompareTag("Player"))
+				multiplier = _camera.forward;
+			else
+				multiplier = _camera.forward / 10;
+			
+			var adjustedPoint = _hit.point + multiplier; // Отодвигаем точку на 1 вперед по направлению рэйкаста
 			_damage -= damageModifier;
 			CastRayCast(adjustedPoint, direction);
 		}
@@ -255,14 +262,12 @@ namespace Player
 			
 			_hitMarkerController.EnableAndDisableMarker(shootedPlayer.isDeath);
 			
-			
-			if(!shootedPlayer.isDeath) return;
-			if (shootedPlayer.isAlreadyDeath) return;
-
-			_hitMarkerController.SetPlayerKilledText(shootedPlayer.playerDisplayName);
-			
 			_hitSoundsController.PlayHitBassSound();
 			_hitSoundsController.PlayHitMarkerSound();
+			
+			if(!shootedPlayer.isDeath || shootedPlayer.hp > 0) return;
+
+			_hitMarkerController.SetPlayerKilledText(shootedPlayer.playerDisplayName);
 			
 			// Звук колокольчика
 			_hitSoundsController.PlayBellSound();

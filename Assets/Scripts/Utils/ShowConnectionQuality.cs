@@ -18,6 +18,7 @@ namespace Utils
         private void OnConnectionQualityChanged(ConnectionQuality previous, ConnectionQuality current)
         {
             connectionQuality.text = current.ToString();
+            connectionQuality.color = current.ColorCode();
         }
         
     }

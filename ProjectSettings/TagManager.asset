@@ -16,6 +16,7 @@ TagManager:
   - PhysicalBody
   - Lamp
   - Interactable
+  - Vehicle
   layers:
   - Default
   - TransparentFX

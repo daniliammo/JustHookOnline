@@ -1,3 +1,4 @@
+using Cars;
 using Mirror;
 using UnityEngine;
 
@@ -15,13 +16,14 @@ namespace Explosion
         public byte explosionForce;
         public float upwardsModifier;
         public byte maxDamageToPlayer;
-        public byte maxDamageVehicle;
+        public byte maxDamageToVehicle;
 
         public GameObject[] fragments;
         
         private ExplosionLinks _eL;
 	    
 
+        [Server]
         private void Start()
         {
 	        _eL = FindObjectOfType<ExplosionLinks>();
@@ -38,7 +40,7 @@ namespace Explosion
 		        if (t.CompareTag("Glass"))
 			        t.GetComponent<BreakableWindow>().RpcBreakWindow();
 		        
-	            if (t.CompareTag("Player"))
+	            if (t.CompareTag("Player") || t.CompareTag("Vehicle"))
 	            {
 	                // Пуляем райкаст для того чтобы проверить игрок за стеной или нет. Чтобы не получилось так что взрыв убивает игрока через стенку
 	                if (Physics.Raycast(transform.position, t.transform.position + t.transform.up / 2 - transform.position,
@@ -47,14 +49,17 @@ namespace Explosion
 	                {
 		                if(hit.collider.CompareTag("Player") || hit.collider.CompareTag("Glass"))
 		                {
-			                var normalizedDistance = Mathf.Clamp01(Vector3.Distance(t.transform.position, transform.position) / radius);
-			                
-			                var damage = maxDamageToPlayer * (1 - normalizedDistance);
-
-			                var player = t.GetComponent<Player.Player>();    
-	                
-			                player.CmdChangeHp((byte)damage, transform, "Взрывная бочка");
+			                var player = t.GetComponent<Player.Player>();
+			                var damage = CalcDamage(DamageType.Player, player.gameObject);
+			                player.CmdChangeHp(damage, transform, "Взрыв");
 		                }
+
+		                if (hit.collider.CompareTag("Vehicle") || hit.collider.CompareTag("Glass"))
+		                {
+			                var vehicle = t.GetComponent<Vehicle>();
+			                var damage = CalcDamage(DamageType.Vehicle, vehicle.gameObject);
+		                }
+			                
 	                }
 	            }
 	            
@@ -81,6 +86,21 @@ namespace Explosion
 	        }
         }
 
+        [Server]
+        private byte CalcDamage(DamageType damageType, GameObject target)
+        {
+	        var normalizedDistance = Mathf.Clamp01(Vector3.Distance(target.transform.position, transform.position) / radius);
+
+	        var damage = damageType switch
+	        {
+		        DamageType.Vehicle => maxDamageToVehicle * (1 - normalizedDistance),
+		        DamageType.Player => maxDamageToPlayer * (1 - normalizedDistance),
+		        _ => 0
+	        };
+
+	        return (byte)damage;
+        }
+        
         [ClientRpc]
         private void RpcExplode()
         {
