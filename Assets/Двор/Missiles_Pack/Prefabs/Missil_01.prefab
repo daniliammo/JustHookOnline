@@ -162,13 +162,12 @@ MonoBehaviour:
   explosionForce: 200
   upwardsModifier: 1
   maxDamageToPlayer: 100
-  maxDamageVehicle: 255
+  maxDamageToVehicle: 0
   fragments: []
   target: {fileID: 0}
   maneuverability: 0.05
   speed: 50
   minSpeed: 40
-  _predictTargetPosition: {x: 0, y: 0, z: 0}
   allowPrediction: 1
   lifeTime: 5252
 --- !u!54 &852870355561973470
@@ -315,6 +314,10 @@ PrefabInstance:
     - target: {fileID: 2776303768859850075, guid: bccc7a794e75b2a44a4b0dac69160b7b, type: 3}
       propertyPath: m_Intensity
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2776303768859850075, guid: bccc7a794e75b2a44a4b0dac69160b7b, type: 3}
+      propertyPath: m_RenderMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2776303768859850075, guid: bccc7a794e75b2a44a4b0dac69160b7b, type: 3}
       propertyPath: m_BoundingSphereOverride.w

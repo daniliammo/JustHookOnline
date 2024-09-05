@@ -154,30 +154,31 @@ namespace Player
             if (Physics.Raycast(_camera.position, _camera.forward, out var hit, MaxDistance,
                     Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             {
-                if (!hit.transform.CompareTag("DeadZone"))
+                if (hit.transform.CompareTag("DeadZone") || hit.transform.CompareTag("Boundary"))
                 {
-                    _ui.hookCrosshair.SetActive(true);
-
-                    var hookCrosshairSize = new Vector2
-                    {
-                        x = minHookCrosshairSize.x * (MaxDistance / hit.distance),
-                        y = minHookCrosshairSize.y * (MaxDistance / hit.distance)
-                    };
-                    
-                    if (hookCrosshairSize.x < minHookCrosshairSize.x)
-                        hookCrosshairSize = minHookCrosshairSize;
-                    
-                    if (hookCrosshairSize.x > maxHookCrosshairSize.x)
-                        hookCrosshairSize = maxHookCrosshairSize;
-                    
-                    _ui.hookCrosshairRectTransform.sizeDelta = hookCrosshairSize;
-                }
-
-                if (hit.transform.CompareTag("DeadZone"))
                     _ui.hookCrosshair.SetActive(false);
+                    return;
+                }
+                
+                _ui.hookCrosshair.SetActive(true);
+
+                var hookCrosshairSize = new Vector2
+                {
+                    x = minHookCrosshairSize.x * (MaxDistance / hit.distance),
+                    y = minHookCrosshairSize.y * (MaxDistance / hit.distance)
+                };
+                    
+                if (hookCrosshairSize.x < minHookCrosshairSize.x)
+                    hookCrosshairSize = minHookCrosshairSize;
+                    
+                if (hookCrosshairSize.x > maxHookCrosshairSize.x)
+                    hookCrosshairSize = maxHookCrosshairSize;
+                    
+                _ui.hookCrosshairRectTransform.sizeDelta = hookCrosshairSize;
+                return;
             }
-            else
-                _ui.hookCrosshair.SetActive(false);
+            
+            _ui.hookCrosshair.SetActive(false);
         }
 
         private void DrawRope()
@@ -271,7 +272,7 @@ namespace Player
             if (!Physics.Raycast(_camera.position, _camera.forward, out _hit,
                     MaxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return;
             
-            if(_hit.transform.CompareTag("DeadZone")) return;
+            if(_hit.transform.CompareTag("DeadZone") && _hit.transform.CompareTag("Boundary")) return;
             
             CmdPlayHookShotSound();
             
@@ -297,9 +298,14 @@ namespace Player
             // _hookGameObject.transform.LookAt(_camera);
             // _hookGameObject.transform.rotation = Quaternion.Euler(0, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
             
-            _hookedPosition = new GameObject("Hooked position");
-            _hookedPosition.transform.position = _hit.point;
-            _hookedPosition.transform.SetParent(_hit.transform);
+            _hookedPosition = new GameObject("Hooked position")
+            {
+                transform =
+                {
+                    position = _hit.point,
+                    parent = _hit.transform
+                }
+            };
         }
         
         private void Grapple()

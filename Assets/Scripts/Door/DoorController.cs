@@ -3,36 +3,40 @@ using Mirror;
 using UnityEngine;
 
 
-[RequireComponent(typeof(NetworkAnimator), typeof(Animator))]
+[RequireComponent(typeof(NetworkAnimator), typeof(Animator), typeof(NetworkIdentity))]
 public class DoorController : NetworkBehaviour
 {
 
-    public Animator animator;
-    
+    private Animator _animator;
     public DoorStatus doorStatus;
     
+    public byte hp;
     
+    
+    [Server]
     private void Start()
     {
-        animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
     }
 
-    public void OpenDoor()
+    [Command (requiresAuthority = false)]
+    public void CmdOpenDoor()
     {
         if(doorStatus == DoorStatus.Opened) return;
         
-        animator.Play("Open");
+        _animator.Play("Open");
         doorStatus = DoorStatus.Opened;
         if(doorStatus == DoorStatus.RequirePassword)
-            Invoke(nameof(CloseDoor), 15);
+            Invoke(nameof(CmdCloseDoor), 15);
     }
     
-    public void CloseDoor()
+    [Command (requiresAuthority = false)]
+    public void CmdCloseDoor()
     {
         if(doorStatus == DoorStatus.Closed) return;
         
         doorStatus = DoorStatus.Closed;
-        animator.Play("Close");
+        _animator.Play("Close");
     }
     
 }

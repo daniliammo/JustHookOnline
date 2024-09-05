@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Mirror;
@@ -7,18 +8,18 @@ using UnityEngine;
 
 namespace Player
 {
-    [RequireComponent(typeof(BoxCollider))]
+    [RequireComponent(typeof(Player))]
     public class InteractController : NetworkBehaviour
     {
 
         private UIObjectsLinks _ui;
-
         private Player _player;
 
+        
         public List<byte> password;
-        private string _passwordString = "";
+        public string _passwordString = "";
 
-        private bool _isWritingPassword;
+        public bool _isWritingPassword;
         
         [CanBeNull] 
         public Interactable currentInteractable;
@@ -60,8 +61,9 @@ namespace Player
                     _ui.simpleInteractNameText.text = currentInteractable.interactName;
                     break;
                 case InteractType.PasswordEntry:
-                    _ui.passwordEntryGameObject.SetActive(true);
-                    _ui.passwordEntryNameText.text = currentInteractable.interactName;
+                    _ui.simpleInteract.SetActive(true);
+                    _ui.simpleInteractNameText.text = currentInteractable.interactName;
+                    _ui.passwordEntryNameText.text = currentInteractable.passwordEntryText;
                     break;
             }
         }
@@ -80,6 +82,8 @@ namespace Player
                         break;
                     case InteractType.PasswordEntry:
                         _ui.passwordEntryGameObject.SetActive(false);
+                        _isWritingPassword = false;
+                        _ui.simpleInteract.SetActive(false);
                         break;
                 }
             }
@@ -87,12 +91,12 @@ namespace Player
             currentInteractable = null;
         }
         
-        private void FixedUpdate()
+        private void Update()
         {
             if(!currentInteractable) return;
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetButton("Interact"))
                 Interact();
-
+            ProcessPassword();
         }
 
         public void Interact()
@@ -105,24 +109,22 @@ namespace Player
 
             if (currentInteractable!.interactType == InteractType.PasswordEntry)
             {
-                if (!_isWritingPassword)
-                    _isWritingPassword = true;
-
-                if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E) && _isWritingPassword)
+                if (Input.GetButton("Cancel") || Input.GetButton("Interact") && _isWritingPassword)
                 {
                     _isWritingPassword = false;
                     _ui.passwordEntryGameObject.SetActive(false);
                 }
                 
+                _ui.passwordEntryGameObject.SetActive(true);
+                
                 _isWritingPassword = true;
-
-                ProcessPassword();
             }
         }
 
         public void ProcessPassword()
         {
-            // if (!_isWritingPassword) return;
+            if (!_isWritingPassword) return;
+            
             #if !UNITY_IOS || !UNITY_ANDROID
             if(Input.GetKeyDown(KeyCode.Alpha0))
                 password.Add(0);
@@ -144,36 +146,64 @@ namespace Player
                 password.Add(8);
             if(Input.GetKeyDown(KeyCode.Alpha9))
                 password.Add(9);
-                
+            
             if (Input.GetKeyDown(KeyCode.Backspace))
-                password.RemoveAt(password.Count);
+            {
+                if(password.Count > 0)
+                    password.RemoveAt(password.Count - 1);
+            }
             #endif
 
-            var stringBuilder = new StringBuilder();
+            switch (password.Count)
+            {
+                case > 0:
+                {
+                    var stringBuilder = new StringBuilder();
+                
+                    foreach (var b in password)
+                        _passwordString = stringBuilder.Append(b).ToString();
+                    break;
+                }
+                case 0:
+                    _passwordString = "";
+                    break;
+            }
 
-            foreach (var b in password)
-                _passwordString = stringBuilder.Append(b).ToString();
 
             _ui.passwordEntry.text = _passwordString;
             
             if(_passwordString.Length == currentInteractable!.password.Length)
             {
                 currentInteractable!.CheckPassword(_passwordString);
-                if(currentInteractable.password != _passwordString)
+                if(_passwordString != currentInteractable.password)
                 {
                     _ui.passwordEntry.color = Color.red;
-                    Invoke(nameof(ResetPassword), 1);
+                    _isWritingPassword = false;
+                    Invoke(nameof(OnPasswordIncorrect), 1.5f);
                 }
             }
 
-            if(_passwordString.Length != currentInteractable!.password.Length)
+            if(_passwordString == currentInteractable.password)
+            {
                 _ui.passwordEntry.color = Color.green;
+                _isWritingPassword = false;
+                Invoke(nameof(OnPasswordCorrect), 1.5f);
+            }
+        }
+
+        private void OnPasswordCorrect()
+        {
+            _ui.passwordEntryGameObject.SetActive(false);
+            _isWritingPassword = true;
+            _ui.passwordEntry.color = Color.white;
         }
         
-        private void ResetPassword()
+        private void OnPasswordIncorrect()
         {
             password = new List<byte>();
             _passwordString = "";
+            _isWritingPassword = true;
+            _ui.passwordEntry.color = Color.white;
         }
         
     }

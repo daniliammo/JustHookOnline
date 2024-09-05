@@ -1,21 +1,30 @@
 using Cars;
 using Mirror;
+using UnityEngine;
 
 
+[RequireComponent(typeof(BoxCollider), typeof(NetworkIdentity))]
 public class Interactable : NetworkBehaviour
 {
 
     public InteractType interactType;
     public string password;
     public string interactName;
+    public string passwordEntryText;
     public Vehicle vehicle;
-    public DoorController door;
-    
+    public DoorController doorController;
+
+
+    [Server]
+    private void Start()
+    {
+        doorController = GetComponent<DoorController>();
+    }
 
     [Command (requiresAuthority = false)]
     public void Interact()
     {
-        door!.OpenDoor();
+        doorController!.CmdOpenDoor();
     }
 
     [Command (requiresAuthority = false)]

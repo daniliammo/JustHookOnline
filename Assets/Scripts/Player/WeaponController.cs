@@ -158,24 +158,26 @@ namespace Player
 
 		private void BreakingThrough(Vector3 direction, byte damageModifier)
 		{
-			Vector3 multiplier;
+			Vector3 forwardMultiplier;
 			
 			if (_hit.collider.CompareTag("Player"))
-				multiplier = _camera.forward;
+				forwardMultiplier = _camera.forward / 1.25f;
 			else
-				multiplier = _camera.forward / 10;
+				forwardMultiplier = _camera.forward / 10;
 			
-			var adjustedPoint = _hit.point + multiplier; // Отодвигаем точку на 1 вперед по направлению рэйкаста
+			var adjustedPoint = _hit.point + forwardMultiplier; // Отодвигаем точку на 1 вперед по направлению рэйкаста
 			_damage -= damageModifier;
 			CastRayCast(adjustedPoint, direction);
 		}
 		
 		private void CastRayCast(Vector3 origin, Vector3 direction)
 		{
-			if (!Physics.Raycast(origin, direction, out _hit, Mathf.Infinity,
-				    Physics.DefaultRaycastLayers)) return;
+			Physics.Raycast(origin, direction, out _hit, Mathf.Infinity,
+				Physics.DefaultRaycastLayers);
 			// ReSharper disable all Unity.PerformanceCriticalCodeInvocation
 
+			if(_hit.transform.CompareTag("Boundary") || _hit.transform.CompareTag("DeadZone")) return;
+			
 			if (_hit.collider.CompareTag("Glass"))
 			{
 				_hit.collider.GetComponent<BreakableWindow>().CmdBreakWindow();
@@ -233,7 +235,7 @@ namespace Player
 				return;
 			}
 
-			if (!_hit.collider.CompareTag("Player") || !_hit.collider.CompareTag("DeadZone") || !_hit.collider.CompareTag("PlayerBulletFlyBy") || !_hit.collider.CompareTag("Glass"))
+			if (!_hit.collider.CompareTag("Player") && !_hit.collider.CompareTag("PlayerBulletFlyBy") && !_hit.collider.CompareTag("Glass"))
 			{
 				CmdSpawnBulletHolePrefab(_hit.point, Quaternion.Euler(Vector3.Angle(_hit.normal, Vector3.up), 0, 0));
 				
