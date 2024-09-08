@@ -29,6 +29,15 @@ namespace Cars
             Gizmos.color = Color.red;
             Gizmos.DrawRay(transform.position + exitPlace, transform.forward);
         }
+        
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(transform.position, 0.3f);
+            
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position + exitPlace, 0.4f);
+        }
         #endif
         
     }
