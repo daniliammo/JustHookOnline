@@ -1,12 +1,15 @@
+using System.Collections.Generic;
+using GameSettings;
 using UnityEngine;
 using TMPro;
+using UnityEditor;
 using UnityEngine.SceneManagement;
 using Utils;
 using Random = UnityEngine.Random;
 
 namespace UI
 {
-    public class Menu : MonoBehaviour
+    public class Menu : GameSettingsClass
     {
         
         private NetworkController _networkController;
@@ -25,6 +28,8 @@ namespace UI
         {
             _networkController = FindObjectOfType<NetworkController>();
             
+            CheckPlayerPrefsKeys(new Dictionary<string, bool>{{"NetworkSettings:CloseGameOnDisconnect", false}});
+            
             NetworkEvents.OnClientStarted += OnClientStarted;
             NetworkEvents.OnClientStopped += OnClientStop;
         }
@@ -37,6 +42,14 @@ namespace UI
         
         private void OnClientStop()
         {
+            if(PlayerPrefsBoolean.GetBool("NetworkSettings:CloseGameOnDisconnect"))
+            {
+                Application.Quit();
+                #if UNITY_EDITOR
+                EditorApplication.ExitPlaymode();
+                #endif
+            }
+
             CursorController.SetCursorLockState(CursorLockMode.None);
             canvasGame.SetActive(false);
             disconnectPanel.SetActive(true);
@@ -110,7 +123,7 @@ namespace UI
             Application.Quit();
             
             #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.ExitPlaymode();
             #endif
         }
 

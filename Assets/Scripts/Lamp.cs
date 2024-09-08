@@ -26,7 +26,7 @@ public class Lamp : NetworkBehaviour
         _azureTimeController.m_onMinuteChange.AddListener(OnMinuteChange);
     }
 
-    [Command(requiresAuthority = false)]
+    [Command (requiresAuthority = false)]
     private void OnMinuteChange()
     {
         if (hour <= _azureTimeController.m_hour && minute <= _azureTimeController.m_minute)
@@ -39,10 +39,12 @@ public class Lamp : NetworkBehaviour
             RpcSetActiveLights(true);
     }
 
-    [Command(requiresAuthority = false)]
+    [Command (requiresAuthority = false)]
     public void CmdBreakLamp()
     {
         RpcBreakLamp();
+        breakableWindow.RpcBreakWindow();
+        Destroy(this);
     }
 
     [ClientRpc]
@@ -50,8 +52,6 @@ public class Lamp : NetworkBehaviour
     {
         foreach (var lightComponent in lights)
             lightComponent.enabled = false;
-
-        breakableWindow.RpcBreakWindow();
     }
 
     [ClientRpc]

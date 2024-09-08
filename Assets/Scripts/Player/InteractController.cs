@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Mirror;
@@ -17,9 +16,9 @@ namespace Player
 
         
         public List<byte> password;
-        public string _passwordString = "";
+        private string _passwordString = "";
 
-        public bool _isWritingPassword;
+        private bool _isWritingPassword;
         
         [CanBeNull] 
         public Interactable currentInteractable;
@@ -94,8 +93,18 @@ namespace Player
         private void Update()
         {
             if(!currentInteractable) return;
-            if (Input.GetButton("Interact"))
+            
+            if (Input.GetKeyDown(KeyCode.E) && _isWritingPassword)
+            {
+                _isWritingPassword = false;
+                _ui.passwordEntryGameObject.SetActive(false);
+                ResetPassword();
+                return;
+            }
+            
+            if (Input.GetKeyDown(KeyCode.E))
                 Interact();
+
             ProcessPassword();
         }
 
@@ -109,12 +118,6 @@ namespace Player
 
             if (currentInteractable!.interactType == InteractType.PasswordEntry)
             {
-                if (Input.GetButton("Cancel") || Input.GetButton("Interact") && _isWritingPassword)
-                {
-                    _isWritingPassword = false;
-                    _ui.passwordEntryGameObject.SetActive(false);
-                }
-                
                 _ui.passwordEntryGameObject.SetActive(true);
                 
                 _isWritingPassword = true;
@@ -193,17 +196,23 @@ namespace Player
 
         private void OnPasswordCorrect()
         {
+            ResetPassword();
+            _ui.passwordEntry.color = Color.white;
             _ui.passwordEntryGameObject.SetActive(false);
             _isWritingPassword = true;
-            _ui.passwordEntry.color = Color.white;
         }
         
         private void OnPasswordIncorrect()
         {
-            password = new List<byte>();
-            _passwordString = "";
+            ResetPassword();
             _isWritingPassword = true;
             _ui.passwordEntry.color = Color.white;
+        }
+
+        private void ResetPassword()
+        {
+            password = new List<byte>();
+            _passwordString = "";
         }
         
     }

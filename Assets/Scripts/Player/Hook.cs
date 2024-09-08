@@ -293,7 +293,7 @@ namespace Player
             _hookGameObject = Instantiate(hookPrefab);
             
             _hookGameObject.transform.LookAt(_camera);
-            _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
+            // _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
 
             // _hookGameObject.transform.LookAt(_camera);
             // _hookGameObject.transform.rotation = Quaternion.Euler(0, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);

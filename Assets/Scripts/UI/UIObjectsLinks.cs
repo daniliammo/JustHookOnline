@@ -107,6 +107,12 @@ namespace UI
 			localInteractController.password.Add(9);
 			localInteractController.ProcessPassword();
 		}
+
+		public void RemoveLastSymbolInThePassword()
+		{
+			if(localInteractController.password.Count > 0)
+				localInteractController.password.RemoveAt(localInteractController.password.Count - 1);
+		}
 		#endregion
 		
 		#endregion
