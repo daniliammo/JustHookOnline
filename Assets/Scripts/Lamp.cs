@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
@@ -12,12 +13,10 @@ public class Lamp : NetworkBehaviour
     private AzureTimeController _azureTimeController;
 
     [Header("Время отключения")]
-    public int hour;
-    public int minute;
+    public HourMinute disableTime;
 
     [Header("Время включения")]
-    public int hour2;
-    public int minute2;
+    public HourMinute enableTime;
 
 
     public override void OnStartClient()
@@ -29,13 +28,13 @@ public class Lamp : NetworkBehaviour
     [Command (requiresAuthority = false)]
     private void OnMinuteChange()
     {
-        if (hour <= _azureTimeController.m_hour && minute <= _azureTimeController.m_minute)
+        if (disableTime.hour <= _azureTimeController.m_hour && disableTime.minute <= _azureTimeController.m_minute)
             RpcSetActiveLights(true);
 
-        if (hour >= _azureTimeController.m_hour && minute >= _azureTimeController.m_minute)
+        if (disableTime.hour >= _azureTimeController.m_hour && disableTime.minute >= _azureTimeController.m_minute)
             RpcSetActiveLights(false);
 
-        if (hour2 >= _azureTimeController.m_hour && minute2 >= _azureTimeController.m_minute)
+        if (enableTime.hour >= _azureTimeController.m_hour && enableTime.minute >= _azureTimeController.m_minute)
             RpcSetActiveLights(true);
     }
 

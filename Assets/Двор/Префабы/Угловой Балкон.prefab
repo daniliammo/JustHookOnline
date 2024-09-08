@@ -10223,6 +10223,14 @@ PrefabInstance:
       propertyPath: _assetId
       value: 2877211842
       objectReference: {fileID: 0}
+    - target: {fileID: 1635160464292429867, guid: 2afe94283f218052c805b86181ff8098, type: 3}
+      propertyPath: _assetId
+      value: 2877211842
+      objectReference: {fileID: 0}
+    - target: {fileID: 4702854457883825786, guid: 2afe94283f218052c805b86181ff8098, type: 3}
+      propertyPath: _assetId
+      value: 2877211842
+      objectReference: {fileID: 0}
     - target: {fileID: 8725836020793151182, guid: 2afe94283f218052c805b86181ff8098, type: 3}
       propertyPath: m_Name
       value: "3 \u041E\u043A\u043D\u043E \u0428\u0438\u0440\u043E\u043A\u043E\u0435"

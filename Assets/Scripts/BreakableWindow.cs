@@ -242,6 +242,8 @@ public class BreakableWindow : NetworkBehaviour
         };
 
         var audioSource = audio.AddComponent<AudioSource>();
+        if(!breakingSound)
+            Debug.LogError($"breakingSound не задан на объекте: {name}. Звук не будет проигран");
         audioSource.clip = breakingSound;
         audioSource.spatialBlend = 1;
         audioSource.maxDistance = 150;

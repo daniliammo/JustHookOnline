@@ -1536,10 +1536,12 @@ MonoBehaviour:
   lights:
   - {fileID: 3095120220582708997}
   breakableWindow: {fileID: 7838610603632562104}
-  hour: 20
-  minute: 15
-  hour2: 3
-  minute2: 40
+  disableTime:
+    hour: 20
+    minute: 15
+  enableTime:
+    hour: 3
+    minute: 40
 --- !u!1 &3076081585376067154
 GameObject:
   m_ObjectHideFlags: 0
@@ -35466,8 +35468,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  partsX: 5
-  partsY: 5
+  partsX: 2
+  partsY: 2
   preCalculate: 1
   addTorques: 1
   hideSplintersInHierarchy: 0
@@ -35476,7 +35478,7 @@ MonoBehaviour:
   destroyPhysicsTime: 5
   destroyColliderWithPhysics: 1
   destroySplintersTime: 0
-  breakingSound: {fileID: 0}
+  breakingSound: {fileID: 8300000, guid: 5c2f5ca33485fbd42a9e7af0cf292651, type: 3}
   isBroken: 0
   splinters: []
 --- !u!1 &6347393903938526051
@@ -35534,10 +35536,12 @@ MonoBehaviour:
   lights:
   - {fileID: 2262026635162607438}
   breakableWindow: {fileID: 4561760664977927649}
-  hour: 20
-  minute: 15
-  hour2: 3
-  minute2: 40
+  disableTime:
+    hour: 20
+    minute: 15
+  enableTime:
+    hour: 3
+    minute: 40
 --- !u!114 &4267446806351173407
 MonoBehaviour:
   m_ObjectHideFlags: 0
