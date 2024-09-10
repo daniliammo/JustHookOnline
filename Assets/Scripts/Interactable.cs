@@ -34,7 +34,7 @@ public class Interactable : NetworkBehaviour
     [Command (requiresAuthority = false)]
     public void Interact()
     {
-        doorController!.CmdOpenDoor();
+        doorController.CmdOpenDoor();
     }
 
     [Command (requiresAuthority = false)]

@@ -19,7 +19,7 @@ MonoBehaviour:
     outputType: 0
     floatPropertyType: 0
     colorPropertyType: 0
-    slider: 0.55
+    slider: 0.463
     colorField: {r: 1, g: 1, b: 1, a: 1}
     timelineBasedCurve:
       serializedVersion: 2
@@ -154,9 +154,9 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 0
+        inSlope: 1
         outSlope: 1
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -164,8 +164,8 @@ MonoBehaviour:
         time: 1
         value: 1
         inSlope: 1
-        outSlope: 0
-        tangentMode: 0
+        outSlope: 1
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -472,7 +472,7 @@ MonoBehaviour:
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_ColorSpace: -1
+      m_ColorSpace: 0
       m_NumColorKeys: 7
       m_NumAlphaKeys: 2
   - name: Stars Intensity
@@ -1649,7 +1649,7 @@ MonoBehaviour:
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_ColorSpace: -1
+      m_ColorSpace: 0
       m_NumColorKeys: 4
       m_NumAlphaKeys: 2
   - name: Dynamic Clouds Color2

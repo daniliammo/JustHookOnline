@@ -9,6 +9,8 @@ public class DoorController : NetworkBehaviour
 
     private Animator _animator;
     public DoorStatus doorStatus;
+
+    public bool requirePassword;
     
     public byte hp;
     
@@ -17,6 +19,9 @@ public class DoorController : NetworkBehaviour
     private void Start()
     {
         _animator = GetComponent<Animator>();
+        
+        if(doorStatus == DoorStatus.Opened)
+            CmdOpenDoor();
     }
 
     [Command (requiresAuthority = false)]
@@ -26,7 +31,7 @@ public class DoorController : NetworkBehaviour
         
         _animator.Play("Open");
         doorStatus = DoorStatus.Opened;
-        if(doorStatus == DoorStatus.RequirePassword)
+        if(requirePassword)
             Invoke(nameof(CmdCloseDoor), 15);
     }
     
