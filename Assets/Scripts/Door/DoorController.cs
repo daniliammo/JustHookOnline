@@ -19,9 +19,6 @@ public class DoorController : NetworkBehaviour
     private void Start()
     {
         _animator = GetComponent<Animator>();
-        
-        if(doorStatus == DoorStatus.Opened)
-            CmdOpenDoor();
     }
 
     [Command (requiresAuthority = false)]
