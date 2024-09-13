@@ -7,36 +7,43 @@ namespace Utils
 	public static class PlayerPrefsBoolean
 	{
 
-		public static void SetBool(string key, bool boolean)
+		public static void SetBool(string keyName, bool value)
 		{
-			switch (boolean)
+			switch (value)
 			{
 				case true:
-					PlayerPrefs.SetInt(key, 1);
+					PlayerPrefs.SetInt(keyName, 1);
 					break;
 				
 				case false:
-					PlayerPrefs.SetInt(key, 0);
+					PlayerPrefs.SetInt(keyName, 0);
 					break;
 			}
 		}
 
 		[Pure]
-		public static bool GetBool(string key)
+		public static bool GetBool(string keyName)
 		{
-			if(PlayerPrefs.HasKey(key))
+			if(PlayerPrefs.HasKey(keyName))
 			{
-				if (PlayerPrefs.GetInt(key) == 1)
-					return true;
+				var value = PlayerPrefs.GetInt(keyName);
 				
-				if (PlayerPrefs.GetInt(key) == 0)
-					return false;
+				if(value != 0 && value != 1)
+					Debug.LogError($"Ключ {keyName} не boolean. {keyName} равен: {value}");
+				
+				switch (value)
+				{
+					case 1:
+						return true;
+					case 0:
+						return false;
+				}
 			}
 			
-			if(!PlayerPrefs.HasKey(key))
-				Debug.LogError($"Нету ключа '{key}'");
-
-			throw new NullReferenceException();
+			if(!PlayerPrefs.HasKey(keyName))
+				Debug.LogError($"Нету ключа '{keyName}'.");
+			
+			throw new Exception($"Произошла ошибка при обработке: {keyName}. Значение: {PlayerPrefs.GetInt(keyName)}");
 		}
 	
 	}
