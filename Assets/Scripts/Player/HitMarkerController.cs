@@ -25,7 +25,6 @@ namespace Player
         {
             _ui.playerKilledGameObject.SetActive(false);
         }
-
         
         public void EnableAndDisableMarker(bool isPlayerDead)
         {
