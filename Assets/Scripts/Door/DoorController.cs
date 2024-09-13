@@ -28,6 +28,7 @@ public class DoorController : NetworkBehaviour
         
         _animator.Play("Open");
         doorStatus = DoorStatus.Opened;
+        
         if(requirePassword)
             Invoke(nameof(CmdCloseDoor), 15);
     }
