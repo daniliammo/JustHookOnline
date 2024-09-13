@@ -38,33 +38,31 @@ namespace Player
         private RaycastHit _hit;
         private Vector3 _currentGrapplePosition;
         
-        private Rigidbody _rigidbody;
+        private Rigidbody _rb;
         private Player _player;
         private LineRenderer _lr;
         private UIObjectsLinks _ui;
         private WeaponController _weaponController;
         
-        // Если true то когда игрок летит на крюке он не может бросить крюк из за того что попал в воздух или не хватило дистанции.
-        public bool _isSafeHook;
-        // True когда крюк зацепился за пол. Когда true крюк отцепится сразу.
+        // Если true, то когда игрок летит на крюке он не может бросить крюк из-за того что попал в воздух или не хватило дистанции.
+        private bool _isSafeHook = true;
+        // True когда крюк зацепился за пол. Если крюк на полу, то отцепится когда игрок подлетит к нему.
         private bool _isHookOnFloor;
         // True когда игрок бросил крюк и крюк летит обратно к игроку.
-        public bool _isHookCanceling;
+        private bool _isHookCanceling;
         // True когда крюк летит к цели и еще не зацепился.
-        public bool _isHookOnAir;
+        private bool _isHookOnAir;
         // True когда игрок летит к крюку
-        public bool IsHooking;
-        // Если true то рисуется линия от игрока к крюку
-        public bool _drawRope;
-
-        public bool _blockHookIsCanceling;
+        private bool _isHooking;
+        // Если true, то рисуется линия от игрока к крюку
+        private bool _drawRope;
         
 
         private void Start()
         {
             _player = GetComponent<Player>();
             _lr = GetComponent<LineRenderer>();
-            _rigidbody = GetComponent<Rigidbody>();
+            _rb = GetComponent<Rigidbody>();
             _weaponController = GetComponent<WeaponController>();
             
             _ui = FindObjectOfType<UIObjectsLinks>();
@@ -131,7 +129,7 @@ namespace Player
         public void JustHook()
         {
             _isHookOnAir = false;
-            if(_blockHookIsCanceling || _isHookCanceling)
+            if(_isHookCanceling)
                 return;
             
             if(!_isSafeHook)
@@ -221,7 +219,7 @@ namespace Player
 
             if (Vector3.Distance(_hookGameObject.transform.position, _hookedPosition.transform.position) <= 0.1f)
             {
-                if (!IsHooking && !_isHookCanceling)
+                if (!_isHooking && !_isHookCanceling)
                     Grapple();
 
                 if (_playHookPool)
@@ -261,14 +259,14 @@ namespace Player
                 _hookGameObject.transform.Rotate(new Vector3(0, 0, 14.4f));
 
             if(!_isHookOnFloor) return;
-            if(!IsHooking) return;
+            if(!_isHooking) return;
             
             // Если обьект в который попал крюк удален крюк должен полететь обратно
             if(!_hookedPosition)
                 StopGrapple();
             
             var toGrapplePoint = _hookGameObject.transform.position - transform.position;
-            _rigidbody.velocity = toGrapplePoint.normalized * HookPoolSpeed;
+            _rb.velocity = toGrapplePoint.normalized * HookPoolSpeed;
             
             var direction = _hookGameObject.transform.position  - transform.position;
             var distanceToGrapplePoint = direction.magnitude;
@@ -280,7 +278,7 @@ namespace Player
             
             _playHookPool = false;
             // Установление скорости воспроизведения звука стягивания
-            CmdSetPitchHookPoolSound(_rigidbody.velocity.magnitude / HookPoolSpeed);
+            CmdSetPitchHookPoolSound(_rb.velocity.magnitude / HookPoolSpeed);
             CmdPlayOrStopHookPoolSound(true);
         }
 
@@ -333,7 +331,7 @@ namespace Player
             _isHookOnAir = false;
             _isHookCanceling = false;
             _playHookPool = true;
-            IsHooking = true;
+            _isHooking = true;
             
             _hookGameObject.transform.LookAt(_camera);
             _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
@@ -348,7 +346,7 @@ namespace Player
         public void StopGrapple()
         {
             CmdPlayOrStopHookPoolSound(true);
-            if(IsHooking || _isHookOnAir)
+            if(_isHooking || _isHookOnAir)
             {
                 _isHookOnAir = false;
                 _isHookCanceling = true;
@@ -357,7 +355,7 @@ namespace Player
             
             _ui.cancelHookingButton.SetActive(false);
             
-            IsHooking = false;
+            _isHooking = false;
             _isHookOnFloor = false;
             
             Destroy(_hookedPosition);
