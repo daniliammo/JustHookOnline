@@ -53,7 +53,7 @@ namespace Player
         // True когда крюк летит к цели и еще не зацепился.
         private bool _isHookOnAir;
         // True когда игрок летит к крюку
-        private bool _isHooking;
+        internal bool IsHooking;
         // Если true, то рисуется линия от игрока к крюку
         private bool _drawRope;
         
@@ -219,7 +219,7 @@ namespace Player
 
             if (Vector3.Distance(_hookGameObject.transform.position, _hookedPosition.transform.position) <= 0.1f)
             {
-                if (!_isHooking && !_isHookCanceling)
+                if (!IsHooking && !_isHookCanceling)
                     Grapple();
 
                 if (_playHookPool)
@@ -259,7 +259,7 @@ namespace Player
                 _hookGameObject.transform.Rotate(new Vector3(0, 0, 14.4f));
 
             if(!_isHookOnFloor) return;
-            if(!_isHooking) return;
+            if(!IsHooking) return;
             
             // Если обьект в который попал крюк удален крюк должен полететь обратно
             if(!_hookedPosition)
@@ -331,7 +331,7 @@ namespace Player
             _isHookOnAir = false;
             _isHookCanceling = false;
             _playHookPool = true;
-            _isHooking = true;
+            IsHooking = true;
             
             _hookGameObject.transform.LookAt(_camera);
             _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
@@ -346,7 +346,7 @@ namespace Player
         public void StopGrapple()
         {
             CmdPlayOrStopHookPoolSound(true);
-            if(_isHooking || _isHookOnAir)
+            if(IsHooking || _isHookOnAir)
             {
                 _isHookOnAir = false;
                 _isHookCanceling = true;
@@ -355,7 +355,7 @@ namespace Player
             
             _ui.cancelHookingButton.SetActive(false);
             
-            _isHooking = false;
+            IsHooking = false;
             _isHookOnFloor = false;
             
             Destroy(_hookedPosition);
