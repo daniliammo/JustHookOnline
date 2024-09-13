@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using Player.Components;
 using UI;
 using UnityEngine;
 
@@ -22,6 +23,9 @@ namespace Player
 
         private Hook _hookController;
         private Player _player;
+        private GroundCheck _groundCheck;
+
+        public bool allowToWalkOnAir = false;
         
         
         private void Start()
@@ -29,6 +33,7 @@ namespace Player
             _rigidbody = GetComponent<Rigidbody>();
             _player = GetComponent<Player>();
             _hookController = GetComponent<Hook>();
+            _groundCheck = GetComponent<GroundCheck>();
             
             _ui = FindObjectOfType<UIObjectsLinks>();
             _joystick = FindObjectOfType<Joystick>();
@@ -58,7 +63,8 @@ namespace Player
             if (_player.isDeath) return;
             if (_ui.menu.isPaused) return;
             if (_hookController.IsHooking) return;
-    
+            if (!_groundCheck.isGrounded && !allowToWalkOnAir) return;
+            
             if (_isOnLadder)
             {
                 // Подъем вверх и спуск вниз по оси Y
