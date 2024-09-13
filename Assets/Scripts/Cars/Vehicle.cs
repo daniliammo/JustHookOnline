@@ -29,10 +29,10 @@ namespace Cars
         public GameObject[] components;
 
         [Range(25, 100)]
-        [Tooltip("Шанс отрыва объектов")]
+        [Tooltip("Шанс отрыва объектов из поля components")]
         public int chance = 25;
         
-        [Tooltip("Добавьте сюда места где будет появлятся огонь после взрыва.")]
+        [Tooltip("Добавьте сюда места где будет появляться огонь после взрыва.")]
         public Transform[] firePlaces;
         
         #nullable enable
