@@ -17,7 +17,7 @@ namespace Player
         public void SetPlayerKilledText(string killedPlayerName)
         {
             _ui.playerKilledGameObject.SetActive(true);
-            _ui.playerKilledText.text = killedPlayerName + " Ликвидирован!";
+            _ui.playerKilledText.text = $"{killedPlayerName} Ликвидирован!";
             Invoke(nameof(HidePlayerKilledText), 3);
         }
 		
