@@ -88,7 +88,18 @@ namespace Player
             if (!RealInput.IsTouchSupported) // Чтобы от нажатия по экрану не пулялся крюк
             {
                 if (Input.GetMouseButtonDown(1))
-                    JustHook();
+                {
+                    if(!_isHookOnAir)
+                        StopGrapple();
+
+                    if (_isHookOnAir)
+                    {
+                        StopGrapple();
+                        _isHookOnAir = false;
+                    }
+
+                    InvokeRepeating(nameof(Test), 0, 0.05f);
+                }
 
                 // Бросить Крюк
                 if (Input.GetKeyDown(KeyCode.LeftControl))
@@ -108,6 +119,15 @@ namespace Player
             DrawRope();
         }
 
+        private void Test()
+        {
+            if(!_isHookCanceling)
+            {
+                CancelInvoke(nameof(Test));
+                JustHook();
+            }
+        }
+        
         public void JustHook()
         {
             _isHookOnAir = false;
