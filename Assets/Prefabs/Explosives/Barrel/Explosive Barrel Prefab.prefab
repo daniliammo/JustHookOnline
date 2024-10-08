@@ -207,11 +207,11 @@ MonoBehaviour:
   explosionSize: 2
   fireSize: 0
   fireBehaviour: 1
-  radius: 12
-  explosionForce: 200
-  upwardsModifier: 2
-  maxDamageToPlayer: 100
-  maxDamageVehicle: 252
+  radius: 13
+  explosionForce: 541
+  upwardsModifier: 3
+  maxDamageToPlayer: 165
+  maxDamageToVehicle: 220
   fragments:
   - {fileID: 149470646354396208, guid: 94a03e7e80d4df93cb6c89f7d2094750, type: 3}
   - {fileID: 6057877235687504590, guid: 6e563e21733d2c132a6fe0dc07528fe0, type: 3}

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using Interactable;
 using JetBrains.Annotations;
 using Mirror;
 using UI;
@@ -21,7 +22,7 @@ namespace Player
         private bool _isWritingPassword;
         
         [CanBeNull] 
-        public Interactable currentInteractable;
+        public Interactable.Interactable currentInteractable;
         
 
         [Client]
@@ -47,7 +48,7 @@ namespace Player
             if (hit.transform.gameObject != gameObject &&
                 hit.transform.gameObject != other.transform.gameObject) return;
             
-            currentInteractable = other.GetComponent<Interactable>();
+            currentInteractable = other.GetComponent<Interactable.Interactable>();
             
             switch (currentInteractable!.interactType)
             {
@@ -62,7 +63,7 @@ namespace Player
                 case InteractType.PasswordEntry:
                     _ui.simpleInteract.SetActive(true);
                     _ui.simpleInteractNameText.text = currentInteractable.interactName;
-                    _ui.passwordEntryNameText.text = currentInteractable.passwordEntryText;
+                    _ui.passwordEntryNameText.text = currentInteractable.intercom.passwordEntryText;
                     break;
             }
         }
@@ -72,7 +73,7 @@ namespace Player
         {
             if (!other.CompareTag("Interactable")) return;
             
-            if(currentInteractable == other.GetComponent<Interactable>())
+            if(currentInteractable == other.GetComponent<Interactable.Interactable>())
             {
                 switch (currentInteractable!.interactType)
                 {
@@ -174,11 +175,12 @@ namespace Player
 
 
             _ui.passwordEntry.text = _passwordString;
+            var passwd = currentInteractable!.intercom.password;
             
-            if(_passwordString.Length == currentInteractable!.password.Length)
+            if(_passwordString.Length == passwd.Length)
             {
-                currentInteractable!.CheckPassword(_passwordString);
-                if(_passwordString != currentInteractable.password)
+                currentInteractable!.intercom.CheckPassword(_passwordString);
+                if(_passwordString != passwd)
                 {
                     _ui.passwordEntry.color = Color.red;
                     _isWritingPassword = false;
@@ -186,7 +188,7 @@ namespace Player
                 }
             }
 
-            if(_passwordString == currentInteractable.password)
+            if(_passwordString == passwd)
             {
                 _ui.passwordEntry.color = Color.green;
                 _isWritingPassword = false;

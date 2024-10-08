@@ -232,7 +232,7 @@ namespace Player
 		
 		private static bool FindChildGameObjectWithTag(Transform parentGameObject, string targetTag)
 		{
-			return FindChildGameObjectWithTag(parentGameObject, targetTag, out var unused);
+			return FindChildGameObjectWithTag(parentGameObject, targetTag, out _);
 		}
 
 		private static bool Find(Transform parentGameObject, string targetTag)
@@ -333,6 +333,12 @@ namespace Player
 			{
 				CmdSetVelocity(_hit.rigidbody, gameObject.transform.forward * 5);
 				return;
+			}
+
+			if(Find(_hit.transform, "Interactable", out var findedGameObject)) // Door
+			{
+				BreakingThrough(direction, 7);
+				findedGameObject.GetComponent<DoorController>().CmdShooted(7);
 			}
 
 			if (!Find(_hit.transform, "Player") && !Find(_hit.transform, "PlayerBulletFlyBy") && !Find(_hit.transform, "Glass"))

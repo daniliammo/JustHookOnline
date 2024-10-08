@@ -12,12 +12,25 @@ namespace Explosion
         public FireSize fireSize;
         public FireBehaviour fireBehaviour;
 
+        [Range(2, 50)]
+        [Tooltip("Радиус взрыва и нанесения урона")]
         public byte radius;
-        public byte explosionForce;
+        
+        [Range(75, 2000)]
+        [Tooltip("Сила отбрасывания объектов от взрыва")]
+        public short explosionForce;
+        
+        [Range(1.5f, 20)]
+        [Tooltip("Этот модификатор определяет насколько сильно взрыв отбросит объекты вверх")]
         public float upwardsModifier;
+        
+        [Range(1, 452)]
         public byte maxDamageToPlayer;
+        
+        [Range(1, 500)]
         public byte maxDamageToVehicle;
 
+        [Tooltip("Эти объекты будут созданы после взрыва и к ним будет применена физическая сила на отбрасывание")]
         public GameObject[] fragments;
         
         private ExplosionLinks _eL;
@@ -42,24 +55,24 @@ namespace Explosion
 		        
 	            if (t.CompareTag("Player") || t.CompareTag("Vehicle"))
 	            {
-	                // Пуляем райкаст для того чтобы проверить игрок за стеной или нет. Чтобы не получилось так что взрыв убивает игрока через стенку
+	                // Пуляем райкаст, для того чтобы проверить игрок за стеной или нет. Чтобы не получилось так что взрыв убивает игрока через стенку
 	                if (Physics.Raycast(transform.position, t.transform.position + t.transform.up / 2 - transform.position,
 	                        out var hit, radius, Physics.DefaultRaycastLayers,
 	                        QueryTriggerInteraction.Ignore))
 	                {
-		                if(hit.collider.CompareTag("Player") || hit.collider.CompareTag("Glass"))
+		                if(hit.collider.CompareTag("Player"))
 		                {
 			                var player = t.GetComponent<Player.Player>();
 			                var damage = CalcDamage(DamageType.Player, player.gameObject);
 			                player.CmdChangeHp(damage, transform, "Взрыв");
 		                }
 
-		                if (hit.collider.CompareTag("Vehicle") || hit.collider.CompareTag("Glass"))
+		                if (hit.collider.CompareTag("Vehicle"))
 		                {
 			                var vehicle = t.GetComponent<Vehicle>();
 			                var damage = CalcDamage(DamageType.Vehicle, vehicle.gameObject);
+			                // TODO: Реализация урона по машинам
 		                }
-			                
 	                }
 	            }
 	            
@@ -151,8 +164,8 @@ namespace Explosion
 		            fireGameObject!.AddComponent<Fire>();
             }
 
-            foreach (var t in fragments)
-	            Instantiate(t, position, rotation).GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, radius, upwardsModifier);
+            foreach (var fragment in fragments)
+	            Instantiate(fragment, position, rotation).GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, radius, upwardsModifier);
             
             NetworkServer.Destroy(gameObject);
             Destroy(gameObject);

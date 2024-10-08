@@ -12,7 +12,10 @@ public class DoorController : NetworkBehaviour
 
     public bool requirePassword;
     
-    public byte hp;
+    [SyncVar]
+    public int hp;
+    
+    public GameObject[] physicComponents;
     
     
     [Server]
@@ -20,7 +23,29 @@ public class DoorController : NetworkBehaviour
     {
         _animator = GetComponent<Animator>();
     }
+    
+    [Command (requiresAuthority = false)]
+    public void CmdShooted(int damage)
+    {
+        hp -= damage;
+        if(hp <= 0)
+            RpcDestroyed();
+    }
 
+    [ClientRpc]
+    private void RpcDestroyed()
+    {
+        foreach (var physicComponent in physicComponents)
+        {
+            gameObject.tag = "Untagged";
+            physicComponent.transform.parent = null;
+            physicComponent.AddComponent<Rigidbody>();
+            physicComponent.tag = "Garbage";
+        }
+        Destroy(GetComponent<Interactable.Interactable>());
+        Destroy(this);
+    }
+    
     [Command (requiresAuthority = false)]
     public void CmdOpenDoor()
     {

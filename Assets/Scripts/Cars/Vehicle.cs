@@ -15,11 +15,12 @@ namespace Cars
 
         public Transform cameraPosition;
         
-        public CarEngine[] engines;
+        public VehicleEngine[] engines;
         
         public Transform[] wheels;
         
         [SyncVar]
+        [Range(1, 255)]
         public byte hp = 255;
 
         [SyncVar]
@@ -36,6 +37,7 @@ namespace Cars
         public Transform[] firePlaces;
         
         #nullable enable
+        [Header("Фары и неоновые наборы")]
         public Light[]? farLights;
         public Light[]? headLights;
         public Light? rightTurnSignal;

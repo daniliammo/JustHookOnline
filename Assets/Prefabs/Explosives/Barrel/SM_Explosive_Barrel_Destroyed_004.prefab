@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 2110435329626938824}
   - component: {fileID: 4023456438087617051}
   - component: {fileID: 4032293616457995831}
-  - component: {fileID: 4945725348456550426}
-  m_Layer: 3
+  - component: {fileID: 175258836269144601}
+  m_Layer: 0
   m_Name: SM_Explosive_Barrel_Destroyed_004
   m_TagString: ExplosiveBarrelFragments
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7364040763526755087, guid: 8cfef666a37f2187c9797521a20c39ee, type: 3}
---- !u!54 &4945725348456550426
+--- !u!54 &175258836269144601
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
