@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 public class BreakableWindow : NetworkBehaviour 
 {
     
-    [Range(2,25)]
+    [Range(2, 25)]
     public int partsX = 5;
     [Range(2, 25)]
     public int partsY = 5;
@@ -142,6 +142,7 @@ public class BreakableWindow : NetworkBehaviour
         obj.layer = 0;
         obj.tag = "PhysicalBody";
         obj.name = "Glass Splinter";
+        
         if (destroySplintersTime > 0)
             Destroy(obj, destroySplintersTime);
 
@@ -156,9 +157,11 @@ public class BreakableWindow : NetworkBehaviour
         mf.mesh = m;
         
         var col = obj.AddComponent<MeshCollider>();
-        col.inflateMesh = true;
+        // col.inflateMesh = true;
         col.convex = true;
-        if (destroyPhysicsTime > 0 && destroyColliderWithPhysics) Destroy(col, destroyPhysicsTime);
+        
+        if (destroyPhysicsTime > 0 && destroyColliderWithPhysics) 
+            Destroy(col, destroyPhysicsTime);
         
         var rigid = obj.AddComponent<Rigidbody>();
         rigid.centerOfMass = (v[0] + v[1] + v[2]) / 3f;
@@ -232,7 +235,7 @@ public class BreakableWindow : NetworkBehaviour
             }
         }
 
-        var audio = new GameObject("Breaking Sound (Temp)")
+        var tempAudioObject = new GameObject("Breaking Sound (Temp)")
         {
             transform =
             {
@@ -241,7 +244,7 @@ public class BreakableWindow : NetworkBehaviour
             }
         };
 
-        var audioSource = audio.AddComponent<AudioSource>();
+        var audioSource = tempAudioObject.AddComponent<AudioSource>();
         if(!breakingSound)
             Debug.LogError($"breakingSound не задан на объекте: {name}. Звук не будет проигран");
         audioSource.clip = breakingSound;
@@ -250,7 +253,7 @@ public class BreakableWindow : NetworkBehaviour
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.Play();
 
-        audio.AddComponent<TempAudioSource>();
+        tempAudioObject.AddComponent<TempAudioSource>();
         
         _splinterParent.transform.SetParent(null);
         
@@ -273,6 +276,7 @@ public class BreakableWindow : NetworkBehaviour
                 }
             }
             else CmdBreakWindow();
-        }        
+        }
     }
+    
 }

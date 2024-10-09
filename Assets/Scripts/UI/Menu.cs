@@ -108,13 +108,17 @@ namespace UI
         
         public void OnJoinToRandomGameButtonClicked()
         {
-            if (!_networkController.discoveredServers.TryGetValue(Random.Range(0, _networkController.discoveredServers.Count), out var server)) return;
+            if(_networkController.DiscoveredServers.Count == 0) 
+                return;
+
+            var server =
+                _networkController.DiscoveredServers[Random.Range(0, _networkController.DiscoveredServers.Count)];
+            
             var address = server.EndPoint.Address.ToString();
             
             joiningToGamePanel.SetActive(true);
             joiningToIpAddress.text = address;
             
-            joiningToIpAddress.text = address;
             _networkController.StartClient(address);
         }
         

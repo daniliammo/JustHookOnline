@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Mirror;
 using Mirror.Discovery;
+using TMPro;
 using UnityEngine;
 
 namespace Utils
@@ -8,10 +9,11 @@ namespace Utils
     public class NetworkController : MonoBehaviour
     {
         
-        public readonly Dictionary<long, ServerResponse> discoveredServers = new();
+        public readonly Dictionary<long, ServerResponse> DiscoveredServers = new();
         
         private NetworkManager _networkManager;
         private NetworkDiscovery _networkDiscovery;
+        public TMP_Text serversList;
         
         
         private void Start()
@@ -27,15 +29,21 @@ namespace Utils
 
         public void OnDiscoveredServer(ServerResponse info)
         {
-            discoveredServers[info.serverId] = info;
+            DiscoveredServers[info.serverId] = info;
         }
         
         private void FindServers()
         {
-            foreach (var i in discoveredServers.Values)
-                print(i.EndPoint.Address);
+            var str = "";
+            foreach (var discoveredServersValue in DiscoveredServers.Values)
+            {
+                print(discoveredServersValue.EndPoint.Address);
+                str += discoveredServersValue.EndPoint.Address;
+            }
+
+            serversList.text = str;
             
-            discoveredServers.Clear();
+            DiscoveredServers.Clear();
         }
         
         public void StartClient(string ip)

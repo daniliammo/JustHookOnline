@@ -3,7 +3,7 @@ using UnityEngine;
 
 
 [Serializable]
-public class HourMinute
+public struct HourMinute
 {
     [SerializeField]
     public int hour;
