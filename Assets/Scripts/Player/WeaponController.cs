@@ -1,4 +1,3 @@
-using System;
 using Mirror;
 using UI;
 using UnityEngine;
@@ -136,9 +135,9 @@ namespace Player
 				return;
 			}
 			
-			CmdSpawnMuzzleFlashPrefab();
-			
 			_isFire = true;
+			
+			CmdSpawnMuzzleFlashPrefab();
 			
 			// Звук
 			PlayAudioSources(gunShot);
@@ -186,12 +185,12 @@ namespace Player
 			// Проходим по всем родителям, пока не дойдем до корня сцены
 			while (currentParent! != null)
 			{
-				currentParent = currentParent.parent;
 				if(currentParent != null && currentParent.CompareTag(targetTag))
 				{
 					parent = currentParent.gameObject;
 					return true;
 				}
+				currentParent = currentParent.parent;
 			}
 
 			parent = null;
@@ -288,11 +287,11 @@ namespace Player
 					Debug.LogError($"Не получилось получить компонент Lamp на объекте: {lampGameObject.name}." 
 					               + $" Игрок: {_player.playerDisplayName}");
 				
-				BreakingThrough(direction, 2);
+				// BreakingThrough(direction, 2);
 				return;
 			}
 
-			if (Find(_hit.transform, "Player", out var player) && !Find(_hit.transform, "PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
+			if (Find(_hit.transform, "Player") && !Find(_hit.transform, "PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
 			{
 				DamagePlayer(_hit, _damage);
 				BreakingThrough(direction, 7);
@@ -372,6 +371,7 @@ namespace Player
 			
 			_hitSoundsController.PlayHitBassSound();
 			_hitSoundsController.PlayHitMarkerSound();
+			
 			
 			if(!shootedPlayer.isDeath || shootedPlayer.hp > 0) return;
 
