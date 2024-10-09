@@ -12,8 +12,6 @@ namespace Cars
         private List<GameObject> _missiles;
         
         public bool rocketAlert;
-
-        public Transform cameraPosition;
         
         public VehicleEngine[] engines;
         
