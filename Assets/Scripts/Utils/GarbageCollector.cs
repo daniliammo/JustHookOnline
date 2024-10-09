@@ -5,22 +5,25 @@ namespace Utils
     public class GarbageCollector : MonoBehaviour
     {
 
-        private readonly string[] _garbageTags = {"ExplosiveBarrelFragments", "Garbage"};
+        private readonly string[] _garbageTags = {"ExplosiveBarrelFragments", "Garbage", "PhysicalBody"};
         private GameObject[] _gameObjectsToDestroy;
+        public byte repeatRate;
     
     
         private void Start()
         {
-            InvokeRepeating(nameof(GarbageCollect), 30, 30);
+            InvokeRepeating(nameof(GarbageCollect), repeatRate, repeatRate);
         }
 
         private void GarbageCollect()
         {
-            foreach (var t in _garbageTags)
+            foreach (var tag in _garbageTags)
             {
-                _gameObjectsToDestroy = GameObject.FindGameObjectsWithTag(t);
+                _gameObjectsToDestroy = GameObject.FindGameObjectsWithTag(tag);
+                
                 foreach (var i in _gameObjectsToDestroy)
                     Destroy(i);
+                
                 _gameObjectsToDestroy = null;
             }
         }

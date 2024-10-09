@@ -1,23 +1,24 @@
 using UnityEngine;
 using Utils;
+using Random = UnityEngine.Random;
 
 namespace Cars
 {
     public class RandomCarSpawner : MonoBehaviour
     {
-
+        
         public int spawnChance;
         
         public GameObject[] carPrefabs;
         private ParkingPlace[] _parkingPlaces;
         public byte maxVehicles;
-
-
+        
+        
         private void Start()
         {
             _parkingPlaces = FindObjectsOfType<ParkingPlace>();
             SpawnCars();
-            // DestroyAll();
+            DestroyAll();
         }
 
         private void SpawnCars()

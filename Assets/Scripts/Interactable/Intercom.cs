@@ -18,8 +18,9 @@ namespace Interactable
 
         private void Awake()
         {
-            GetComponent<Interactable>().interactType = InteractType.PasswordEntry;
-            GetComponent<Interactable>().intercom = this;
+            var interactable = GetComponent<Interactable>();
+            interactable.interactType = InteractType.PasswordEntry;
+            interactable.intercom = this;
         }
         
         [Server]
@@ -60,7 +61,7 @@ namespace Interactable
         }
     
         [ClientRpc]
-        private void RpcPlayButtonSound()
+        public void RpcPlayButtonSound()
         {
             audioSource.PlayOneShot(buttonSound);
         }

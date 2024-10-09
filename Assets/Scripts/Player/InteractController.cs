@@ -29,7 +29,7 @@ namespace Player
         private void Start()
         {
             _ui = FindObjectOfType<UIObjectsLinks>();
-            _player = FindObjectOfType<Player>();
+            _player = GetComponent<Player>();
             
             _ui.localInteractController = this;
         }

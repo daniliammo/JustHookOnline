@@ -41,6 +41,7 @@ public class Lamp : NetworkBehaviour
     [Command (requiresAuthority = false)]
     public void CmdBreakLamp()
     {
+        gameObject.tag = "Untagged";
         RpcBreakLamp();
         breakableWindow.RpcBreakWindow();
         Destroy(this);

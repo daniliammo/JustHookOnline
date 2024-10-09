@@ -169,94 +169,6 @@ namespace Player
 			_damage -= damageModifier;
 			CastRayCast(adjustedPoint, direction);
 		}
-
-		#region Find
-		
-		private static bool FindParentGameObjectWithTag(Transform childGameObject, string targetTag, out GameObject parent)
-		{
-			var currentParent = childGameObject.parent;
-
-			if (childGameObject.CompareTag(targetTag))
-			{
-				parent = childGameObject.gameObject;
-				return true;
-			}
-			
-			// Проходим по всем родителям, пока не дойдем до корня сцены
-			while (currentParent! != null)
-			{
-				if(currentParent != null && currentParent.CompareTag(targetTag))
-				{
-					parent = currentParent.gameObject;
-					return true;
-				}
-				currentParent = currentParent.parent;
-			}
-
-			parent = null;
-			return false;
-		}
-
-		private static bool FindParentGameObjectWithTag(Transform childGameObject, string targetTag)
-		{
-			return FindParentGameObjectWithTag(childGameObject, targetTag, out var unused);
-		}
-		
-		private static bool FindChildGameObjectWithTag(Transform parentGameObject, string targetTag, out GameObject child)
-		{
-			// Проверяем, не совпадает ли сам родительский объект с искомым тегом
-			if (parentGameObject.CompareTag(targetTag))
-			{
-				child = parentGameObject.gameObject;
-				return true;
-			}
-
-			// Проходим по всем дочерним объектам
-			foreach (Transform childTransform in parentGameObject)
-			{
-				if (childTransform.CompareTag(targetTag))
-				{
-					child = childTransform.gameObject;
-					return true;
-				}
-
-				// Рекурсивный вызов для проверки вложенных дочерних объектов
-				if (FindChildGameObjectWithTag(childTransform, targetTag, out child))
-					return true;
-			}
-
-			child = null;
-			return false;
-		}
-		
-		private static bool FindChildGameObjectWithTag(Transform parentGameObject, string targetTag)
-		{
-			return FindChildGameObjectWithTag(parentGameObject, targetTag, out _);
-		}
-
-		private static bool Find(Transform parentGameObject, string targetTag)
-		{
-			return FindChildGameObjectWithTag(parentGameObject, targetTag) || FindParentGameObjectWithTag(parentGameObject, targetTag);
-		}
-		
-		private static bool Find(Transform parentGameObject, string targetTag, out GameObject x)
-		{
-			if (FindChildGameObjectWithTag(parentGameObject, targetTag, out var g))
-			{
-				x = g;
-				return true;
-			}
-			if (FindParentGameObjectWithTag(parentGameObject, targetTag, out var g2))
-			{
-				x = g2;
-				return true;
-			}
-
-			x = null;
-			return false;
-		}
-		
-		#endregion
 		
 		[Command]
 		private void CmdCastRayCast(Vector3 origin, Vector3 direction)
@@ -269,17 +181,17 @@ namespace Player
 			Physics.Raycast(origin, direction, out _hit, Mathf.Infinity);
 			// ReSharper disable all Unity.PerformanceCriticalCodeInvocation
 
-			if(Find(_hit.transform, "Boundary") || Find(_hit.transform, "DeadZone")) 
+			if(FindGameObject.Find(_hit.transform, "Boundary") || FindGameObject.Find(_hit.transform, "DeadZone")) 
 				return;
 			
-			if (Find(_hit.transform, "Glass", out var glass))
+			if (FindGameObject.Find(_hit.transform, "Glass", out var glass))
 			{
 				glass.GetComponent<BreakableWindow>().CmdBreakWindow();
 				BreakingThrough(direction, 1);
 				return;
 			}
 
-			if(Find(_hit.transform, "Lamp", out var lampGameObject))
+			if(FindGameObject.Find(_hit.transform, "Lamp", out var lampGameObject))
 			{
 				if(lampGameObject.TryGetComponent<Lamp>(out var lamp))
 					lamp.CmdBreakLamp();
@@ -291,14 +203,16 @@ namespace Player
 				return;
 			}
 
-			if (Find(_hit.transform, "Player") && !Find(_hit.transform, "PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
+			if (FindGameObject.Find(_hit.transform, "Player") &&
+			    !FindGameObject.Find(_hit.transform,
+				    "PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
 			{
 				DamagePlayer(_hit, _damage);
 				BreakingThrough(direction, 7);
 				return;
 			}
 
-			if (Find(_hit.transform, "PlayerBulletFlyBy"))
+			if (FindGameObject.Find(_hit.transform, "PlayerBulletFlyBy"))
 			{
 				_bulletFlyBySoundSpawner.CmdSpawnBulletFlyBySound(_hit.point, new Quaternion());
 				
@@ -306,7 +220,7 @@ namespace Player
 				return;
 			}
 
-			if (Find(_hit.transform, "ExplosiveBarrel", out var explosiveBarrel))
+			if (FindGameObject.Find(_hit.transform, "ExplosiveBarrel", out var explosiveBarrel))
 			{
 				CmdSetVelocity(_hit.rigidbody, gameObject.transform.forward * 5);
 				explosiveBarrel.GetComponent<ExplosiveBarrel>().CmdShooted(15, _hit.point, gameObject.transform.position);
@@ -334,13 +248,15 @@ namespace Player
 				return;
 			}
 
-			if(Find(_hit.transform, "Interactable", out var findedGameObject)) // Door
+			if(FindGameObject.Find(_hit.transform, "Interactable", out var findedGameObject)) // Door
 			{
 				BreakingThrough(direction, 7);
 				findedGameObject.GetComponent<DoorController>().CmdShooted(7);
 			}
 
-			if (!Find(_hit.transform, "Player") && !Find(_hit.transform, "PlayerBulletFlyBy") && !Find(_hit.transform, "Glass"))
+			if (!FindGameObject.Find(_hit.transform, "Player") &&
+			    !FindGameObject.Find(_hit.transform, "PlayerBulletFlyBy") &&
+			    !FindGameObject.Find(_hit.transform, "Glass"))
 			{
 				CmdSpawnBulletHolePrefab(_hit.point, Quaternion.Euler(Vector3.Angle(_hit.normal, Vector3.up), 0, 0));
 				

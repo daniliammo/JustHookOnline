@@ -3,7 +3,7 @@ using Mirror;
 using UnityEngine;
 
 
-[RequireComponent(typeof(NetworkAnimator), typeof(Animator), typeof(NetworkIdentity))]
+// [RequireComponent(typeof(NetworkAnimator), typeof(Animator), typeof(NetworkIdentity))]
 public class DoorController : NetworkBehaviour
 {
 
@@ -35,14 +35,20 @@ public class DoorController : NetworkBehaviour
     [ClientRpc]
     private void RpcDestroyed()
     {
+        gameObject.tag = "Untagged";
+        
         foreach (var physicComponent in physicComponents)
         {
-            gameObject.tag = "Untagged";
             physicComponent.transform.parent = null;
             physicComponent.AddComponent<Rigidbody>();
-            physicComponent.tag = "Garbage";
+            physicComponent.tag = "PhysicalBody";
         }
+        
         Destroy(GetComponent<Interactable.Interactable>());
+        Destroy(GetComponent<NetworkAnimator>());
+        Destroy(GetComponent<Animator>());
+        Destroy(GetComponent<BoxCollider>());
+        Destroy(GetComponent<NetworkIdentity>());
         Destroy(this);
     }
     
