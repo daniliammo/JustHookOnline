@@ -442,6 +442,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  allowToWalkOnAir: 0
 --- !u!114 &1728175027713046738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,7 +459,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   gun: {fileID: 7051573726986065128}
-  muzzleFlashPrefab: {fileID: 1743301284569550, guid: 5354a9a5a3ca715f489812edceb30f00, type: 3}
+  muzzleFlashPrefab: {fileID: 1336949550903370, guid: 4543ab5e3d405ec40a8d4e9aa5165030, type: 3}
   muzzleFlashPosition: {fileID: 12510550492726572}
   bulletHolePrefab: {fileID: 1067471869909948, guid: f70beae9db4534140b6d54697cfbfa53, type: 3}
   bloodPrefab: {fileID: 1067471869909948, guid: 456e2901a751e8e4da7201850962c340, type: 3}
@@ -503,12 +504,6 @@ MonoBehaviour:
   hookShot: {fileID: 8300000, guid: e743ccd1a1732396aa3bb0ce2f2c157c, type: 3}
   hookCancel: {fileID: 8300000, guid: 90872e47fd9e86d6dbf0b901c1411bc6, type: 3}
   hookLanding: {fileID: 8300000, guid: c7530a6f6db16e77ea909317c716b950, type: 3}
-  _isSafeHook: 0
-  _isHookCanceling: 0
-  _isHookOnAir: 0
-  IsHooking: 0
-  _drawRope: 0
-  _blockHookIsCanceling: 0
 --- !u!114 &3240597773332603622
 MonoBehaviour:
   m_ObjectHideFlags: 0

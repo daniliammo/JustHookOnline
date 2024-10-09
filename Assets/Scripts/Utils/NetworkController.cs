@@ -14,6 +14,9 @@ namespace Utils
         private NetworkManager _networkManager;
         private NetworkDiscovery _networkDiscovery;
         public TMP_Text serversList;
+        // public TMP_Text fastConnectButtonText;
+
+        // private string ipAddress;
         
         
         private void Start()
@@ -34,17 +37,24 @@ namespace Utils
         
         private void FindServers()
         {
-            var str = "";
+            var ipAddress = "";
             foreach (var discoveredServersValue in DiscoveredServers.Values)
             {
                 print(discoveredServersValue.EndPoint.Address);
-                str += discoveredServersValue.EndPoint.Address;
+                ipAddress += discoveredServersValue.EndPoint.Address;
             }
-
-            serversList.text = str;
+            
+            // fastConnectButtonText.text = $"{ipAddress} - Подключиться";
+            
+            serversList.text = ipAddress;
             
             DiscoveredServers.Clear();
         }
+
+        // public void OnFastConnectButtonClicked()
+        // {
+        //     StartClient(ipAddress);
+        // }
         
         public void StartClient(string ip)
         {
