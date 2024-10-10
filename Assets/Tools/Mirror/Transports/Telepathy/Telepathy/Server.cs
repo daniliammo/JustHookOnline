@@ -11,13 +11,13 @@ namespace Telepathy
     {
         // events to hook into
         // => OnData uses ArraySegment for allocation free receives later
-        public Action<int> OnConnected;
+        public Action<int, string> OnConnected;
         public Action<int, ArraySegment<byte>> OnData;
         public Action<int> OnDisconnected;
 
         // listener
         public TcpListener listener;
-        private Thread listenerThread;
+        Thread listenerThread;
 
         // disconnect if send queue gets too big.
         // -> avoids ever growing queue memory if network is slower than input
@@ -41,17 +41,17 @@ namespace Telepathy
         public int ReceivePipeTotalCount => receivePipe.TotalCount;
 
         // clients with <connectionId, ConnectionState>
-        private readonly ConcurrentDictionary<int, ConnectionState> clients = new ConcurrentDictionary<int, ConnectionState>();
+        readonly ConcurrentDictionary<int, ConnectionState> clients = new ConcurrentDictionary<int, ConnectionState>();
 
         // connectionId counter
-        private int counter;
+        int counter;
 
         // public next id function in case someone needs to reserve an id
         // (e.g. if hostMode should always have 0 connection and external
         //  connections should start at 1, etc.)
         public int NextConnectionId()
         {
-            var id = Interlocked.Increment(ref counter);
+            int id = Interlocked.Increment(ref counter);
 
             // it's very unlikely that we reach the uint limit of 2 billion.
             // even with 1 new connection per second, this would take 68 years.
@@ -76,7 +76,7 @@ namespace Telepathy
         // the listener thread's listen function
         // note: no maxConnections parameter. high level API should handle that.
         //       (Transport can't send a 'too full' message anyway)
-        private void Listen(int port)
+        void Listen(int port)
         {
             // absolutely must wrap with try/catch, otherwise thread
             // exceptions are silent
@@ -104,7 +104,7 @@ namespace Telepathy
                     // note: 'using' sucks here because it will try to
                     // dispose after thread was started but we still need it
                     // in the thread
-                    var client = listener.AcceptTcpClient();
+                    TcpClient client = listener.AcceptTcpClient();
 
                     // set socket options
                     client.NoDelay = NoDelay;
@@ -112,14 +112,14 @@ namespace Telepathy
                     client.ReceiveTimeout = ReceiveTimeout;
 
                     // generate the next connection id (thread safely)
-                    var connectionId = NextConnectionId();
+                    int connectionId = NextConnectionId();
 
                     // add to dict immediately
-                    var connection = new ConnectionState(client, MaxMessageSize);
+                    ConnectionState connection = new ConnectionState(client, MaxMessageSize);
                     clients[connectionId] = connection;
 
                     // spawn a send thread for each client
-                    var sendThread = new Thread(() =>
+                    Thread sendThread = new Thread(() =>
                     {
                         // wrap in try-catch, otherwise Thread exceptions
                         // are silent
@@ -145,7 +145,7 @@ namespace Telepathy
                     sendThread.Start();
 
                     // spawn a receive thread for each client
-                    var receiveThread = new Thread(() =>
+                    Thread receiveThread = new Thread(() =>
                     {
                         // wrap in try-catch, otherwise Thread exceptions
                         // are silent
@@ -243,9 +243,9 @@ namespace Telepathy
             listenerThread = null;
 
             // close all client connections
-            foreach (var kvp in clients)
+            foreach (KeyValuePair<int, ConnectionState> kvp in clients)
             {
-                var client = kvp.Value.client;
+                TcpClient client = kvp.Value.client;
                 // close the stream if not closed yet. it may have been closed
                 // by a disconnect already, so use try/catch
                 try { client.GetStream().Close(); } catch {}
@@ -269,7 +269,7 @@ namespace Telepathy
             if (message.Count <= MaxMessageSize)
             {
                 // find the connection
-                if (clients.TryGetValue(connectionId, out var connection))
+                if (clients.TryGetValue(connectionId, out ConnectionState connection))
                 {
                     // check send pipe limit
                     if (connection.sendPipe.Count < SendQueueLimit)
@@ -321,7 +321,7 @@ namespace Telepathy
             try
             {
                 // find the connection
-                if (clients.TryGetValue(connectionId, out var connection))
+                if (clients.TryGetValue(connectionId, out ConnectionState connection))
                 {
                     return ((IPEndPoint)connection.client.Client.RemoteEndPoint).Address.ToString();
                 }
@@ -339,13 +339,21 @@ namespace Telepathy
                 // so let's at least catch it and recover
                 return "unknown";
             }
+            catch (ObjectDisposedException)
+            {
+                return "Disposed";
+            }
+            catch (Exception)
+            {
+                return "";
+            }
         }
 
         // disconnect (kick) a client
         public bool Disconnect(int connectionId)
         {
             // find the connection
-            if (clients.TryGetValue(connectionId, out var connection))
+            if (clients.TryGetValue(connectionId, out ConnectionState connection))
             {
                 // just close it. send thread will take care of the rest.
                 connection.client.Close();
@@ -375,7 +383,7 @@ namespace Telepathy
                 return 0;
 
             // process up to 'processLimit' messages for this connection
-            for (var i = 0; i < processLimit; ++i)
+            for (int i = 0; i < processLimit; ++i)
             {
                 // check enabled in case a Mirror scene message arrived
                 if (checkEnabled != null && !checkEnabled())
@@ -383,12 +391,12 @@ namespace Telepathy
 
                 // peek first. allows us to process the first queued entry while
                 // still keeping the pooled byte[] alive by not removing anything.
-                if (receivePipe.TryPeek(out var connectionId, out var eventType, out var message))
+                if (receivePipe.TryPeek(out int connectionId, out EventType eventType, out ArraySegment<byte> message))
                 {
                     switch (eventType)
                     {
                         case EventType.Connected:
-                            OnConnected?.Invoke(connectionId);
+                            OnConnected?.Invoke(connectionId, GetClientAddress(connectionId));
                             break;
                         case EventType.Data:
                             OnData?.Invoke(connectionId, message);
@@ -397,7 +405,7 @@ namespace Telepathy
                             OnDisconnected?.Invoke(connectionId);
                             // remove disconnected connection now that the final
                             // disconnected message was processed.
-                            clients.TryRemove(connectionId, out var _);
+                            clients.TryRemove(connectionId, out ConnectionState _);
                             break;
                     }
 

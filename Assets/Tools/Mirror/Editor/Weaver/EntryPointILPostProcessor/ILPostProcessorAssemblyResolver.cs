@@ -23,26 +23,26 @@ using Unity.CompilationPipeline.Common.ILPostProcessing;
 
 namespace Mirror.Weaver
 {
-    internal class ILPostProcessorAssemblyResolver : IAssemblyResolver
+    class ILPostProcessorAssemblyResolver : IAssemblyResolver
     {
-        private readonly string[] assemblyReferences;
+        readonly string[] assemblyReferences;
 
         // originally we used Dictionary + lock.
         // Resolve() is called thousands of times for large projects.
         // ILPostProcessor is multithreaded, so best to use ConcurrentDictionary without the lock here.
-        private readonly ConcurrentDictionary<string, AssemblyDefinition> assemblyCache =
+        readonly ConcurrentDictionary<string, AssemblyDefinition> assemblyCache =
             new ConcurrentDictionary<string, AssemblyDefinition>();
 
         // Resolve() calls FindFile() every time.
         // thousands of times for String => mscorlib alone in large projects.
         // cache the results! ILPostProcessor is multithreaded, so use a ConcurrentDictionary here.
-        private readonly ConcurrentDictionary<string, string> fileNameCache =
+        readonly ConcurrentDictionary<string, string> fileNameCache =
             new ConcurrentDictionary<string, string>();
 
-        private readonly ICompiledAssembly compiledAssembly;
-        private AssemblyDefinition selfAssembly;
+        readonly ICompiledAssembly compiledAssembly;
+        AssemblyDefinition selfAssembly;
 
-        private readonly Logger Log;
+        readonly Logger Log;
 
         public ILPostProcessorAssemblyResolver(ICompiledAssembly compiledAssembly, Logger Log)
         {
@@ -86,7 +86,7 @@ namespace Mirror.Weaver
             // reduces a single String=>mscorlib resolve from 0.771ms to 0.015ms.
             // => 50x improvement in TypeReference.Resolve() speed!
             // => 22x improvement in Weaver speed!
-            if (!fileNameCache.TryGetValue(name.Name, out var fileName))
+            if (!fileNameCache.TryGetValue(name.Name, out string fileName))
             {
                 fileName = FindFile(name.Name);
                 fileNameCache.TryAdd(name.Name, fileName);
@@ -109,30 +109,30 @@ namespace Mirror.Weaver
             }
 
             // try to get cached assembly by filename + writetime
-            var lastWriteTime = File.GetLastWriteTime(fileName);
-            var cacheKey = fileName + lastWriteTime;
-            if (assemblyCache.TryGetValue(cacheKey, out var result))
+            DateTime lastWriteTime = File.GetLastWriteTime(fileName);
+            string cacheKey = fileName + lastWriteTime;
+            if (assemblyCache.TryGetValue(cacheKey, out AssemblyDefinition result))
                 return result;
 
             // otherwise resolve and cache a new assembly
             parameters.AssemblyResolver = this;
-            var ms = MemoryStreamFor(fileName);
+            MemoryStream ms = MemoryStreamFor(fileName);
 
-            var pdb = fileName + ".pdb";
+            string pdb = fileName + ".pdb";
             if (File.Exists(pdb))
                 parameters.SymbolStream = MemoryStreamFor(pdb);
 
-            var assemblyDefinition = AssemblyDefinition.ReadAssembly(ms, parameters);
+            AssemblyDefinition assemblyDefinition = AssemblyDefinition.ReadAssembly(ms, parameters);
             assemblyCache.TryAdd(cacheKey, assemblyDefinition);
             return assemblyDefinition;
         }
 
         // find assemblyname in assembly's references
-        private string FindFile(string name)
+        string FindFile(string name)
         {
             // perhaps the type comes from a .dll or .exe
             // check both in one call without Linq instead of iterating twice like originally
-            foreach (var r in assemblyReferences)
+            foreach (string r in assemblyReferences)
             {
                 if (Path.GetFileNameWithoutExtension(r) == name)
                     return r;
@@ -140,7 +140,7 @@ namespace Mirror.Weaver
 
             // this is called thousands(!) of times.
             // constructing strings only once saves ~0.1ms per call for mscorlib.
-            var dllName = name + ".dll";
+            string dllName = name + ".dll";
 
             // Unfortunately the current ICompiledAssembly API only provides direct references.
             // It is very much possible that a postprocessor ends up investigating a type in a directly
@@ -149,9 +149,9 @@ namespace Mirror.Weaver
             // in the ILPostProcessing API. As a workaround, we rely on the fact here that the indirect references
             // are always located next to direct references, so we search in all directories of direct references we
             // got passed, and if we find the file in there, we resolve to it.
-            foreach (var parentDir in assemblyReferences.Select(Path.GetDirectoryName).Distinct())
+            foreach (string parentDir in assemblyReferences.Select(Path.GetDirectoryName).Distinct())
             {
-                var candidate = Path.Combine(parentDir, dllName);
+                string candidate = Path.Combine(parentDir, dllName);
                 if (File.Exists(candidate))
                     return candidate;
             }
@@ -162,15 +162,15 @@ namespace Mirror.Weaver
         // open file as MemoryStream.
         // ILPostProcessor is multithreaded.
         // retry a few times in case another thread is still accessing the file.
-        private static MemoryStream MemoryStreamFor(string fileName)
+        static MemoryStream MemoryStreamFor(string fileName)
         {
             return Retry(10, TimeSpan.FromSeconds(1), () =>
             {
                 byte[] byteArray;
-                using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     byteArray = new byte[fs.Length];
-                    var readLength = fs.Read(byteArray, 0, (int)fs.Length);
+                    int readLength = fs.Read(byteArray, 0, (int)fs.Length);
                     if (readLength != fs.Length)
                         throw new InvalidOperationException("File read length is not full length of file.");
                 }
@@ -179,7 +179,7 @@ namespace Mirror.Weaver
             });
         }
 
-        private static MemoryStream Retry(int retryCount, TimeSpan waitTime, Func<MemoryStream> func)
+        static MemoryStream Retry(int retryCount, TimeSpan waitTime, Func<MemoryStream> func)
         {
             try
             {

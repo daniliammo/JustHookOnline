@@ -81,7 +81,7 @@ namespace Mirror
         public void CmdChangeReadyState(bool readyState)
         {
             readyToBegin = readyState;
-            var room = NetworkManager.singleton as NetworkRoomManager;
+            NetworkRoomManager room = NetworkManager.singleton as NetworkRoomManager;
             if (room != null)
             {
                 room.ReadyStatusChanged();
@@ -133,7 +133,7 @@ namespace Mirror
             if (!showRoomGUI)
                 return;
 
-            var room = NetworkManager.singleton as NetworkRoomManager;
+            NetworkRoomManager room = NetworkManager.singleton as NetworkRoomManager;
             if (room)
             {
                 if (!room.showRoomGUI)
@@ -147,9 +147,9 @@ namespace Mirror
             }
         }
 
-        private void DrawPlayerReadyState()
+        void DrawPlayerReadyState()
         {
-            GUILayout.BeginArea(new Rect(20f + index * 100, 200f, 90f, 130f));
+            GUILayout.BeginArea(new Rect(20f + (index * 100), 200f, 90f, 130f));
 
             GUILayout.Label($"Player [{index + 1}]");
 
@@ -169,7 +169,7 @@ namespace Mirror
             GUILayout.EndArea();
         }
 
-        private void DrawPlayerReadyButton()
+        void DrawPlayerReadyButton()
         {
             if (NetworkClient.active && isLocalPlayer)
             {

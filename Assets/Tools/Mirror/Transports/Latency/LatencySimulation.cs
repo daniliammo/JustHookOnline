@@ -13,7 +13,7 @@ using UnityEngine.Serialization;
 
 namespace Mirror
 {
-    internal struct QueuedMessage
+    struct QueuedMessage
     {
         public int connectionId;
         public byte[] bytes;
@@ -88,15 +88,15 @@ namespace Mirror
 
         // message queues
         // list so we can insert randomly (scramble)
-        private readonly List<QueuedMessage> clientToServer = new List<QueuedMessage>();
-        private readonly List<QueuedMessage> serverToClient = new List<QueuedMessage>();
+        readonly List<QueuedMessage> clientToServer = new List<QueuedMessage>();
+        readonly List<QueuedMessage> serverToClient = new List<QueuedMessage>();
 
         // random
         // UnityEngine.Random.value is [0, 1] with both upper and lower bounds inclusive
         // but we need the upper bound to be exclusive, so using System.Random instead.
         // => NextDouble() is NEVER < 0 so loss=0 never drops!
         // => NextDouble() is ALWAYS < 1 so loss=1 always drops!
-        private readonly System.Random random = new System.Random();
+        readonly System.Random random = new System.Random();
 
         public void Awake()
         {
@@ -105,14 +105,14 @@ namespace Mirror
         }
 
         // forward enable/disable to the wrapped transport
-        private void OnEnable() { wrap.enabled = true; }
-        private void OnDisable() { wrap.enabled = false; }
+        void OnEnable() { wrap.enabled = true; }
+        void OnDisable() { wrap.enabled = false; }
 
         // noise function can be replaced if needed
         protected virtual float Noise(float time) => Mathf.PerlinNoise(time, time);
 
         // helper function to simulate latency
-        private float SimulateLatency(int channeldId)
+        float SimulateLatency(int channeldId)
         {
             // spike over perlin noise.
             // no spikes isn't realistic.
@@ -121,7 +121,7 @@ namespace Mirror
 #if !UNITY_2020_3_OR_NEWER
             float spike = Noise((float)NetworkTime.localTime * jitterSpeed) * jitter;
 #else
-            var spike = Noise((float)Time.unscaledTimeAsDouble * jitterSpeed) * jitter;
+            float spike = Noise((float)Time.unscaledTimeAsDouble * jitterSpeed) * jitter;
 #endif
 
             // base latency
@@ -137,7 +137,7 @@ namespace Mirror
         }
 
         // helper function to simulate a send with latency/loss/scramble
-        private void SimulateSend(
+        void SimulateSend(
             int connectionId,
             ArraySegment<byte> segment,
             int channelId,
@@ -146,18 +146,18 @@ namespace Mirror
         {
             // segment is only valid after returning. copy it.
             // (allocates for now. it's only for testing anyway.)
-            var bytes = new byte[segment.Count];
+            byte[] bytes = new byte[segment.Count];
             Buffer.BlockCopy(segment.Array, segment.Offset, bytes, 0, segment.Count);
 
             // simulate latency
 #if !UNITY_2020_3_OR_NEWER
             double sendTime = NetworkTime.localTime + latency;
 #else
-            var sendTime = Time.unscaledTimeAsDouble + latency;
+            double sendTime = Time.unscaledTimeAsDouble + latency;
 #endif
 
             // construct message
-            var message = new QueuedMessage
+            QueuedMessage message = new QueuedMessage
             (
                 connectionId,
                 bytes,
@@ -169,13 +169,13 @@ namespace Mirror
             if (channelId == Channels.Unreliable)
             {
                 // simulate drop
-                var drop = random.NextDouble() < unreliableLoss/100;
+                bool drop = random.NextDouble() < unreliableLoss/100;
                 if (!drop)
                 {
                     // simulate scramble (Random.Next is < max, so +1)
-                    var scramble = random.NextDouble() < unreliableScramble/100;
-                    var last = messageQueue.Count;
-                    var index = scramble ? random.Next(0, last + 1) : last;
+                    bool scramble = random.NextDouble() < unreliableScramble/100;
+                    int last = messageQueue.Count;
+                    int index = scramble ? random.Next(0, last + 1) : last;
 
                     // simulate latency
                     messageQueue.Insert(index, message);
@@ -221,7 +221,7 @@ namespace Mirror
 
         public override void ClientSend(ArraySegment<byte> segment, int channelId)
         {
-            var latency = SimulateLatency(channelId);
+            float latency = SimulateLatency(channelId);
             SimulateSend(0, segment, channelId, latency, clientToServer);
         }
 
@@ -235,13 +235,16 @@ namespace Mirror
 
         public override void ServerSend(int connectionId, ArraySegment<byte> segment, int channelId)
         {
-            var latency = SimulateLatency(channelId);
+            float latency = SimulateLatency(channelId);
             SimulateSend(connectionId, segment, channelId, latency, serverToClient);
         }
 
         public override void ServerStart()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             wrap.OnServerConnected = OnServerConnected;
+#pragma warning restore CS0618 // Type or member is obsolete
+            wrap.OnServerConnectedWithAddress = OnServerConnectedWithAddress;
             wrap.OnServerDataReceived = OnServerDataReceived;
             wrap.OnServerError = OnServerError;
             wrap.OnServerTransportException = OnServerTransportException;
@@ -261,10 +264,10 @@ namespace Mirror
         {
             // flush messages after latency.
             // need to iterate all, since queue isn't a sortedlist.
-            for (var i = 0; i < clientToServer.Count; ++i)
+            for (int i = 0; i < clientToServer.Count; ++i)
             {
                 // message ready to be sent?
-                var message = clientToServer[i];
+                QueuedMessage message = clientToServer[i];
 #if !UNITY_2020_3_OR_NEWER
                 if (message.time <= NetworkTime.localTime)
 #else
@@ -285,10 +288,10 @@ namespace Mirror
         {
             // flush messages after latency.
             // need to iterate all, since queue isn't a sortedlist.
-            for (var i = 0; i < serverToClient.Count; ++i)
+            for (int i = 0; i < serverToClient.Count; ++i)
             {
                 // message ready to be sent?
-                var message = serverToClient[i];
+                QueuedMessage message = serverToClient[i];
 #if !UNITY_2020_3_OR_NEWER
                 if (message.time <= NetworkTime.localTime)
 #else

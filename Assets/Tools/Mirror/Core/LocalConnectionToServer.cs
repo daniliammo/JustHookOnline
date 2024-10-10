@@ -14,8 +14,8 @@ namespace Mirror
         internal readonly Queue<NetworkWriterPooled> queue = new Queue<NetworkWriterPooled>();
 
         // see caller for comments on why we need this
-        private bool connectedEventPending;
-        private bool disconnectedEventPending;
+        bool connectedEventPending;
+        bool disconnectedEventPending;
         internal void QueueConnectedEvent() => connectedEventPending = true;
         internal void QueueDisconnectedEvent() => disconnectedEventPending = true;
 
@@ -34,7 +34,7 @@ namespace Mirror
             // both directions do this, so [Command] and [Rpc] behave the same way.
 
             //Debug.Log($"Enqueue {BitConverter.ToString(segment.Array, segment.Offset, segment.Count)}");
-            var writer = NetworkWriterPool.Get();
+            NetworkWriterPooled writer = NetworkWriterPool.Get();
             writer.WriteBytes(segment.Array, segment.Offset, segment.Count);
             connectionToClient.queue.Enqueue(writer);
         }
@@ -54,15 +54,15 @@ namespace Mirror
             while (queue.Count > 0)
             {
                 // call receive on queued writer's content, return to pool
-                var writer = queue.Dequeue();
-                var message = writer.ToArraySegment();
+                NetworkWriterPooled writer = queue.Dequeue();
+                ArraySegment<byte> message = writer.ToArraySegment();
 
                 // OnTransportData assumes a proper batch with timestamp etc.
                 // let's make a proper batch and pass it to OnTransportData.
-                var batcher = GetBatchForChannelId(Channels.Reliable);
+                Batcher batcher = GetBatchForChannelId(Channels.Reliable);
                 batcher.AddMessage(message, NetworkTime.localTime);
 
-                using (var batchWriter = NetworkWriterPool.Get())
+                using (NetworkWriterPooled batchWriter = NetworkWriterPool.Get())
                 {
                     // make a batch with our local time (double precision)
                     if (batcher.GetBatch(batchWriter))

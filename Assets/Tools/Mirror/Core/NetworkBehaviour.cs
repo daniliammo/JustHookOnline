@@ -147,7 +147,36 @@ namespace Mirror
         // if we then modify the [SyncVar] from inside the setter,
         // the setter would call the hook and we deadlock.
         // hook guard prevents that.
-        private ulong syncVarHookGuard;
+        ulong syncVarHookGuard;
+
+        protected virtual void OnValidate()
+        {
+            // Skip if Editor is in Play mode
+            if (Application.isPlaying) return;
+
+            // we now allow child NetworkBehaviours.
+            // we can not [RequireComponent(typeof(NetworkIdentity))] anymore.
+            // instead, we need to ensure a NetworkIdentity is somewhere in the
+            // parents.
+            // only run this in Editor. don't add more runtime overhead.
+
+            // GetComponentInParent(includeInactive) is needed because Prefabs are not
+            // considered active, so this check requires to scan inactive.
+#if UNITY_2021_3_OR_NEWER // 2021 has GetComponentInParent(bool includeInactive = false)
+            if (GetComponent<NetworkIdentity>() == null &&
+                GetComponentInParent<NetworkIdentity>(true) == null)
+            {
+                Debug.LogError($"{GetType()} on {name} requires a NetworkIdentity. Please add a NetworkIdentity component to {name} or it's parents.", this);
+            }
+#elif UNITY_2020_3_OR_NEWER // 2020 only has GetComponentsInParent(bool includeInactive = false), we can use this too
+            NetworkIdentity[] parentsIds = GetComponentsInParent<NetworkIdentity>(true);
+            int parentIdsCount = parentsIds != null ? parentsIds.Length : 0;
+            if (GetComponent<NetworkIdentity>() == null && parentIdsCount == 0)
+            {
+                Debug.LogError($"{GetType()} on {name} requires a NetworkIdentity. Please add a NetworkIdentity component to {name} or it's parents.", this);
+            }
+#endif
+        }
 
         // USED BY WEAVER to set syncvars in host mode without deadlocking
         protected bool GetSyncVarHookGuard(ulong dirtyBit) =>
@@ -165,7 +194,7 @@ namespace Mirror
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SetSyncObjectDirtyBit(ulong dirtyBit)
+        void SetSyncObjectDirtyBit(ulong dirtyBit)
         {
             syncObjectDirtyBits |= dirtyBit;
         }
@@ -210,7 +239,7 @@ namespace Mirror
 
             // clear all unsynchronized changes in syncobjects
             // (Linq allocates, use for instead)
-            for (var i = 0; i < syncObjects.Count; ++i)
+            for (int i = 0; i < syncObjects.Count; ++i)
             {
                 syncObjects[i].ClearChanges();
             }
@@ -228,11 +257,11 @@ namespace Mirror
             }
 
             // add it, remember the index in list (if Count=0, index=0 etc.)
-            var index = syncObjects.Count;
+            int index = syncObjects.Count;
             syncObjects.Add(syncObject);
 
             // OnDirty needs to set nth bit in our dirty mask
-            var nthBit = 1UL << index;
+            ulong nthBit = 1UL << index;
             syncObject.OnDirty = () => SetSyncObjectDirtyBit(nthBit);
 
             // who is allowed to modify SyncList/SyncSet/etc.:
@@ -302,34 +331,6 @@ namespace Mirror
             };
         }
 
-        protected virtual void OnValidate()
-        {
-            // we now allow child NetworkBehaviours.
-            // we can not [RequireComponent(typeof(NetworkIdentity))] anymore.
-            // instead, we need to ensure a NetworkIdentity is somewhere in the
-            // parents.
-            // only run this in Editor. don't add more runtime overhead.
-
-            // GetComponentInParent(includeInactive) is needed because Prefabs are not
-            // considered active, so this check requires to scan inactive.
-#if UNITY_EDITOR
-#if UNITY_2021_3_OR_NEWER // 2021 has GetComponentInParent(bool includeInactive = false)
-            if (GetComponent<NetworkIdentity>() == null &&
-                GetComponentInParent<NetworkIdentity>(true) == null)
-            {
-                Debug.LogError($"{GetType()} on {name} requires a NetworkIdentity. Please add a NetworkIdentity component to {name} or it's parents.", this);
-            }
-#elif UNITY_2020_3_OR_NEWER // 2020 only has GetComponentsInParent(bool includeInactive = false), we can use this too
-            NetworkIdentity[] parentsIds = GetComponentsInParent<NetworkIdentity>(true);
-            int parentIdsCount = parentsIds != null ? parentsIds.Length : 0;
-            if (GetComponent<NetworkIdentity>() == null && parentIdsCount == 0)
-            {
-                Debug.LogError($"{GetType()} on {name} requires a NetworkIdentity. Please add a NetworkIdentity component to {name} or it's parents.", this);
-            }
-#endif
-#endif
-        }
-
         // pass full function name to avoid ClassA.Func <-> ClassB.Func collisions
         protected void SendCommandInternal(string functionFullName, int functionHashCode, NetworkWriter writer, int channelId, bool requiresAuthority = true)
         {
@@ -373,8 +374,14 @@ namespace Mirror
                 return;
             }
 
+            if (netId == 0)
+            {
+                Debug.LogWarning($"Command {functionFullName} called on {name} with netId=0. Maybe it wasn't spawned yet?", gameObject);
+                return;
+            }
+
             // construct the message
-            var message = new CommandMessage
+            CommandMessage message = new CommandMessage
             {
                 netId = netId,
                 componentIndex = ComponentIndex,
@@ -412,7 +419,7 @@ namespace Mirror
             }
 
             // construct the message
-            var message = new RpcMessage
+            RpcMessage message = new RpcMessage
             {
                 netId = netId,
                 componentIndex = ComponentIndex,
@@ -431,15 +438,15 @@ namespace Mirror
                 return;
 
             // serialize the message only once
-            using (var serialized = NetworkWriterPool.Get())
+            using (NetworkWriterPooled serialized = NetworkWriterPool.Get())
             {
                 serialized.Write(message);
 
                 // send to every observer.
                 // batching buffers this automatically.
-                foreach (var conn in netIdentity.observers.Values)
+                foreach (NetworkConnectionToClient conn in netIdentity.observers.Values)
                 {
-                    var isOwner = conn == netIdentity.connectionToClient;
+                    bool isOwner = conn == netIdentity.connectionToClient;
                     if ((!isOwner || includeOwner) && conn.isReady)
                     {
                         conn.Send(message, channelId);
@@ -484,7 +491,7 @@ namespace Mirror
             }
 
             // construct the message
-            var message = new RpcMessage
+            RpcMessage message = new RpcMessage
             {
                 netId = netId,
                 componentIndex = ComponentIndex,
@@ -530,7 +537,7 @@ namespace Mirror
         {
             if (!SyncVarEqual(value, ref field))
             {
-                var oldValue = field;
+                T oldValue = field;
                 SetSyncVar(value, ref field, dirtyBit);
 
                 // call hook (if any)
@@ -557,7 +564,7 @@ namespace Mirror
         {
             if (!SyncVarGameObjectEqual(value, netIdField))
             {
-                var oldValue = field;
+                GameObject oldValue = field;
                 SetSyncVarGameObject(value, ref field, dirtyBit, ref netIdField);
 
                 // call hook (if any)
@@ -584,7 +591,7 @@ namespace Mirror
         {
             if (!SyncVarNetworkIdentityEqual(value, netIdField))
             {
-                var oldValue = field;
+                NetworkIdentity oldValue = field;
                 SetSyncVarNetworkIdentity(value, ref field, dirtyBit, ref netIdField);
 
                 // call hook (if any)
@@ -612,7 +619,7 @@ namespace Mirror
         {
             if (!SyncVarNetworkBehaviourEqual(value, netIdField))
             {
-                var oldValue = field;
+                T oldValue = field;
                 SetSyncVarNetworkBehaviour(value, ref field, dirtyBit, ref netIdField);
 
                 // call hook (if any)
@@ -695,7 +702,7 @@ namespace Mirror
 
             // client always looks up based on netId because objects might get in and out of range
             // over and over again, which shouldn't null them forever
-            if (NetworkClient.spawned.TryGetValue(netId, out var identity) && identity != null)
+            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity identity) && identity != null)
                 return gameObjectField = identity.gameObject;
             return null;
         }
@@ -766,7 +773,7 @@ namespace Mirror
         //  }
         public void GeneratedSyncVarDeserialize<T>(ref T field, Action<T, T> OnChanged, T value)
         {
-            var previous = field;
+            T previous = field;
             field = value;
 
             // any hook? then call if changed.
@@ -823,8 +830,8 @@ namespace Mirror
         //   }
         public void GeneratedSyncVarDeserialize_GameObject(ref GameObject field, Action<GameObject, GameObject> OnChanged, NetworkReader reader, ref uint netIdField)
         {
-            var previousNetId = netIdField;
-            var previousGameObject = field;
+            uint previousNetId = netIdField;
+            GameObject previousGameObject = field;
             netIdField = reader.ReadUInt();
 
             // get the new GameObject now that netId field is set
@@ -885,8 +892,8 @@ namespace Mirror
         //   }
         public void GeneratedSyncVarDeserialize_NetworkIdentity(ref NetworkIdentity field, Action<NetworkIdentity, NetworkIdentity> OnChanged, NetworkReader reader, ref uint netIdField)
         {
-            var previousNetId = netIdField;
-            var previousIdentity = field;
+            uint previousNetId = netIdField;
+            NetworkIdentity previousIdentity = field;
             netIdField = reader.ReadUInt();
 
             // get the new NetworkIdentity now that netId field is set
@@ -949,8 +956,8 @@ namespace Mirror
         public void GeneratedSyncVarDeserialize_NetworkBehaviour<T>(ref T field, Action<T, T> OnChanged, NetworkReader reader, ref NetworkBehaviourSyncVar netIdField)
             where T : NetworkBehaviour
         {
-            var previousNetId = netIdField;
-            var previousBehaviour = field;
+            NetworkBehaviourSyncVar previousNetId = netIdField;
+            T previousBehaviour = field;
             netIdField = reader.ReadNetworkBehaviourSyncVar();
 
             // get the new NetworkBehaviour now that netId field is set
@@ -1066,7 +1073,7 @@ namespace Mirror
 
             // client always looks up based on netId because objects might get in and out of range
             // over and over again, which shouldn't null them forever
-            if (!NetworkClient.spawned.TryGetValue(syncNetBehaviour.netId, out var identity))
+            if (!NetworkClient.spawned.TryGetValue(syncNetBehaviour.netId, out NetworkIdentity identity))
             {
                 return null;
             }
@@ -1120,9 +1127,9 @@ namespace Mirror
             DeserializeSyncVars(reader, initialState);
         }
 
-        private void SerializeSyncObjects(NetworkWriter writer, bool initialState)
+        void SerializeSyncObjects(NetworkWriter writer, bool initialState)
         {
-            // if initialState: write all SyncVars.
+            // if initialState: write all SyncObjects (SyncList/Set/etc)
             // otherwise write dirtyBits+dirty SyncVars
             if (initialState)
                 SerializeObjectsAll(writer);
@@ -1130,7 +1137,7 @@ namespace Mirror
                 SerializeObjectsDelta(writer);
         }
 
-        private void DeserializeSyncObjects(NetworkReader reader, bool initialState)
+        void DeserializeSyncObjects(NetworkReader reader, bool initialState)
         {
             if (initialState)
             {
@@ -1168,9 +1175,9 @@ namespace Mirror
 
         public void SerializeObjectsAll(NetworkWriter writer)
         {
-            for (var i = 0; i < syncObjects.Count; i++)
+            for (int i = 0; i < syncObjects.Count; i++)
             {
-                var syncObject = syncObjects[i];
+                SyncObject syncObject = syncObjects[i];
                 syncObject.OnSerializeAll(writer);
             }
         }
@@ -1181,10 +1188,10 @@ namespace Mirror
             writer.WriteULong(syncObjectDirtyBits);
 
             // serializable objects, such as synclists
-            for (var i = 0; i < syncObjects.Count; i++)
+            for (int i = 0; i < syncObjects.Count; i++)
             {
                 // check dirty mask at nth bit
-                var syncObject = syncObjects[i];
+                SyncObject syncObject = syncObjects[i];
                 if ((syncObjectDirtyBits & (1UL << i)) != 0)
                 {
                     syncObject.OnSerializeDelta(writer);
@@ -1194,20 +1201,20 @@ namespace Mirror
 
         internal void DeserializeObjectsAll(NetworkReader reader)
         {
-            for (var i = 0; i < syncObjects.Count; i++)
+            for (int i = 0; i < syncObjects.Count; i++)
             {
-                var syncObject = syncObjects[i];
+                SyncObject syncObject = syncObjects[i];
                 syncObject.OnDeserializeAll(reader);
             }
         }
 
         internal void DeserializeObjectsDelta(NetworkReader reader)
         {
-            var dirty = reader.ReadULong();
-            for (var i = 0; i < syncObjects.Count; i++)
+            ulong dirty = reader.ReadULong();
+            for (int i = 0; i < syncObjects.Count; i++)
             {
                 // check dirty mask at nth bit
-                var syncObject = syncObjects[i];
+                SyncObject syncObject = syncObjects[i];
                 if ((dirty & (1UL << i)) != 0)
                 {
                     syncObject.OnDeserializeDelta(reader);
@@ -1245,9 +1252,9 @@ namespace Mirror
             // write placeholder length byte
             // (jumping back later is WAY faster than allocating a temporary
             //  writer for the payload, then writing payload.size, payload)
-            var headerPosition = writer.Position;
+            int headerPosition = writer.Position;
             writer.WriteByte(0);
-            var contentPosition = writer.Position;
+            int contentPosition = writer.Position;
 
             // write payload
             try
@@ -1260,12 +1267,12 @@ namespace Mirror
                 // show a detailed error and let the user know what went wrong
                 Debug.LogError($"OnSerialize failed for: object={name} component={GetType()} sceneId={netIdentity.sceneId:X}\n\n{e}");
             }
-            var endPosition = writer.Position;
+            int endPosition = writer.Position;
 
             // fill in length hash as the last byte of the 4 byte length
             writer.Position = headerPosition;
-            var size = endPosition - contentPosition;
-            var safety = (byte)(size & 0xFF);
+            int size = endPosition - contentPosition;
+            byte safety = (byte)(size & 0xFF);
             writer.WriteByte(safety);
             writer.Position = endPosition;
 
@@ -1282,7 +1289,7 @@ namespace Mirror
         internal static int ErrorCorrection(int size, byte safety)
         {
             // clear the last byte which most likely contains the error
-            var cleared = (uint)size & 0xFFFFFF00;
+            uint cleared = (uint)size & 0xFFFFFF00;
 
             // insert the safety which we know to be correct
             return (int)(cleared | safety);
@@ -1293,11 +1300,11 @@ namespace Mirror
         internal bool Deserialize(NetworkReader reader, bool initialState)
         {
             // detect errors, but attempt to correct before returning
-            var result = true;
+            bool result = true;
 
             // read 1 byte length hash safety & capture beginning for size check
-            var safety = reader.ReadByte();
-            var chunkStart = reader.Position;
+            byte safety = reader.ReadByte();
+            int chunkStart = reader.Position;
 
             // call OnDeserialize and wrap it in a try-catch block so there's no
             // way to mess up another component's deserialization
@@ -1319,8 +1326,8 @@ namespace Mirror
             }
 
             // compare bytes read with length hash
-            var size = reader.Position - chunkStart;
-            var sizeHash = (byte)(size & 0xFF);
+            int size = reader.Position - chunkStart;
+            byte sizeHash = (byte)(size & 0xFF);
             if (sizeHash != safety)
             {
                 // warn the user.
@@ -1331,7 +1338,7 @@ namespace Mirror
                 // read more than 255 bytes too many / too few.
                 //
                 // see test: SerializationSizeMismatch.
-                var correctedSize = ErrorCorrection(size, safety);
+                int correctedSize = ErrorCorrection(size, safety);
                 reader.Position = chunkStart + correctedSize;
                 result = false;
             }
@@ -1341,7 +1348,7 @@ namespace Mirror
 
         internal void ResetSyncObjects()
         {
-            foreach (var syncObject in syncObjects)
+            foreach (SyncObject syncObject in syncObjects)
             {
                 syncObject.Reset();
             }

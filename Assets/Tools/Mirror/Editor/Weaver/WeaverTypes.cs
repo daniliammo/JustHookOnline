@@ -60,7 +60,7 @@ namespace Mirror.Weaver
         public TypeDefinition initializeOnLoadMethodAttribute;
         public TypeDefinition runtimeInitializeOnLoadMethodAttribute;
 
-        private AssemblyDefinition assembly;
+        AssemblyDefinition assembly;
 
         public TypeReference Import<T>() => Import(typeof(T));
 
@@ -72,23 +72,23 @@ namespace Mirror.Weaver
             // system types
             this.assembly = assembly;
 
-            var ArraySegmentType = Import(typeof(ArraySegment<>));
+            TypeReference ArraySegmentType = Import(typeof(ArraySegment<>));
             ArraySegmentConstructorReference = Resolvers.ResolveMethod(ArraySegmentType, assembly, Log, ".ctor", ref WeavingFailed);
 
-            var ActionType = Import(typeof(Action<,>));
+            TypeReference ActionType = Import(typeof(Action<,>));
             ActionT_T = Resolvers.ResolveMethod(ActionType, assembly, Log, ".ctor", ref WeavingFailed);
 
             weaverFuseType = Import(typeof(WeaverFuse));
             weaverFuseMethod = Resolvers.ResolveMethod(weaverFuseType, assembly, Log, "Weaved", ref WeavingFailed);
 
-            var NetworkServerType = Import(typeof(NetworkServer));
+            TypeReference NetworkServerType = Import(typeof(NetworkServer));
             NetworkServerGetActive = Resolvers.ResolveMethod(NetworkServerType, assembly, Log, "get_active", ref WeavingFailed);
 
-            var NetworkClientType = Import(typeof(NetworkClient));
+            TypeReference NetworkClientType = Import(typeof(NetworkClient));
             NetworkClientGetActive = Resolvers.ResolveMethod(NetworkClientType, assembly, Log, "get_active", ref WeavingFailed);
             NetworkClientConnectionReference = Resolvers.ResolveMethod(NetworkClientType, assembly, Log, "get_connection", ref WeavingFailed);
 
-            var NetworkBehaviourType = Import<NetworkBehaviour>();
+            TypeReference NetworkBehaviourType = Import<NetworkBehaviour>();
 
             NetworkBehaviourDirtyBitsReference = Resolvers.ResolveField(NetworkBehaviourType, assembly, Log, "syncVarDirtyBits", ref WeavingFailed);
 
@@ -112,20 +112,20 @@ namespace Mirror.Weaver
 
             InitSyncObjectReference = Resolvers.ResolveMethod(NetworkBehaviourType, assembly, Log, "InitSyncObject", ref WeavingFailed);
 
-            var RemoteProcedureCallsType = Import(typeof(RemoteCalls.RemoteProcedureCalls));
+            TypeReference RemoteProcedureCallsType = Import(typeof(RemoteCalls.RemoteProcedureCalls));
             registerCommandReference = Resolvers.ResolveMethod(RemoteProcedureCallsType, assembly, Log, "RegisterCommand", ref WeavingFailed);
             registerRpcReference = Resolvers.ResolveMethod(RemoteProcedureCallsType, assembly, Log, "RegisterRpc", ref WeavingFailed);
 
-            var RemoteCallDelegateType = Import<RemoteCalls.RemoteCallDelegate>();
+            TypeReference RemoteCallDelegateType = Import<RemoteCalls.RemoteCallDelegate>();
             RemoteCallDelegateConstructor = Resolvers.ResolveMethod(RemoteCallDelegateType, assembly, Log, ".ctor", ref WeavingFailed);
 
-            var ScriptableObjectType = Import<ScriptableObject>();
+            TypeReference ScriptableObjectType = Import<ScriptableObject>();
             ScriptableObjectCreateInstanceMethod = Resolvers.ResolveMethod(
                 ScriptableObjectType, assembly, Log,
                 md => md.Name == "CreateInstance" && md.HasGenericParameters,
                 ref WeavingFailed);
 
-            var unityDebug = Import(typeof(UnityEngine.Debug));
+            TypeReference unityDebug = Import(typeof(UnityEngine.Debug));
             // these have multiple methods with same name, so need to check parameters too
             logErrorReference = Resolvers.ResolveMethod(unityDebug, assembly, Log, md =>
                 md.Name == "LogError" &&
@@ -139,19 +139,19 @@ namespace Mirror.Weaver
                 md.Parameters[0].ParameterType.FullName == typeof(object).FullName,
                 ref WeavingFailed);
 
-            var typeType = Import(typeof(Type));
+            TypeReference typeType = Import(typeof(Type));
             getTypeFromHandleReference = Resolvers.ResolveMethod(typeType, assembly, Log, "GetTypeFromHandle", ref WeavingFailed);
 
-            var NetworkWriterPoolType = Import(typeof(NetworkWriterPool));
+            TypeReference NetworkWriterPoolType = Import(typeof(NetworkWriterPool));
             GetWriterReference = Resolvers.ResolveMethod(NetworkWriterPoolType, assembly, Log, "Get", ref WeavingFailed);
             ReturnWriterReference = Resolvers.ResolveMethod(NetworkWriterPoolType, assembly, Log, "Return", ref WeavingFailed);
 
-            var readerExtensions = Import(typeof(NetworkReaderExtensions));
-            readNetworkBehaviourGeneric = Resolvers.ResolveMethod(readerExtensions, assembly, Log, md =>
-                {
-                    return md.Name == nameof(NetworkReaderExtensions.ReadNetworkBehaviour) &&
-                           md.HasGenericParameters;
-                },
+            TypeReference readerExtensions = Import(typeof(NetworkReaderExtensions));
+            readNetworkBehaviourGeneric = Resolvers.ResolveMethod(readerExtensions, assembly, Log, (md =>
+            {
+                return md.Name == nameof(NetworkReaderExtensions.ReadNetworkBehaviour) &&
+                       md.HasGenericParameters;
+            }),
             ref WeavingFailed);
 
             // [InitializeOnLoadMethod]
@@ -159,12 +159,12 @@ namespace Mirror.Weaver
             // we can only import this attribute if we are in an Editor assembly.
             if (Helpers.IsEditorAssembly(assembly))
             {
-                var initializeOnLoadMethodAttributeRef = Import(typeof(InitializeOnLoadMethodAttribute));
+                TypeReference initializeOnLoadMethodAttributeRef = Import(typeof(InitializeOnLoadMethodAttribute));
                 initializeOnLoadMethodAttribute = initializeOnLoadMethodAttributeRef.Resolve();
             }
 
             // [RuntimeInitializeOnLoadMethod]
-            var runtimeInitializeOnLoadMethodAttributeRef = Import(typeof(RuntimeInitializeOnLoadMethodAttribute));
+            TypeReference runtimeInitializeOnLoadMethodAttributeRef = Import(typeof(RuntimeInitializeOnLoadMethodAttribute));
             runtimeInitializeOnLoadMethodAttribute = runtimeInitializeOnLoadMethodAttributeRef.Resolve();
         }
     }

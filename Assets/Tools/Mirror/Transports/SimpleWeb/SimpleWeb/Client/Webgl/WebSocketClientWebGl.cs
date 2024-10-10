@@ -21,24 +21,24 @@ namespace Mirror.SimpleWeb
 
     public class WebSocketClientWebGl : SimpleWebClient
     {
-        private static readonly Dictionary<int, WebSocketClientWebGl> instances = new Dictionary<int, WebSocketClientWebGl>();
+        static readonly Dictionary<int, WebSocketClientWebGl> instances = new Dictionary<int, WebSocketClientWebGl>();
 
         [MonoPInvokeCallback(typeof(Action<int>))]
-        private static void OpenCallback(int index) => instances[index].onOpen();
+        static void OpenCallback(int index) => instances[index].onOpen();
 
         [MonoPInvokeCallback(typeof(Action<int>))]
-        private static void CloseCallBack(int index) => instances[index].onClose();
+        static void CloseCallBack(int index) => instances[index].onClose();
 
         [MonoPInvokeCallback(typeof(Action<int, IntPtr, int>))]
-        private static void MessageCallback(int index, IntPtr bufferPtr, int count) => instances[index].onMessage(bufferPtr, count);
+        static void MessageCallback(int index, IntPtr bufferPtr, int count) => instances[index].onMessage(bufferPtr, count);
 
         [MonoPInvokeCallback(typeof(Action<int>))]
-        private static void ErrorCallback(int index) => instances[index].onErr();
+        static void ErrorCallback(int index) => instances[index].onErr();
 
         /// <summary>
         /// key for instances sent between c# and js
         /// </summary>
-        private int index;
+        int index;
 
         /// <summary>
         /// Queue for messages sent by high level while still connecting, they will be sent after onOpen is called.
@@ -47,7 +47,7 @@ namespace Mirror.SimpleWeb
         ///     Without this the JS websocket will give errors.
         /// </para>
         /// </summary>
-        private Queue<byte[]> ConnectingSendQueue;
+        Queue<byte[]> ConnectingSendQueue;
 
         public bool CheckJsConnected() => SimpleWebJSLib.IsConnected(index);
 
@@ -76,7 +76,7 @@ namespace Mirror.SimpleWeb
         {
             if (segment.Count > maxMessageSize)
             {
-                Log.Error($"[SWT-WebSocketClientWebGl]: Cant send message with length {segment.Count} because it is over the max size of {maxMessageSize}");
+                Log.Error("[SWT-WebSocketClientWebGl]: Cant send message with length {0} because it is over the max size of {1}", segment.Count, maxMessageSize);
                 return;
             }
 
@@ -91,7 +91,7 @@ namespace Mirror.SimpleWeb
             }
         }
 
-        private void onOpen()
+        void onOpen()
         {
             receiveQueue.Enqueue(new Message(EventType.Connected));
             state = ClientState.Connected;
@@ -100,7 +100,7 @@ namespace Mirror.SimpleWeb
             {
                 while (ConnectingSendQueue.Count > 0)
                 {
-                    var next = ConnectingSendQueue.Dequeue();
+                    byte[] next = ConnectingSendQueue.Dequeue();
                     SimpleWebJSLib.Send(index, next, 0, next.Length);
                 }
 
@@ -108,7 +108,7 @@ namespace Mirror.SimpleWeb
             }
         }
 
-        private void onClose()
+        void onClose()
         {
             // this code should be last in this class
 
@@ -117,23 +117,23 @@ namespace Mirror.SimpleWeb
             instances.Remove(index);
         }
 
-        private void onMessage(IntPtr bufferPtr, int count)
+        void onMessage(IntPtr bufferPtr, int count)
         {
             try
             {
-                var buffer = bufferPool.Take(count);
+                ArrayBuffer buffer = bufferPool.Take(count);
                 buffer.CopyFrom(bufferPtr, count);
 
                 receiveQueue.Enqueue(new Message(buffer));
             }
             catch (Exception e)
             {
-                Log.Error($"[SWT-WebSocketClientWebGl]: onMessage {e.GetType()}: {e.Message}\n{e.StackTrace}");
+                Log.Error("[SWT-WebSocketClientWebGl]: onMessage {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace);
                 receiveQueue.Enqueue(new Message(e));
             }
         }
 
-        private void onErr()
+        void onErr()
         {
             receiveQueue.Enqueue(new Message(new Exception("Javascript Websocket error")));
             Disconnect();

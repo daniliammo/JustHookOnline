@@ -27,7 +27,7 @@ namespace Mirror
         // 2) timestamp batching: if each batch is expected to contain a
         //    timestamp, then large messages have to be a batch too. otherwise
         //    they would not contain a timestamp
-        private readonly int threshold;
+        readonly int threshold;
 
         // TimeStamp header size. each batch has one.
         public const int TimestampSize = sizeof(double);
@@ -47,10 +47,18 @@ namespace Mirror
         //        it would allocate too many writers.
         //        https://github.com/vis2k/Mirror/pull/3127
         // => best to build batches on the fly.
-        private readonly Queue<NetworkWriterPooled> batches = new Queue<NetworkWriterPooled>();
+        readonly Queue<NetworkWriterPooled> batches = new Queue<NetworkWriterPooled>();
 
-        // current batch in progress
-        private NetworkWriterPooled batch;
+        // current batch in progress.
+        // we also store the timestamp to ensure we don't add a message from another frame,
+        // as this would introduce subtle jitter!
+        //
+        // for example:
+        // - a batch is started at t=1, another message is added at t=2 and then it's flushed
+        // - NetworkTransform uses remoteTimestamp which is t=1
+        // - snapshot interpolation would off by one (or multiple) frames!
+        NetworkWriterPooled batch;
+        double batchTimestamp;
 
         public Batcher(int threshold)
         {
@@ -62,9 +70,35 @@ namespace Mirror
         // caller needs to make sure they are within max packet size.
         public void AddMessage(ArraySegment<byte> message, double timeStamp)
         {
+            // safety: message timestamp is only written once.
+            // make sure all messages in this batch are from the same timestamp.
+            // otherwise it could silently introduce jitter.
+            //
+            // this happened before:
+            // - NetworkEarlyUpdate @ t=1 processes transport messages
+            //   - a handler replies by sending a message
+            //     - a new batch is started @ t=1, timestamp is encoded
+            // - NetworkLateUpdate @ t=2 decides it's time to broadcast
+            //   - NetworkTransform sends @ t=2
+            //     - we add to the above batch which already encoded t=1
+            // - Client receives the batch which timestamp t=1
+            //   - NetworkTransform uses remoteTime for interpolation
+            //     remoteTime is the batch timestamp which is t=1
+            //     - the NetworkTransform message is actually t=2
+            // => smooth interpolation would be impossible!
+            //    NT thinks the position was @ t=1 but actually it was @ t=2 !
+            //
+            // the solution: if timestamp changed, enqueue the existing batch
+            if (batch != null && batchTimestamp != timeStamp)
+            {
+                batches.Enqueue(batch);
+                batch = null;
+                batchTimestamp = 0;
+            }
+
             // predict the needed size, which is varint(size) + content
-            var headerSize = Compression.VarUIntSize((ulong)message.Count);
-            var neededSize = headerSize + message.Count;
+            int headerSize = Compression.VarUIntSize((ulong)message.Count);
+            int neededSize = headerSize + message.Count;
 
             // when appending to a batch in progress, check final size.
             // if it expands beyond threshold, then we should finalize it first.
@@ -76,6 +110,7 @@ namespace Mirror
             {
                 batches.Enqueue(batch);
                 batch = null;
+                batchTimestamp = 0;
             }
 
             // initialize a new batch if necessary
@@ -89,6 +124,9 @@ namespace Mirror
                 // -> batches are per-frame, it doesn't matter which message's
                 //    timestamp we use.
                 batch.WriteDouble(timeStamp);
+
+                // remember the encoded timestamp, see safety check below.
+                batchTimestamp = timeStamp;
             }
 
             // add serialization to current batch. even if > threshold.
@@ -109,14 +147,14 @@ namespace Mirror
         }
 
         // helper function to copy a batch to writer and return it to pool
-        private static void CopyAndReturn(NetworkWriterPooled batch, NetworkWriter writer)
+        static void CopyAndReturn(NetworkWriterPooled batch, NetworkWriter writer)
         {
             // make sure the writer is fresh to avoid uncertain situations
             if (writer.Position != 0)
                 throw new ArgumentException($"GetBatch needs a fresh writer!");
 
             // copy to the target writer
-            var segment = batch.ToArraySegment();
+            ArraySegment<byte> segment = batch.ToArraySegment();
             writer.WriteBytes(segment.Array, segment.Offset, segment.Count);
 
             // return batch to pool for reuse
@@ -129,7 +167,7 @@ namespace Mirror
         public bool GetBatch(NetworkWriter writer)
         {
             // get first batch from queue (if any)
-            if (batches.TryDequeue(out var first))
+            if (batches.TryDequeue(out NetworkWriterPooled first))
             {
                 CopyAndReturn(first, writer);
                 return true;
@@ -155,10 +193,11 @@ namespace Mirror
             {
                 NetworkWriterPool.Return(batch);
                 batch = null;
+                batchTimestamp = 0;
             }
 
             // return all queued batches
-            foreach (var queued in batches)
+            foreach (NetworkWriterPooled queued in batches)
                 NetworkWriterPool.Return(queued);
 
             batches.Clear();

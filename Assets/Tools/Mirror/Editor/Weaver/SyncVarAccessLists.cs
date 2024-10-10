@@ -22,7 +22,7 @@ namespace Mirror.Weaver
         public Dictionary<string, int> numSyncVars = new Dictionary<string, int>();
 
         public int GetSyncVarStart(string className) =>
-            numSyncVars.TryGetValue(className, out var value) ? value : 0;
+            numSyncVars.TryGetValue(className, out int value) ? value : 0;
 
         public void SetNumSyncVars(string className, int num)
         {

@@ -11,7 +11,7 @@ namespace Mirror
     {
         public Transport[] transports;
 
-        private Transport available;
+        Transport available;
 
         // underlying transport connectionId to multiplexed connectionId lookup.
         //
@@ -32,24 +32,24 @@ namespace Mirror
         // with initial capacity to avoid runtime allocations.
 
         // (original connectionId, transport#) to multiplexed connectionId
-        private readonly Dictionary<KeyValuePair<int, int>, int> originalToMultiplexedId =
+        readonly Dictionary<KeyValuePair<int, int>, int> originalToMultiplexedId =
             new Dictionary<KeyValuePair<int, int>, int>(100);
 
         // multiplexed connectionId to (original connectionId, transport#)
-        private readonly Dictionary<int, KeyValuePair<int, int>> multiplexedToOriginalId =
+        readonly Dictionary<int, KeyValuePair<int, int>> multiplexedToOriginalId =
             new Dictionary<int, KeyValuePair<int, int>>(100);
 
         // next multiplexed id counter. start at 1 because 0 is reserved for host.
-        private int nextMultiplexedId = 1;
+        int nextMultiplexedId = 1;
 
         // prevent log flood from OnGUI or similar per-frame updates
-        private bool alreadyWarned;
+        bool alreadyWarned;
 
         public ushort Port
         {
             get
             {
-                foreach (var transport in transports)
+                foreach (Transport transport in transports)
                     if (transport.Available() && transport is PortTransport portTransport)
                         return portTransport.Port;
 
@@ -71,7 +71,7 @@ namespace Mirror
                     // listen ports have to be different for each transport
                     // so we just set the first available one.
                     // This depends on the selected build platform.
-                    foreach (var transport in transports)
+                    foreach (Transport transport in transports)
                         if (transport.Available() && transport is PortTransport portTransport)
                         {
                             portTransport.Port = value;
@@ -85,8 +85,8 @@ namespace Mirror
         public int AddToLookup(int originalConnectionId, int transportIndex)
         {
             // add to both
-            var pair = new KeyValuePair<int, int>(originalConnectionId, transportIndex);
-            var multiplexedId = nextMultiplexedId++;
+            KeyValuePair<int, int> pair = new KeyValuePair<int, int>(originalConnectionId, transportIndex);
+            int multiplexedId = nextMultiplexedId++;
 
             originalToMultiplexedId[pair] = multiplexedId;
             multiplexedToOriginalId[multiplexedId] = pair;
@@ -97,8 +97,8 @@ namespace Mirror
         public void RemoveFromLookup(int originalConnectionId, int transportIndex)
         {
             // remove from both
-            var pair = new KeyValuePair<int, int>(originalConnectionId, transportIndex);
-            if (originalToMultiplexedId.TryGetValue(pair, out var multiplexedId))
+            KeyValuePair<int, int> pair = new KeyValuePair<int, int>(originalConnectionId, transportIndex);
+            if (originalToMultiplexedId.TryGetValue(pair, out int multiplexedId))
             {
                 originalToMultiplexedId.Remove(pair);
                 multiplexedToOriginalId.Remove(multiplexedId);
@@ -114,7 +114,7 @@ namespace Mirror
                 return false;
             }
 
-            var pair = multiplexedToOriginalId[multiplexId];
+            KeyValuePair<int, int> pair = multiplexedToOriginalId[multiplexId];
             originalConnectionId = pair.Key;
             transportIndex       = pair.Value;
             return true;
@@ -122,8 +122,8 @@ namespace Mirror
 
         public int MultiplexId(int originalConnectionId, int transportIndex)
         {
-            var pair = new KeyValuePair<int, int>(originalConnectionId, transportIndex);
-            if (originalToMultiplexedId.TryGetValue(pair, out var multiplexedId))
+            KeyValuePair<int, int> pair = new KeyValuePair<int, int>(originalConnectionId, transportIndex);
+            if (originalToMultiplexedId.TryGetValue(pair, out int multiplexedId))
                 return multiplexedId;
             else
                 return 0;
@@ -141,44 +141,44 @@ namespace Mirror
 
         public override void ClientEarlyUpdate()
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 transport.ClientEarlyUpdate();
         }
 
         public override void ServerEarlyUpdate()
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 transport.ServerEarlyUpdate();
         }
 
         public override void ClientLateUpdate()
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 transport.ClientLateUpdate();
         }
 
         public override void ServerLateUpdate()
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 transport.ServerLateUpdate();
         }
 
-        private void OnEnable()
+        void OnEnable()
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 transport.enabled = true;
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 transport.enabled = false;
         }
 
         public override bool Available()
         {
             // available if any of the transports is available
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 if (transport.Available())
                     return true;
 
@@ -189,7 +189,7 @@ namespace Mirror
 
         public override void ClientConnect(string address)
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
             {
                 if (transport.Available())
                 {
@@ -208,7 +208,7 @@ namespace Mirror
 
         public override void ClientConnect(Uri uri)
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
             {
                 if (transport.Available())
                 {
@@ -251,28 +251,36 @@ namespace Mirror
         #endregion
 
         #region Server
-
-        private void AddServerCallbacks()
+        void AddServerCallbacks()
         {
             // all underlying transports should call the multiplex transport's events
-            for (var i = 0; i < transports.Length; i++)
+            for (int i = 0; i < transports.Length; i++)
             {
                 // this is required for the handlers, if I use i directly
                 // then all the handlers will use the last i
-                var transportIndex = i;
-                var transport = transports[i];
+                int transportIndex = i;
+                Transport transport = transports[i];
 
-                transport.OnServerConnected = originalConnectionId =>
+#pragma warning disable CS0618 // Type or member is obsolete
+                transport.OnServerConnected = (originalConnectionId =>
                 {
                     // invoke Multiplex event with multiplexed connectionId
-                    var multiplexedId = AddToLookup(originalConnectionId, transportIndex);
+                    int multiplexedId = AddToLookup(originalConnectionId, transportIndex);
                     OnServerConnected.Invoke(multiplexedId);
+                });
+#pragma warning restore CS0618 // Type or member is obsolete
+
+                transport.OnServerConnectedWithAddress = (originalConnectionId, address) =>
+                {
+                    // invoke Multiplex event with multiplexed connectionId
+                    int multiplexedId = AddToLookup(originalConnectionId, transportIndex);
+                    OnServerConnectedWithAddress.Invoke(multiplexedId, address);
                 };
 
                 transport.OnServerDataReceived = (originalConnectionId, data, channel) =>
                 {
                     // invoke Multiplex event with multiplexed connectionId
-                    var multiplexedId = MultiplexId(originalConnectionId, transportIndex);
+                    int multiplexedId = MultiplexId(originalConnectionId, transportIndex);
                     if (multiplexedId == 0)
                     {
                         if (Utils.IsHeadless())
@@ -292,7 +300,7 @@ namespace Mirror
                 transport.OnServerError = (originalConnectionId, error, reason) =>
                 {
                     // invoke Multiplex event with multiplexed connectionId
-                    var multiplexedId = MultiplexId(originalConnectionId, transportIndex);
+                    int multiplexedId = MultiplexId(originalConnectionId, transportIndex);
                     if (multiplexedId == 0)
                     {
                         if (Utils.IsHeadless())
@@ -312,14 +320,14 @@ namespace Mirror
                 transport.OnServerTransportException = (originalConnectionId, exception) =>
                 {
                     // invoke Multiplex event with multiplexed connectionId
-                    var multiplexedId = MultiplexId(originalConnectionId, transportIndex);
+                    int multiplexedId = MultiplexId(originalConnectionId, transportIndex);
                     OnServerTransportException.Invoke(multiplexedId, exception);
                 };
 
                 transport.OnServerDisconnected = originalConnectionId =>
                 {
                     // invoke Multiplex event with multiplexed connectionId
-                    var multiplexedId = MultiplexId(originalConnectionId, transportIndex);
+                    int multiplexedId = MultiplexId(originalConnectionId, transportIndex);
                     if (multiplexedId == 0)
                     {
                         if (Utils.IsHeadless())
@@ -347,7 +355,7 @@ namespace Mirror
         public override bool ServerActive()
         {
             // avoid Linq.All allocations
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 if (!transport.ServerActive())
                     return false;
 
@@ -357,7 +365,7 @@ namespace Mirror
         public override string ServerGetClientAddress(int connectionId)
         {
             // convert multiplexed connectionId to original id & transport index
-            if (OriginalId(connectionId, out var originalConnectionId, out var transportIndex))
+            if (OriginalId(connectionId, out int originalConnectionId, out int transportIndex))
                 return transports[transportIndex].ServerGetClientAddress(originalConnectionId);
             else
                 return "";
@@ -366,14 +374,14 @@ namespace Mirror
         public override void ServerDisconnect(int connectionId)
         {
             // convert multiplexed connectionId to original id & transport index
-            if (OriginalId(connectionId, out var originalConnectionId, out var transportIndex))
+            if (OriginalId(connectionId, out int originalConnectionId, out int transportIndex))
                 transports[transportIndex].ServerDisconnect(originalConnectionId);
         }
 
         public override void ServerSend(int connectionId, ArraySegment<byte> segment, int channelId)
         {
             // convert multiplexed connectionId to original transport + connId
-            if (OriginalId(connectionId, out var originalConnectionId, out var transportIndex))
+            if (OriginalId(connectionId, out int originalConnectionId, out int transportIndex))
                 transports[transportIndex].ServerSend(originalConnectionId, segment, channelId);
         }
 
@@ -381,7 +389,7 @@ namespace Mirror
         {
             AddServerCallbacks();
 
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
             {
                 transport.ServerStart();
 
@@ -403,7 +411,7 @@ namespace Mirror
 
         public override void ServerStop()
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 transport.ServerStop();
         }
         #endregion
@@ -421,10 +429,10 @@ namespace Mirror
             //   different platforms seeing a different game state.
             // => the safest solution is to use the smallest max size for all
             //    transports. that will never fail.
-            var mininumAllowedSize = int.MaxValue;
-            foreach (var transport in transports)
+            int mininumAllowedSize = int.MaxValue;
+            foreach (Transport transport in transports)
             {
-                var size = transport.GetMaxPacketSize(channelId);
+                int size = transport.GetMaxPacketSize(channelId);
                 mininumAllowedSize = Mathf.Min(size, mininumAllowedSize);
             }
             return mininumAllowedSize;
@@ -432,16 +440,16 @@ namespace Mirror
 
         public override void Shutdown()
         {
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 transport.Shutdown();
         }
 
         public override string ToString()
         {
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.Append("Multiplexer:");
 
-            foreach (var transport in transports)
+            foreach (Transport transport in transports)
                 builder.Append($" {transport}");
 
             return builder.ToString().Trim();

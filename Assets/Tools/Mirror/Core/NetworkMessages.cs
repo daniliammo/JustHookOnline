@@ -24,7 +24,7 @@ namespace Mirror
         // Instead we take the highest 16bits of the 32bit hash and fold them with xor into the lower 16bits
         // This will create a more uniform 16bit hash, the method is described in:
         // http://www.isthe.com/chongo/tech/comp/fnv/ in section "Changing the FNV hash size - xor-folding"
-        private static ushort CalculateId() => typeof(T).FullName.GetStableHashCode16();
+        static ushort CalculateId() => typeof(T).FullName.GetStableHashCode16();
     }
 
     // message packing all in one place, instead of constructing headers in all
@@ -45,9 +45,9 @@ namespace Mirror
         // dump all types for debugging
         public static void LogTypes()
         {
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.AppendLine("NetworkMessageIds:");
-            foreach (var kvp in Lookup)
+            foreach (KeyValuePair<ushort, Type> kvp in Lookup)
             {
                 builder.AppendLine($"  Id={kvp.Key} = {kvp.Value}");
             }
@@ -64,7 +64,7 @@ namespace Mirror
         public static int MaxContentSize(int channelId)
         {
             // calculate the max possible size that can fit in a batch
-            var transportMax = Transport.active.GetMaxPacketSize(channelId);
+            int transportMax = Transport.active.GetMaxPacketSize(channelId);
             return transportMax - IdSize - Batcher.MaxMessageOverhead(transportMax);
         }
 
@@ -132,7 +132,7 @@ namespace Mirror
                 // further attacks.
                 T message = default;
                 // record start position for NetworkDiagnostics because reader might contain multiple messages if using batching
-                var startPos = reader.Position;
+                int startPos = reader.Position;
                 try
                 {
                     if (requireAuthentication && !conn.isAuthenticated)
@@ -167,7 +167,7 @@ namespace Mirror
                 }
                 finally
                 {
-                    var endPos = reader.Position;
+                    int endPos = reader.Position;
                     // TODO: Figure out the correct channel
                     NetworkDiagnostics.OnReceive(message, channelId, endPos - startPos);
                 }

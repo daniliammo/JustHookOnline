@@ -18,9 +18,9 @@ namespace Mirror.SimpleWeb
             if (!sslEnabled)
                 return default;
 
-            var certJsonPath = sslCertJson;
+            string certJsonPath = sslCertJson;
 
-            var cert = LoadCertJson(certJsonPath);
+            Cert cert = LoadCertJson(certJsonPath);
 
             return new SslConfig(
                 enabled: sslEnabled,
@@ -32,8 +32,8 @@ namespace Mirror.SimpleWeb
 
         internal static Cert LoadCertJson(string certJsonPath)
         {
-            var json = File.ReadAllText(certJsonPath);
-            var cert = JsonUtility.FromJson<Cert>(json);
+            string json = File.ReadAllText(certJsonPath);
+            Cert cert = JsonUtility.FromJson<Cert>(json);
 
             if (string.IsNullOrWhiteSpace(cert.path))
                 throw new InvalidDataException("Cert Json didn't not contain \"path\"");

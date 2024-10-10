@@ -82,7 +82,7 @@ namespace Mirror
             if (!batches.TryGetValue(channelId, out batch))
             {
                 // get max batch size for this channel
-                var threshold = Transport.active.GetBatchThreshold(channelId);
+                int threshold = Transport.active.GetBatchThreshold(channelId);
 
                 // create batcher
                 batch = new Batcher(threshold);
@@ -96,7 +96,7 @@ namespace Mirror
         public void Send<T>(T message, int channelId = Channels.Reliable)
             where T : struct, NetworkMessage
         {
-            using (var writer = NetworkWriterPool.Get())
+            using (NetworkWriterPooled writer = NetworkWriterPool.Get())
             {
                 // pack message
                 NetworkMessages.Pack(message, writer);
@@ -106,7 +106,7 @@ namespace Mirror
                 // if it's larger, log an error immediately with the type <T>.
                 // previously we only logged in Update() when processing batches,
                 // but there we don't have type information anymore.
-                var max = NetworkMessages.MaxMessageSize(channelId);
+                int max = NetworkMessages.MaxMessageSize(channelId);
                 if (writer.Position > max)
                 {
                     Debug.LogError($"NetworkConnection.Send: message of type {typeof(T)} with a size of {writer.Position} bytes is larger than the max allowed message size in one batch: {max}.\nThe message was dropped, please make it smaller.");
@@ -155,18 +155,18 @@ namespace Mirror
         {
             // go through batches for all channels
             // foreach ((int key, Batcher batcher) in batches) // Unity 2020 doesn't support deconstruct yet
-            foreach (var kvp in batches)
+            foreach (KeyValuePair<int, Batcher> kvp in batches)
             {
                 // make and send as many batches as necessary from the stored
                 // messages.
-                using (var writer = NetworkWriterPool.Get())
+                using (NetworkWriterPooled writer = NetworkWriterPool.Get())
                 {
                     // make a batch with our local time (double precision)
                     while (kvp.Value.GetBatch(writer))
                     {
                         // message size is validated in Send<T>, with test coverage.
                         // we can send directly without checking again.
-                        var segment = writer.ToArraySegment();
+                        ArraySegment<byte> segment = writer.ToArraySegment();
 
                         // send to transport
                         SendToTransport(segment, kvp.Key);
@@ -208,7 +208,7 @@ namespace Mirror
         // never be returned to the pool.
         public virtual void Cleanup()
         {
-            foreach (var batcher in batches.Values)
+            foreach (Batcher batcher in batches.Values)
             {
                 batcher.Clear();
             }

@@ -25,15 +25,15 @@ namespace Mirror
     public class HistoryBounds
     {
         // mischa: use MinMaxBounds to avoid Unity Bounds.Encapsulate conversions.
-        private readonly int boundsPerBucket;
-        private readonly Queue<MinMaxBounds> fullBuckets;
+        readonly int boundsPerBucket;
+        readonly Queue<MinMaxBounds> fullBuckets;
 
         // full bucket limit. older ones will be removed.
-        private readonly int bucketLimit;
+        readonly int bucketLimit;
 
         // bucket in progress, contains 0..boundsPerBucket bounds encapsulated.
-        private MinMaxBounds? currentBucket;
-        private int currentBucketSize;
+        MinMaxBounds? currentBucket;
+        int currentBucketSize;
 
         // amount of total bounds, including bounds in full buckets + current
         public int boundsCount { get; private set; }
@@ -41,12 +41,12 @@ namespace Mirror
         // total bounds encapsulating all of the bounds history.
         // totalMinMax is used for internal calculations.
         // public total is used for Unity representation.
-        private MinMaxBounds totalMinMax;
+        MinMaxBounds totalMinMax;
         public Bounds total
         {
             get
             {
-                var bounds = new Bounds();
+                Bounds bounds = new Bounds();
                 bounds.SetMinMax(totalMinMax.min, totalMinMax.max);
                 return bounds;
             }
@@ -57,7 +57,7 @@ namespace Mirror
             // bucketLimit via '/' cuts off remainder.
             // that's what we want, since we always have a 'currentBucket'.
             this.boundsPerBucket = boundsPerBucket;
-            this.bucketLimit = boundsLimit / boundsPerBucket;
+            this.bucketLimit = (boundsLimit / boundsPerBucket);
 
             // initialize queue with maximum capacity to avoid runtime resizing
             // capacity +1 because it makes the code easier if we insert first, and then remove.
@@ -69,7 +69,7 @@ namespace Mirror
         public void Insert(Bounds bounds)
         {
             // convert to MinMax representation for faster .Encapsulate()
-            var minmax = new MinMaxBounds
+            MinMaxBounds minmax = new MinMaxBounds
             {
                 min = bounds.min,
                 max = bounds.max
@@ -121,7 +121,7 @@ namespace Mirror
                     // instead of iterating N buckets, we iterate N / boundsPerBucket buckets.
                     // TODO technically we could reuse 'currentBucket' before clearing instead of encapsulating again
                     totalMinMax = minmax;
-                    foreach (var bucket in fullBuckets)
+                    foreach (MinMaxBounds bucket in fullBuckets)
                         totalMinMax.Encapsulate(bucket);
                 }
             }

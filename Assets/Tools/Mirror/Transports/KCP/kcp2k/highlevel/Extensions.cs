@@ -106,7 +106,7 @@ namespace kcp2k
                 //
                 // throws SocketException if datagram was larger than buffer.
                 // https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.socket.receive?view=net-6.0
-                var size = socket.ReceiveFrom(recvBuffer, 0, recvBuffer.Length, SocketFlags.None, ref remoteEP);
+                int size = socket.ReceiveFrom(recvBuffer, 0, recvBuffer.Length, SocketFlags.None, ref remoteEP);
                 data = new ArraySegment<byte>(recvBuffer, 0, size);
                 return true;
             }
@@ -148,7 +148,7 @@ namespace kcp2k
                 //
                 // throws SocketException if datagram was larger than buffer.
                 // https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.socket.receive?view=net-6.0
-                var size = socket.Receive(recvBuffer, 0, recvBuffer.Length, SocketFlags.None);
+                int size = socket.Receive(recvBuffer, 0, recvBuffer.Length, SocketFlags.None);
                 data = new ArraySegment<byte>(recvBuffer, 0, size);
                 return true;
             }

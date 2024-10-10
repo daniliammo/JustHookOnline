@@ -37,17 +37,17 @@ namespace Mirror.SimpleWeb
 
         public static void Loop(Config config)
         {
-            (var conn, var bufferSize, var setMask) = config;
+            (Connection conn, int bufferSize, bool setMask) = config;
 
             Profiler.BeginThreadProfiling("SimpleWeb", $"SendLoop {conn.connId}");
 
             // create write buffer for this thread
-            var writeBuffer = new byte[bufferSize];
-            var maskHelper = setMask ? new MaskHelper() : null;
+            byte[] writeBuffer = new byte[bufferSize];
+            MaskHelper maskHelper = setMask ? new MaskHelper() : null;
             try
             {
-                var client = conn.client;
-                var stream = conn.stream;
+                TcpClient client = conn.client;
+                Stream stream = conn.stream;
 
                 // null check in case disconnect while send thread is starting
                 if (client == null)
@@ -65,18 +65,18 @@ namespace Mirror.SimpleWeb
 
                     if (SendLoopConfig.batchSend)
                     {
-                        var offset = 0;
-                        while (conn.sendQueue.TryDequeue(out var msg))
+                        int offset = 0;
+                        while (conn.sendQueue.TryDequeue(out ArrayBuffer msg))
                         {
                             // check if connected before sending message
                             if (!client.Connected)
                             {
-                                Log.Verbose($"[SWT-SendLoop]: SendLoop {conn} not connected");
+                                Log.Verbose("[SWT-SendLoop]: SendLoop {0} not connected", conn);
                                 msg.Release();
                                 return;
                             }
 
-                            var maxLength = msg.count + Constants.HeaderSize + Constants.MaskSize;
+                            int maxLength = msg.count + Constants.HeaderSize + Constants.MaskSize;
 
                             // if next writer could overflow, write to stream and clear buffer
                             if (offset + maxLength > bufferSize)
@@ -96,31 +96,28 @@ namespace Mirror.SimpleWeb
                     }
                     else
                     {
-                        while (conn.sendQueue.TryDequeue(out var msg))
+                        while (conn.sendQueue.TryDequeue(out ArrayBuffer msg))
                         {
                             // check if connected before sending message
                             if (!client.Connected)
                             {
-                                Log.Verbose($"[SWT-SendLoop]: SendLoop {conn} not connected");
+                                Log.Verbose("[SWT-SendLoop]: SendLoop {0} not connected", conn);
                                 msg.Release();
                                 return;
                             }
 
-                            var length = SendMessage(writeBuffer, 0, msg, setMask, maskHelper);
+                            int length = SendMessage(writeBuffer, 0, msg, setMask, maskHelper);
                             stream.Write(writeBuffer, 0, length);
                             msg.Release();
                         }
                     }
                 }
 
-                Log.Verbose($"[SWT-SendLoop]: {conn} Not Connected");
+                Log.Verbose("[SWT-SendLoop]: {0} Not Connected", conn);
             }
             catch (ThreadInterruptedException e) { Log.InfoException(e); }
-            catch (ThreadAbortException e) { Log.InfoException(e); }
-            catch (Exception e)
-            {
-                Log.Exception(e);
-            }
+            catch (ThreadAbortException) { Log.Error("[SWT-SendLoop]: Thread Abort Exception"); }
+            catch (Exception e) { Log.Exception(e); }
             finally
             {
                 Profiler.EndThreadProfiling();
@@ -130,10 +127,10 @@ namespace Mirror.SimpleWeb
         }
 
         /// <returns>new offset in buffer</returns>
-        private static int SendMessage(byte[] buffer, int startOffset, ArrayBuffer msg, bool setMask, MaskHelper maskHelper)
+        static int SendMessage(byte[] buffer, int startOffset, ArrayBuffer msg, bool setMask, MaskHelper maskHelper)
         {
-            var msgLength = msg.count;
-            var offset = WriteHeader(buffer, startOffset, msgLength, setMask);
+            int msgLength = msg.count;
+            int offset = WriteHeader(buffer, startOffset, msgLength, setMask);
 
             if (setMask)
             {
@@ -148,7 +145,7 @@ namespace Mirror.SimpleWeb
 
             if (setMask)
             {
-                var messageOffset = offset - msgLength;
+                int messageOffset = offset - msgLength;
                 MessageProcessor.ToggleMask(buffer, messageOffset, msgLength, buffer, messageOffset - Constants.MaskSize);
             }
 
@@ -157,7 +154,7 @@ namespace Mirror.SimpleWeb
 
         public static int WriteHeader(byte[] buffer, int startOffset, int msgLength, bool setMask)
         {
-            var sendLength = 0;
+            int sendLength = 0;
             const byte finished = 128;
             const byte byteOpCode = 2;
 
@@ -199,11 +196,10 @@ namespace Mirror.SimpleWeb
         }
 
     }
-
-    internal sealed class MaskHelper : IDisposable
+    sealed class MaskHelper : IDisposable
     {
-        private readonly byte[] maskBuffer;
-        private readonly RNGCryptoServiceProvider random;
+        readonly byte[] maskBuffer;
+        readonly RNGCryptoServiceProvider random;
 
         public MaskHelper()
         {

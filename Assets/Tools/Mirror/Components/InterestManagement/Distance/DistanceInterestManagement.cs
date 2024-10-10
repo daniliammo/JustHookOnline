@@ -12,17 +12,16 @@ namespace Mirror
 
         [Tooltip("Rebuild all every 'rebuildInterval' seconds.")]
         public float rebuildInterval = 1;
-
-        private double lastRebuildTime;
+        double lastRebuildTime;
 
         // cache custom ranges to avoid runtime TryGetComponent lookups
-        private readonly Dictionary<NetworkIdentity, DistanceInterestManagementCustomRange> CustomRanges = new Dictionary<NetworkIdentity, DistanceInterestManagementCustomRange>();
+        readonly Dictionary<NetworkIdentity, DistanceInterestManagementCustomRange> CustomRanges = new Dictionary<NetworkIdentity, DistanceInterestManagementCustomRange>();
 
         // helper function to get vis range for a given object, or default.
         [ServerCallback]
-        private int GetVisRange(NetworkIdentity identity)
+        int GetVisRange(NetworkIdentity identity)
         {
-            return CustomRanges.TryGetValue(identity, out var custom) ? custom.visRange : visRange;
+            return CustomRanges.TryGetValue(identity, out DistanceInterestManagementCustomRange custom) ? custom.visRange : visRange;
         }
 
         [ServerCallback]
@@ -45,15 +44,15 @@ namespace Mirror
 
         public override bool OnCheckObserver(NetworkIdentity identity, NetworkConnectionToClient newObserver)
         {
-            var range = GetVisRange(identity);
+            int range = GetVisRange(identity);
             return Vector3.Distance(identity.transform.position, newObserver.identity.transform.position) < range;
         }
 
         public override void OnRebuildObservers(NetworkIdentity identity, HashSet<NetworkConnectionToClient> newObservers)
         {
             // cache range and .transform because both call GetComponent.
-            var range = GetVisRange(identity);
-            var position = identity.transform.position;
+            int range = GetVisRange(identity);
+            Vector3 position = identity.transform.position;
 
             // brute force distance check
             // -> only player connections can be observers, so it's enough if we
@@ -62,7 +61,7 @@ namespace Mirror
             //    magnitude faster. if we have 10k monsters and run a sphere
             //    cast 10k times, we will see a noticeable lag even with physics
             //    layers. but checking to every connection is fast.
-            foreach (var conn in NetworkServer.connections.Values)
+            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
             {
                 // authenticated and joined world with a player?
                 if (conn != null && conn.isAuthenticated && conn.identity != null)

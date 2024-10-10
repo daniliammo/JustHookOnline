@@ -52,7 +52,7 @@ namespace Mirror
         {
             if (buffer.Length < value)
             {
-                var capacity = Math.Max(value, buffer.Length * 2);
+                int capacity = Math.Max(value, buffer.Length * 2);
                 Array.Resize(ref buffer, capacity);
             }
         }
@@ -61,7 +61,7 @@ namespace Mirror
         // Try to use ToArraySegment instead to avoid allocations!
         public byte[] ToArray()
         {
-            var data = new byte[Position];
+            byte[] data = new byte[Position];
             Array.ConstrainedCopy(buffer, 0, data, 0, Position);
             return data;
         }
@@ -139,7 +139,7 @@ namespace Mirror
             // => our 1mio writes benchmark is 6x slower with Marshal.SizeOf<T>
             // => for blittable types, sizeof(T) is even recommended:
             // https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
-            var size = sizeof(T);
+            int size = sizeof(T);
 
             // ensure capacity
             // NOTE that our runtime resizing comes at no extra cost because:
@@ -221,7 +221,7 @@ namespace Mirror
         /// <summary>Writes any type that mirror supports. Uses weaver populated Writer(T).write.</summary>
         public void Write<T>(T value)
         {
-            var writeDelegate = Writer<T>.write;
+            Action<NetworkWriter, T> writeDelegate = Writer<T>.write;
             if (writeDelegate == null)
             {
                 Debug.LogError($"No writer found for {typeof(T)}. This happens either if you are missing a NetworkWriter extension for your custom type, or if weaving failed. Try to reimport a script to weave again.");

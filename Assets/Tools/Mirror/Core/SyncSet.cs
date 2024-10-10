@@ -23,10 +23,6 @@ namespace Mirror
         /// <summary>This is called BEFORE the data is cleared</summary>
         public Action OnClear;
 
-        // Deprecated 2024-03-22
-        [Obsolete("Use individual Actions, which pass OLD value where appropriate, instead.")]
-        public Action<Operation, T> Callback;
-
         protected readonly ISet<T> objects;
 
         public int Count => objects.Count;
@@ -39,7 +35,7 @@ namespace Mirror
             OP_CLEAR
         }
 
-        private struct Change
+        struct Change
         {
             internal Operation operation;
             internal T item;
@@ -50,13 +46,13 @@ namespace Mirror
         // -> changing the same slot 10x caues 10 changes.
         // -> note that this grows until next sync(!)
         // TODO Dictionary<key, change> to avoid ever growing changes / redundant changes!
-        private readonly List<Change> changes = new List<Change>();
+        readonly List<Change> changes = new List<Change>();
 
         // how many changes we need to ignore
         // this is needed because when we initialize the list,
         // we might later receive changes that have already been applied
         // so we need to skip them
-        private int changesAhead;
+        int changesAhead;
 
         public SyncSet(ISet<T> objects)
         {
@@ -74,7 +70,7 @@ namespace Mirror
         // this should be called after a successful sync
         public override void ClearChanges() => changes.Clear();
 
-        private void AddOperation(Operation op, T oldItem, T newItem, bool checkAccess)
+        void AddOperation(Operation op, T oldItem, T newItem, bool checkAccess)
         {
             if (checkAccess && IsReadOnly)
                 throw new InvalidOperationException("SyncSets can only be modified by the owner.");
@@ -116,35 +112,26 @@ namespace Mirror
                 case Operation.OP_ADD:
                     OnAdd?.Invoke(newItem);
                     OnChange?.Invoke(op, newItem);
-#pragma warning disable CS0618 // Type or member is obsolete
-                    Callback?.Invoke(op, newItem);
-#pragma warning restore CS0618 // Type or member is obsolete
                     break;
                 case Operation.OP_REMOVE:
                     OnRemove?.Invoke(oldItem);
                     OnChange?.Invoke(op, oldItem);
-#pragma warning disable CS0618 // Type or member is obsolete
-                    Callback?.Invoke(op, oldItem);
-#pragma warning restore CS0618 // Type or member is obsolete
                     break;
                 case Operation.OP_CLEAR:
                     OnClear?.Invoke();
                     OnChange?.Invoke(op, default);
-#pragma warning disable CS0618 // Type or member is obsolete
-                    Callback?.Invoke(op, default);
-#pragma warning restore CS0618 // Type or member is obsolete
                     break;
             }
         }
 
-        private void AddOperation(Operation op, bool checkAccess) => AddOperation(op, default, default, checkAccess);
+        void AddOperation(Operation op, bool checkAccess) => AddOperation(op, default, default, checkAccess);
 
         public override void OnSerializeAll(NetworkWriter writer)
         {
             // if init,  write the full list content
             writer.WriteUInt((uint)objects.Count);
 
-            foreach (var obj in objects)
+            foreach (T obj in objects)
                 writer.Write(obj);
 
             // all changes have been applied already
@@ -159,9 +146,9 @@ namespace Mirror
             // write all the queued up changes
             writer.WriteUInt((uint)changes.Count);
 
-            for (var i = 0; i < changes.Count; i++)
+            for (int i = 0; i < changes.Count; i++)
             {
-                var change = changes[i];
+                Change change = changes[i];
                 writer.WriteByte((byte)change.operation);
 
                 switch (change.operation)
@@ -181,14 +168,14 @@ namespace Mirror
         public override void OnDeserializeAll(NetworkReader reader)
         {
             // if init,  write the full list content
-            var count = (int)reader.ReadUInt();
+            int count = (int)reader.ReadUInt();
 
             objects.Clear();
             changes.Clear();
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var obj = reader.Read<T>();
+                T obj = reader.Read<T>();
                 objects.Add(obj);
             }
 
@@ -200,15 +187,15 @@ namespace Mirror
 
         public override void OnDeserializeDelta(NetworkReader reader)
         {
-            var changesCount = (int)reader.ReadUInt();
+            int changesCount = (int)reader.ReadUInt();
 
-            for (var i = 0; i < changesCount; i++)
+            for (int i = 0; i < changesCount; i++)
             {
-                var operation = (Operation)reader.ReadByte();
+                Operation operation = (Operation)reader.ReadByte();
 
                 // apply the operation only if it is a new change
                 // that we have not applied yet
-                var apply = changesAhead == 0;
+                bool apply = changesAhead == 0;
                 T oldItem = default;
                 T newItem = default;
 
@@ -314,7 +301,7 @@ namespace Mirror
             }
 
             // remove every element in other from this
-            foreach (var element in other)
+            foreach (T element in other)
                 Remove(element);
         }
 
@@ -324,16 +311,16 @@ namespace Mirror
                 IntersectWithSet(otherSet);
             else
             {
-                var otherAsSet = new HashSet<T>(other);
+                HashSet<T> otherAsSet = new HashSet<T>(other);
                 IntersectWithSet(otherAsSet);
             }
         }
 
-        private void IntersectWithSet(ISet<T> otherSet)
+        void IntersectWithSet(ISet<T> otherSet)
         {
-            var elements = new List<T>(objects);
+            List<T> elements = new List<T>(objects);
 
-            foreach (var element in elements)
+            foreach (T element in elements)
                 if (!otherSet.Contains(element))
                     Remove(element);
         }
@@ -356,7 +343,7 @@ namespace Mirror
             if (other == this)
                 Clear();
             else
-                foreach (var element in other)
+                foreach (T element in other)
                     if (!Remove(element))
                         Add(element);
         }
@@ -365,7 +352,7 @@ namespace Mirror
         public void UnionWith(IEnumerable<T> other)
         {
             if (other != this)
-                foreach (var element in other)
+                foreach (T element in other)
                     Add(element);
         }
     }

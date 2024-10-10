@@ -116,21 +116,21 @@ namespace Mirror
  
         public static SyncData ReadSyncData(this NetworkReader reader)
         {   
-            var changedData = (Changed)reader.ReadByte();
+            Changed changedData = (Changed)reader.ReadByte();
             
             // If we have nothing to read here, let's say because posX is unchanged, then we can write anything
             // for now, but in the NT, we will need to check changedData again, to put the right values of the axis
             // back. We don't have it here.
 
-            var position = 
+            Vector3 position = 
                 new Vector3(
                     (changedData & Changed.PosX) > 0 ? reader.ReadFloat() : 0,
                     (changedData & Changed.PosY) > 0 ? reader.ReadFloat() : 0,
                     (changedData & Changed.PosZ) > 0 ? reader.ReadFloat() : 0
                 );
 
-            var vecRotation = new Vector3();
-            var quatRotation = new Quaternion();
+            Vector3 vecRotation = new Vector3();
+            Quaternion quatRotation = new Quaternion();
 
             if ((changedData & Changed.CompressRot) > 0)
             {
@@ -146,9 +146,9 @@ namespace Mirror
                     );
             }
                 
-            var scale = (changedData & Changed.Scale) == Changed.Scale ? reader.ReadVector3() : new Vector3();
+            Vector3 scale = (changedData & Changed.Scale) == Changed.Scale ? reader.ReadVector3() : new Vector3();
 
-            var _syncData = (changedData & Changed.CompressRot) > 0 ? new SyncData(changedData, position, quatRotation, scale) : new SyncData(changedData, position, vecRotation, scale);
+            SyncData _syncData = (changedData & Changed.CompressRot) > 0 ? new SyncData(changedData, position, quatRotation, scale) : new SyncData(changedData, position, vecRotation, scale);
 
             return _syncData;
         }

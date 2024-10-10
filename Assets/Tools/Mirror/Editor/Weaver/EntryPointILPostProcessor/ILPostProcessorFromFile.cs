@@ -18,20 +18,20 @@ namespace Mirror.Weaver
             // we COULD Weave() with a test logger manually.
             // but for test result consistency on all platforms,
             // let's invoke the ILPostProcessor here too.
-            var assembly = new CompiledAssemblyFromFile(assemblyPath);
+            CompiledAssemblyFromFile assembly = new CompiledAssemblyFromFile(assemblyPath);
             assembly.References = references;
 
             // create ILPP and check WillProcess like Unity would.
-            var ilpp = new ILPostProcessorHook();
+            ILPostProcessorHook ilpp = new ILPostProcessorHook();
             if (ilpp.WillProcess(assembly))
             {
                 //Debug.Log($"Will Process: {assembly.Name}");
 
                 // process it like Unity would
-                var result = ilpp.Process(assembly);
+                ILPostProcessResult result = ilpp.Process(assembly);
 
                 // handle the error messages like Unity would
-                foreach (var message in result.Diagnostics)
+                foreach (DiagnosticMessage message in result.Diagnostics)
                 {
                     if (message.DiagnosticType == DiagnosticType.Warning)
                     {

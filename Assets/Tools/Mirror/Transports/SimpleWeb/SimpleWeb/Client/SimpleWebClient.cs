@@ -9,7 +9,7 @@ namespace Mirror.SimpleWeb
         NotConnected = 0,
         Connecting = 1,
         Connected = 2,
-        Disconnecting = 3
+        Disconnecting = 3,
     }
 
     /// <summary>
@@ -18,7 +18,7 @@ namespace Mirror.SimpleWeb
     /// </summary>
     public abstract class SimpleWebClient
     {
-        private readonly int maxMessagesPerTick;
+        readonly int maxMessagesPerTick;
 
         protected ClientState state;
         protected readonly int maxMessageSize;
@@ -67,14 +67,14 @@ namespace Mirror.SimpleWeb
         /// <param name="behaviour"></param>
         public void ProcessMessageQueue(MonoBehaviour behaviour)
         {
-            var processedCount = 0;
-            var skipEnabled = behaviour == null;
+            int processedCount = 0;
+            bool skipEnabled = behaviour == null;
             // check enabled every time in case behaviour was disabled after data
             while (
                 (skipEnabled || behaviour.enabled) &&
                 processedCount < maxMessagesPerTick &&
                 // Dequeue last
-                receiveQueue.TryDequeue(out var next)
+                receiveQueue.TryDequeue(out Message next)
                 )
             {
                 processedCount++;
@@ -97,7 +97,7 @@ namespace Mirror.SimpleWeb
                 }
             }
             if (receiveQueue.Count > 0)
-                Log.Warn($"[SWT-SimpleWebClient]: ProcessMessageQueue has {receiveQueue.Count} remaining.");
+                Log.Warn("[SWT-SimpleWebClient]: ProcessMessageQueue has {0} remaining.", receiveQueue.Count);
         }
     }
 }

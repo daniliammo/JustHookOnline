@@ -59,7 +59,7 @@ namespace Mirror
             // estimating in multiples is a great way to be game independent.
             // for example, a fast paced shooter and a slow paced RTS will both
             // have poor connection if the multiplier is >10.
-            var multiplier = currentBufferTime / targetBufferTime;
+            double multiplier = currentBufferTime / targetBufferTime;
 
             // empirically measured with Tanks demo + LatencySimulation.
             // it's not obvious to estimate on paper.

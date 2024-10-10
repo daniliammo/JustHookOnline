@@ -9,13 +9,13 @@ namespace Mirror.Discovery
     [RequireComponent(typeof(NetworkDiscovery))]
     public class NetworkDiscoveryHUD : MonoBehaviour
     {
-        private readonly Dictionary<long, ServerResponse> discoveredServers = new Dictionary<long, ServerResponse>();
-        private Vector2 scrollViewPos = Vector2.zero;
+        readonly Dictionary<long, ServerResponse> discoveredServers = new Dictionary<long, ServerResponse>();
+        Vector2 scrollViewPos = Vector2.zero;
 
         public NetworkDiscovery networkDiscovery;
 
 #if UNITY_EDITOR
-        private void OnValidate()
+        void OnValidate()
         {
             if (networkDiscovery == null)
             {
@@ -26,7 +26,7 @@ namespace Mirror.Discovery
         }
 #endif
 
-        private void OnGUI()
+        void OnGUI()
         {
             if (NetworkManager.singleton == null)
                 return;
@@ -38,7 +38,7 @@ namespace Mirror.Discovery
                 StopButtons();
         }
 
-        private void DrawGUI()
+        void DrawGUI()
         {
             GUILayout.BeginArea(new Rect(10, 10, 300, 500));
             GUILayout.BeginHorizontal();
@@ -74,7 +74,7 @@ namespace Mirror.Discovery
             // servers
             scrollViewPos = GUILayout.BeginScrollView(scrollViewPos);
 
-            foreach (var info in discoveredServers.Values)
+            foreach (ServerResponse info in discoveredServers.Values)
                 if (GUILayout.Button(info.EndPoint.Address.ToString()))
                     Connect(info);
 
@@ -82,7 +82,7 @@ namespace Mirror.Discovery
             GUILayout.EndArea();
         }
 
-        private void StopButtons()
+        void StopButtons()
         {
             GUILayout.BeginArea(new Rect(10, 40, 100, 25));
 
@@ -117,7 +117,7 @@ namespace Mirror.Discovery
             GUILayout.EndArea();
         }
 
-        private void Connect(ServerResponse info)
+        void Connect(ServerResponse info)
         {
             networkDiscovery.StopDiscovery();
             NetworkManager.singleton.StartClient(info.uri);

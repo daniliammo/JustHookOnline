@@ -6,16 +6,16 @@ namespace Mirror.Transports.Encryption
     [CustomEditor(typeof(EncryptionTransport), true)]
     public class EncryptionTransportInspector : UnityEditor.Editor
     {
-        private SerializedProperty innerProperty;
-        private SerializedProperty clientValidatesServerPubKeyProperty;
-        private SerializedProperty clientTrustedPubKeySignaturesProperty;
-        private SerializedProperty serverKeypairPathProperty;
-        private SerializedProperty serverLoadKeyPairFromFileProperty;
+        SerializedProperty innerProperty;
+        SerializedProperty clientValidatesServerPubKeyProperty;
+        SerializedProperty clientTrustedPubKeySignaturesProperty;
+        SerializedProperty serverKeypairPathProperty;
+        SerializedProperty serverLoadKeyPairFromFileProperty;
 
         // Assuming proper SerializedProperty definitions for properties
         // Add more SerializedProperty fields related to different modes as needed
 
-        private void OnEnable()
+        void OnEnable()
         {
             innerProperty = serializedObject.FindProperty("inner");
             clientValidatesServerPubKeyProperty = serializedObject.FindProperty("clientValidateServerPubKey");
@@ -36,7 +36,7 @@ namespace Mirror.Transports.Encryption
             EditorGUILayout.HelpBox("Validating the servers public key is essential for complete man-in-the-middle (MITM) safety, but might not be feasible for all modes of hosting.", MessageType.Info);
             EditorGUILayout.PropertyField(clientValidatesServerPubKeyProperty, new GUIContent("Validate Server Public Key"));
 
-            var validationMode = (EncryptionTransport.ValidationMode)clientValidatesServerPubKeyProperty.enumValueIndex;
+            EncryptionTransport.ValidationMode validationMode = (EncryptionTransport.ValidationMode)clientValidatesServerPubKeyProperty.enumValueIndex;
 
             switch (validationMode)
             {
@@ -58,8 +58,8 @@ namespace Mirror.Transports.Encryption
             }
             if(GUILayout.Button("Generate Key Pair"))
             {
-                var keyPair = EncryptionCredentials.Generate();
-                var path = EditorUtility.SaveFilePanel("Select where to save the keypair", "", "server-keys.json", "json");
+                EncryptionCredentials keyPair = EncryptionCredentials.Generate();
+                string path = EditorUtility.SaveFilePanel("Select where to save the keypair", "", "server-keys.json", "json");
                 if (!string.IsNullOrEmpty(path))
                 {
                     keyPair.SaveToFile(path);

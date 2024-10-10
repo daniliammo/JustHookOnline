@@ -22,12 +22,12 @@ namespace Mirror
         {
             unchecked
             {
-                var hash = 0x811c9dc5;
+                uint hash = 0x811c9dc5;
                 uint prime = 0x1000193;
 
-                for (var i = 0; i < text.Length; ++i)
+                for (int i = 0; i < text.Length; ++i)
                 {
-                    var value = (byte)text[i];
+                    byte value = (byte)text[i];
                     hash = hash ^ value;
                     hash *= prime;
                 }
@@ -42,7 +42,7 @@ namespace Mirror
         public static ushort GetStableHashCode16(this string text)
         {
             // deterministic hash
-            var hash = GetStableHashCode(text);
+            int hash = GetStableHashCode(text);
 
             // Gets the 32bit fnv1a hash
             // To get it down to 16bit but still reduce hash collisions we cant just cast it to ushort
@@ -93,20 +93,26 @@ namespace Mirror
         {
             // while count > 0 risks deadlock if other thread write at the same time.
             // our safest solution is a best-effort approach to clear 'Count' once.
-            var count = source.Count; // get it only once
-            for (var i = 0; i < count; ++i)
+            int count = source.Count; // get it only once
+            for (int i = 0; i < count; ++i)
             {
                 source.TryDequeue(out _);
             }
         }
 #endif
 
-#if !UNITY_2022_0_OR_NEWER
+#if !UNITY_2021_3_OR_NEWER
         // Some patch versions of Unity 2021.3 and earlier don't have transform.GetPositionAndRotation which we use for performance in some places
         public static void GetPositionAndRotation(this Transform transform, out Vector3 position, out Quaternion rotation)
         {
             position = transform.position;
             rotation = transform.rotation;
+        }
+
+        public static void SetPositionAndRotation(this Transform transform, Vector3 position, Quaternion rotation)
+        {
+            transform.position = position;
+            transform.rotation = rotation;
         }
 #endif
 

@@ -16,7 +16,7 @@ namespace Mirror.Authenticators
         public string username;
         public string password;
 
-        private readonly HashSet<NetworkConnection> connectionsPendingDisconnect = new HashSet<NetworkConnection>();
+        readonly HashSet<NetworkConnectionToClient> connectionsPendingDisconnect = new HashSet<NetworkConnectionToClient>();
 
         #region Messages
 
@@ -82,7 +82,7 @@ namespace Mirror.Authenticators
             if (msg.authUsername == serverUsername && msg.authPassword == serverPassword)
             {
                 // create and send msg to client so it knows to proceed
-                var authResponseMessage = new AuthResponseMessage
+                AuthResponseMessage authResponseMessage = new AuthResponseMessage
                 {
                     code = 100,
                     message = "Success"
@@ -98,7 +98,7 @@ namespace Mirror.Authenticators
                 connectionsPendingDisconnect.Add(conn);
 
                 // create and send msg to client so it knows to disconnect
-                var authResponseMessage = new AuthResponseMessage
+                AuthResponseMessage authResponseMessage = new AuthResponseMessage
                 {
                     code = 200,
                     message = "Invalid Credentials"
@@ -114,7 +114,7 @@ namespace Mirror.Authenticators
             }
         }
 
-        private IEnumerator DelayedDisconnect(NetworkConnectionToClient conn, float waitTime)
+        IEnumerator DelayedDisconnect(NetworkConnectionToClient conn, float waitTime)
         {
             yield return new WaitForSeconds(waitTime);
 
@@ -156,7 +156,7 @@ namespace Mirror.Authenticators
         /// </summary>
         public override void OnClientAuthenticate()
         {
-            var authRequestMessage = new AuthRequestMessage
+            AuthRequestMessage authRequestMessage = new AuthRequestMessage
             {
                 authUsername = username,
                 authPassword = password

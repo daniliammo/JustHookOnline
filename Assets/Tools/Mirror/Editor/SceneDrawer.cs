@@ -10,7 +10,7 @@ namespace Mirror
         {
             if (property.propertyType == SerializedPropertyType.String)
             {
-                var sceneObject = AssetDatabase.LoadAssetAtPath<SceneAsset>(property.stringValue);
+                SceneAsset sceneObject = AssetDatabase.LoadAssetAtPath<SceneAsset>(property.stringValue);
 
                 if (sceneObject == null && !string.IsNullOrWhiteSpace(property.stringValue))
                 {
@@ -21,7 +21,7 @@ namespace Mirror
                 {
                     Debug.LogError($"Could not find scene {property.stringValue} in {property.propertyPath}, assign the proper scenes in your NetworkManager");
                 }
-                var scene = (SceneAsset)EditorGUI.ObjectField(position, label, sceneObject, typeof(SceneAsset), true);
+                SceneAsset scene = (SceneAsset)EditorGUI.ObjectField(position, label, sceneObject, typeof(SceneAsset), true);
 
                 property.stringValue = AssetDatabase.GetAssetPath(scene);
             }
@@ -33,9 +33,9 @@ namespace Mirror
 
         protected SceneAsset GetBuildSettingsSceneObject(string sceneName)
         {
-            foreach (var buildScene in EditorBuildSettings.scenes)
+            foreach (EditorBuildSettingsScene buildScene in EditorBuildSettings.scenes)
             {
-                var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(buildScene.path);
+                SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(buildScene.path);
                 if (sceneAsset!= null && sceneAsset.name == sceneName)
                 {
                     return sceneAsset;

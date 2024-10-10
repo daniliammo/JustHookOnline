@@ -58,15 +58,15 @@ namespace Mirror
             // TODO this needs to be faster than O(N)
             //      search around that area.
             //      should be O(1) most of the time, unless sampling was off.
-            var index = 0; // manually count when iterating. easier than for-int loop.
-            var prev = new KeyValuePair<double, T>();
+            int index = 0; // manually count when iterating. easier than for-int loop.
+            KeyValuePair<double, T> prev = new KeyValuePair<double, T>();
 
             // SortedList foreach iteration allocates a LOT. use for-int instead.
             // foreach (KeyValuePair<double, T> entry in history) {
-            for (var i = 0; i < history.Count; ++i)
+            for (int i = 0; i < history.Count; ++i)
             {
-                var key = history.Keys[i];
-                var value = history.Values[i];
+                double key = history.Keys[i];
+                T value = history.Values[i];
 
                 // exact match?
                 if (timestamp == key)
@@ -150,12 +150,12 @@ namespace Mirror
             // so when we apply the correction, the new after.position would be:
             //   corrected.position(25) + after.delta(5) = 30
             //
-            var previousDeltaTime = after.timestamp - before.timestamp;     // 3.0 - 1.0 = 2.0
-            var correctedDeltaTime = after.timestamp - corrected.timestamp; // 3.0 - 2.5 = 0.5
+            double previousDeltaTime = after.timestamp - before.timestamp;     // 3.0 - 1.0 = 2.0
+            double correctedDeltaTime = after.timestamp - corrected.timestamp; // 3.0 - 2.5 = 0.5
 
             // fix multiplier becoming NaN if previousDeltaTime is 0:
             // double multiplier = correctedDeltaTime / previousDeltaTime;
-            var multiplier = previousDeltaTime != 0 ? correctedDeltaTime / previousDeltaTime : 0; // 0.5 / 2.0 = 0.25
+            double multiplier = previousDeltaTime != 0 ? correctedDeltaTime / previousDeltaTime : 0; // 0.5 / 2.0 = 0.25
 
             // recalculate 'after.delta' with the multiplier
             after.positionDelta        = Vector3.Lerp(Vector3.zero, after.positionDelta, (float)multiplier);
@@ -168,11 +168,11 @@ namespace Mirror
             history[after.timestamp] = after;
 
             // second step: readjust all absolute values by rewinding client's delta moves on top of it.
-            var last = corrected;
-            for (var i = afterIndex; i < history.Count; ++i)
+            T last = corrected;
+            for (int i = afterIndex; i < history.Count; ++i)
             {
-                var key = history.Keys[i];
-                var value = history.Values[i];
+                double key = history.Keys[i];
+                T value = history.Values[i];
 
                 // correct absolute position based on last + delta.
                 value.position        = last.position + value.positionDelta;

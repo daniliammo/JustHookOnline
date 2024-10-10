@@ -18,7 +18,7 @@ namespace Mirror.Weaver
                 WeavingFailed = true;
                 return null;
             }
-            var method = ResolveMethod(tr, assembly, Log, m => m.Name == name, ref WeavingFailed);
+            MethodReference method = ResolveMethod(tr, assembly, Log, m => m.Name == name, ref WeavingFailed);
             if (method == null)
             {
                 Log.Error($"Method not found with name {name} in type {tr.Name}", tr);
@@ -29,7 +29,7 @@ namespace Mirror.Weaver
 
         public static MethodReference ResolveMethod(TypeReference t, AssemblyDefinition assembly, Logger Log, System.Func<MethodDefinition, bool> predicate, ref bool WeavingFailed)
         {
-            foreach (var methodRef in t.Resolve().Methods)
+            foreach (MethodDefinition methodRef in t.Resolve().Methods)
             {
                 if (predicate(methodRef))
                 {
@@ -50,7 +50,7 @@ namespace Mirror.Weaver
                 WeavingFailed = true;
                 return null;
             }
-            var field = ResolveField(tr, assembly, Log, m => m.Name == name, ref WeavingFailed);
+            FieldReference field = ResolveField(tr, assembly, Log, m => m.Name == name, ref WeavingFailed);
             if (field == null)
             {
                 Log.Error($"Field not found with name {name} in type {tr.Name}", tr);
@@ -61,7 +61,7 @@ namespace Mirror.Weaver
 
         public static FieldReference ResolveField(TypeReference t, AssemblyDefinition assembly, Logger Log, System.Func<FieldDefinition, bool> predicate, ref bool WeavingFailed)
         {
-            foreach (var fieldRef in t.Resolve().Fields)
+            foreach (FieldDefinition fieldRef in t.Resolve().Fields)
             {
                 if (predicate(fieldRef))
                 {
@@ -80,7 +80,7 @@ namespace Mirror.Weaver
             {
                 return null;
             }
-            foreach (var methodDef in tr.Resolve().Methods)
+            foreach (MethodDefinition methodDef in tr.Resolve().Methods)
             {
                 if (methodDef.Name == name)
                 {
@@ -99,7 +99,7 @@ namespace Mirror.Weaver
 
         public static MethodDefinition ResolveDefaultPublicCtor(TypeReference variable)
         {
-            foreach (var methodRef in variable.Resolve().Methods)
+            foreach (MethodDefinition methodRef in variable.Resolve().Methods)
             {
                 if (methodRef.Name == ".ctor" &&
                     methodRef.Resolve().IsPublic &&
@@ -113,7 +113,7 @@ namespace Mirror.Weaver
 
         public static MethodReference ResolveProperty(TypeReference tr, AssemblyDefinition assembly, string name)
         {
-            foreach (var pd in tr.Resolve().Properties)
+            foreach (PropertyDefinition pd in tr.Resolve().Properties)
             {
                 if (pd.Name == name)
                 {

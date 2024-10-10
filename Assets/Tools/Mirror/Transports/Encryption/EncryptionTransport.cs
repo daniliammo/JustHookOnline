@@ -17,7 +17,7 @@ namespace Mirror.Transports.Encryption
         {
             Off,
             List,
-            Callback
+            Callback,
         }
 
         public ValidationMode clientValidateServerPubKey;
@@ -40,12 +40,12 @@ namespace Mirror.Transports.Encryption
 
         private void ServerRemoveFromPending(EncryptedConnection con)
         {
-            for (var i = 0; i < _serverPendingConnections.Count; i++)
+            for (int i = 0; i < _serverPendingConnections.Count; i++)
             {
                 if (_serverPendingConnections[i] == con)
                 {
                     // remove by swapping with last
-                    var lastIndex = _serverPendingConnections.Count - 1;
+                    int lastIndex = _serverPendingConnections.Count - 1;
                     _serverPendingConnections[i] = _serverPendingConnections[lastIndex];
                     _serverPendingConnections.RemoveAt(lastIndex);
                     break;
@@ -55,7 +55,7 @@ namespace Mirror.Transports.Encryption
 
         private void HandleInnerServerDisconnected(int connId)
         {
-            if (_serverConnections.TryGetValue(connId, out var con))
+            if (_serverConnections.TryGetValue(connId, out EncryptedConnection con))
             {
                 ServerRemoveFromPending(con);
                 _serverConnections.Remove(connId);
@@ -70,13 +70,15 @@ namespace Mirror.Transports.Encryption
 
         private void HandleInnerServerDataReceived(int connId, ArraySegment<byte> data, int channel)
         {
-            if (_serverConnections.TryGetValue(connId, out var c))
+            if (_serverConnections.TryGetValue(connId, out EncryptedConnection c))
             {
                 c.OnReceiveRaw(data, channel);
             }
         }
 
-        private void HandleInnerServerConnected(int connId)
+        private void HandleInnerServerConnected(int connId) => HandleInnerServerConnected(connId, inner.ServerGetClientAddress(connId));
+
+        private void HandleInnerServerConnected(int connId, string clientRemoteAddress)
         {
             Debug.Log($"[EncryptionTransport] New connection #{connId}");
             EncryptedConnection ec = null;
@@ -89,7 +91,8 @@ namespace Mirror.Transports.Encryption
                 {
                     Debug.Log($"[EncryptionTransport] Connection #{connId} is ready");
                     ServerRemoveFromPending(ec);
-                    OnServerConnected?.Invoke(connId);
+                    //OnServerConnected?.Invoke(connId);
+                    OnServerConnectedWithAddress?.Invoke(connId, clientRemoteAddress);
                 },
                 (type, msg) =>
                 {
@@ -205,7 +208,10 @@ namespace Mirror.Transports.Encryption
             {
                 _credentials = EncryptionCredentials.Generate();
             }
+#pragma warning disable CS0618 // Type or member is obsolete
             inner.OnServerConnected = HandleInnerServerConnected;
+#pragma warning restore CS0618 // Type or member is obsolete
+            inner.OnServerConnectedWithAddress = HandleInnerServerConnected;
             inner.OnServerDataReceived = HandleInnerServerDataReceived;
             inner.OnServerDataSent = (connId, bytes, channel) => OnServerDataSent?.Invoke(connId, bytes, channel);
             inner.OnServerError = HandleInnerServerError;
@@ -215,7 +221,7 @@ namespace Mirror.Transports.Encryption
 
         public override void ServerSend(int connectionId, ArraySegment<byte> segment, int channelId = Channels.Reliable)
         {
-            if (_serverConnections.TryGetValue(connectionId, out var connection) && connection.IsReady)
+            if (_serverConnections.TryGetValue(connectionId, out EncryptedConnection connection) && connection.IsReady)
             {
                 connection.Send(segment, channelId);
             }
@@ -259,7 +265,7 @@ namespace Mirror.Transports.Encryption
             inner.ServerLateUpdate();
             Profiler.BeginSample("EncryptionTransport.ServerLateUpdate");
             // Reverse iteration as entries can be removed while updating
-            for (var i = _serverPendingConnections.Count - 1; i >= 0; i--)
+            for (int i = _serverPendingConnections.Count - 1; i >= 0; i--)
             {
                 _serverPendingConnections[i].TickNonReady(NetworkTime.time);
             }

@@ -13,7 +13,7 @@ namespace Mirror
     public static class ThreadLog
     {
         // queue log messages from threads
-        private struct LogEntry
+        struct LogEntry
         {
             public int     threadId;
             public LogType type;
@@ -31,11 +31,11 @@ namespace Mirror
 
         // ConcurrentQueue allocations are fine here.
         // logs allocate anywway.
-        private static readonly ConcurrentQueue<LogEntry> logs =
+        static readonly ConcurrentQueue<LogEntry> logs =
             new ConcurrentQueue<LogEntry>();
 
         // main thread id
-        private static int mainThreadId;
+        static int mainThreadId;
 
 #if !UNITY_EDITOR
         // Editor as of Unity 2021 does log threaded messages.
@@ -64,12 +64,12 @@ namespace Mirror
         }
 #endif
 
-        private static bool IsMainThread() =>
+        static bool IsMainThread() =>
             Thread.CurrentThread.ManagedThreadId == mainThreadId;
 
         // callback runs on the same thread where the Debug.Log is called.
         // we can use this to buffer messages for main thread here.
-        private static void OnLog(string message, string stackTrace, LogType type)
+        static void OnLog(string message, string stackTrace, LogType type)
         {
             // only enqueue messages from other threads.
             // otherwise OnLateUpdate main thread logging would be enqueued
@@ -80,10 +80,10 @@ namespace Mirror
             logs.Enqueue(new LogEntry(Thread.CurrentThread.ManagedThreadId, type, message, stackTrace));
         }
 
-        private static void OnLateUpdate()
+        static void OnLateUpdate()
         {
             // process queued logs on main thread
-            while (logs.TryDequeue(out var entry))
+            while (logs.TryDequeue(out LogEntry entry))
             {
                 switch (entry.type)
                 {

@@ -4,24 +4,24 @@ using Mono.CecilX.Cil;
 
 namespace Mirror.Weaver
 {
-    internal static class ServerClientAttributeProcessor
+    static class ServerClientAttributeProcessor
     {
         public static bool Process(WeaverTypes weaverTypes, Logger Log, TypeDefinition td, ref bool WeavingFailed)
         {
-            var modified = false;
-            foreach (var md in td.Methods)
+            bool modified = false;
+            foreach (MethodDefinition md in td.Methods)
             {
                 modified |= ProcessSiteMethod(weaverTypes, Log, md, ref WeavingFailed);
             }
 
-            foreach (var nested in td.NestedTypes)
+            foreach (TypeDefinition nested in td.NestedTypes)
             {
                 modified |= Process(weaverTypes, Log, nested, ref WeavingFailed);
             }
             return modified;
         }
 
-        private static bool ProcessSiteMethod(WeaverTypes weaverTypes, Logger Log, MethodDefinition md, ref bool WeavingFailed)
+        static bool ProcessSiteMethod(WeaverTypes weaverTypes, Logger Log, MethodDefinition md, ref bool WeavingFailed)
         {
             if (md.Name == ".cctor" ||
                 md.Name == NetworkBehaviourProcessor.ProcessedFunctionName ||
@@ -47,7 +47,7 @@ namespace Mirror.Weaver
 
         public static bool HasServerClientAttribute(MethodDefinition md)
         {
-            foreach (var attr in md.CustomAttributes)
+            foreach (CustomAttribute attr in md.CustomAttributes)
             {
                 switch (attr.Constructor.DeclaringType.ToString())
                 {
@@ -79,10 +79,10 @@ namespace Mirror.Weaver
             return true;
         }
 
-        private static void InjectServerGuard(WeaverTypes weaverTypes, MethodDefinition md, bool logWarning)
+        static void InjectServerGuard(WeaverTypes weaverTypes, MethodDefinition md, bool logWarning)
         {
-            var worker = md.Body.GetILProcessor();
-            var top = md.Body.Instructions[0];
+            ILProcessor worker = md.Body.GetILProcessor();
+            Instruction top = md.Body.Instructions[0];
 
             worker.InsertBefore(top, worker.Create(OpCodes.Call, weaverTypes.NetworkServerGetActive));
             worker.InsertBefore(top, worker.Create(OpCodes.Brtrue, top));
@@ -96,10 +96,10 @@ namespace Mirror.Weaver
             worker.InsertBefore(top, worker.Create(OpCodes.Ret));
         }
 
-        private static void InjectClientGuard(WeaverTypes weaverTypes, MethodDefinition md, bool logWarning)
+        static void InjectClientGuard(WeaverTypes weaverTypes, MethodDefinition md, bool logWarning)
         {
-            var worker = md.Body.GetILProcessor();
-            var top = md.Body.Instructions[0];
+            ILProcessor worker = md.Body.GetILProcessor();
+            Instruction top = md.Body.Instructions[0];
 
             worker.InsertBefore(top, worker.Create(OpCodes.Call, weaverTypes.NetworkClientGetActive));
             worker.InsertBefore(top, worker.Create(OpCodes.Brtrue, top));
@@ -115,12 +115,12 @@ namespace Mirror.Weaver
         }
 
         // this is required to early-out from a function with "ref" or "out" parameters
-        private static void InjectGuardParameters(MethodDefinition md, ILProcessor worker, Instruction top)
+        static void InjectGuardParameters(MethodDefinition md, ILProcessor worker, Instruction top)
         {
-            var offset = md.Resolve().IsStatic ? 0 : 1;
-            for (var index = 0; index < md.Parameters.Count; index++)
+            int offset = md.Resolve().IsStatic ? 0 : 1;
+            for (int index = 0; index < md.Parameters.Count; index++)
             {
-                var param = md.Parameters[index];
+                ParameterDefinition param = md.Parameters[index];
                 if (param.IsOut)
                 {
                     // this causes IL2CPP build issues with generic out parameters:
@@ -131,8 +131,8 @@ namespace Mirror.Weaver
                     //   GetElementType() will get the element type of the inner elementType
                     //   which will return wrong type for arrays and generic
                     // credit: JamesFrowen
-                    var byRefType = (ByReferenceType)param.ParameterType;
-                    var elementType = byRefType.ElementType;
+                    ByReferenceType byRefType = (ByReferenceType)param.ParameterType;
+                    TypeReference elementType = byRefType.ElementType;
 
                     md.Body.Variables.Add(new VariableDefinition(elementType));
                     md.Body.InitLocals = true;
@@ -147,7 +147,7 @@ namespace Mirror.Weaver
         }
 
         // this is required to early-out from a function with a return value.
-        private static void InjectGuardReturnValue(MethodDefinition md, ILProcessor worker, Instruction top)
+        static void InjectGuardReturnValue(MethodDefinition md, ILProcessor worker, Instruction top)
         {
             if (!md.ReturnType.Is(typeof(void)))
             {

@@ -78,7 +78,7 @@ namespace Mirror
 
             // easier: set to rounded multiples of interval (fholm).
             // long to match double time.
-            var multiplier = (long)(time / interval);
+            long multiplier = (long)(time / interval);
             lastTime = multiplier * interval;
             return true;
         }

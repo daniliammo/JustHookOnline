@@ -12,14 +12,14 @@ namespace Mirror
     public struct TimeSample
     {
         // UnityEngine.Time isn't thread safe. use stopwatch instead.
-        private readonly Stopwatch watch;
+        readonly Stopwatch watch;
 
         // remember when Begin was called
-        private double beginTime;
+        double beginTime;
 
         // keep accumulating times over the given interval.
         // (not readonly. we modify its contents.)
-        private ExponentialMovingAverage ema;
+        ExponentialMovingAverage ema;
 
         // average in seconds.
         // code often runs in sub-millisecond time. float is more precise.
@@ -51,7 +51,7 @@ namespace Mirror
         public void End()
         {
             // add duration in seconds to accumulated durations
-            var elapsed = watch.Elapsed.TotalSeconds - beginTime;
+            double elapsed = watch.Elapsed.TotalSeconds - beginTime;
             ema.Add(elapsed);
 
             // expose new average thread safely

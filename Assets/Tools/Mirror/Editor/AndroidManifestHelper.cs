@@ -61,7 +61,7 @@ public class AndroidManifestHelper : IPreprocessBuildWithReport, IPostprocessBui
     }
 #endif
 
-    private static void AddOrRemoveTag(XmlDocument doc, string @namespace, string path, string elementName, string name, bool required, bool modifyIfFound, params string[] attrs) // name, value pairs
+    static void AddOrRemoveTag(XmlDocument doc, string @namespace, string path, string elementName, string name, bool required, bool modifyIfFound, params string[] attrs) // name, value pairs
     {
         var nodes = doc.SelectNodes(path + "/" + elementName);
         XmlElement element = null;
@@ -84,7 +84,7 @@ public class AndroidManifestHelper : IPreprocessBuildWithReport, IPostprocessBui
                 parent.AppendChild(element);
             }
 
-            for (var i = 0; i < attrs.Length; i += 2)
+            for (int i = 0; i < attrs.Length; i += 2)
             {
                 if (modifyIfFound || string.IsNullOrEmpty(element.GetAttribute(attrs[i], @namespace)))
                 {

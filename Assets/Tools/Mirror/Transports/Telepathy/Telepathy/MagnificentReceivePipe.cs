@@ -16,7 +16,7 @@ namespace Telepathy
         // queue entry message. only used in here.
         // -> byte arrays are always of 4 + MaxMessageSize
         // -> ArraySegment indicates the actual message content
-        private struct Entry
+        struct Entry
         {
             public int connectionId;
             public EventType eventType;
@@ -33,7 +33,7 @@ namespace Telepathy
         // ConcurrentQueue allocates. lock{} instead.
         //
         // IMPORTANT: lock{} all usages!
-        private readonly Queue<Entry> queue = new Queue<Entry>();
+        readonly Queue<Entry> queue = new Queue<Entry>();
 
         // byte[] pool to avoid allocations
         // Take & Return is beautifully encapsulated in the pipe.
@@ -41,7 +41,7 @@ namespace Telepathy
         // and it can be tested easily.
         //
         // IMPORTANT: lock{} all usages!
-        private Pool<byte[]> pool;
+        Pool<byte[]> pool;
 
         // unfortunately having one receive pipe per connetionId is way slower
         // in CCU tests. right now we have one pipe for all connections.
@@ -49,7 +49,7 @@ namespace Telepathy
         //    spamming connection being able to slow down everyone else since
         //    the queue would be full of just this connection's messages forever
         // => let's use a simpler per-connectionId counter for now
-        private Dictionary<int, int> queueCounter = new Dictionary<int, int>();
+        Dictionary<int, int> queueCounter = new Dictionary<int, int>();
 
         // constructor
         public MagnificentReceivePipe(int MaxMessageSize)
@@ -65,7 +65,7 @@ namespace Telepathy
         {
             lock (this)
             {
-                return queueCounter.TryGetValue(connectionId, out var count)
+                return queueCounter.TryGetValue(connectionId, out int count)
                        ? count
                        : 0;
             }
@@ -103,7 +103,7 @@ namespace Telepathy
                     // it into a byte[] that we can queue safely.
 
                     // get one from the pool first to avoid allocations
-                    var bytes = pool.Take();
+                    byte[] bytes = pool.Take();
 
                     // copy into it
                     Buffer.BlockCopy(message.Array, message.Offset, bytes, 0, message.Count);
@@ -115,11 +115,11 @@ namespace Telepathy
                 // enqueue it
                 // IMPORTANT: pass the segment around pool byte[],
                 //            NOT the 'message' that is only valid until returning!
-                var entry = new Entry(connectionId, eventType, segment);
+                Entry entry = new Entry(connectionId, eventType, segment);
                 queue.Enqueue(entry);
 
                 // increase counter for this connectionId
-                var oldCount = Count(connectionId);
+                int oldCount = Count(connectionId);
                 queueCounter[connectionId] = oldCount + 1;
             }
         }
@@ -143,7 +143,7 @@ namespace Telepathy
             {
                 if (queue.Count > 0)
                 {
-                    var entry = queue.Peek();
+                    Entry entry = queue.Peek();
                     connectionId = entry.connectionId;
                     eventType = entry.eventType;
                     data = entry.data;
@@ -172,7 +172,7 @@ namespace Telepathy
                 if (queue.Count > 0)
                 {
                     // dequeue from queue
-                    var entry = queue.Dequeue();
+                    Entry entry = queue.Dequeue();
 
                     // return byte[] to pool (if any).
                     // not all message types have byte[] contents.
@@ -204,7 +204,7 @@ namespace Telepathy
                 while (queue.Count > 0)
                 {
                     // dequeue
-                    var entry = queue.Dequeue();
+                    Entry entry = queue.Dequeue();
 
                     // return byte[] to pool (if any).
                     // not all message types have byte[] contents.

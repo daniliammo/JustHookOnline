@@ -5,33 +5,36 @@
 // note that ThreadLog.cs is required for Debug.Log from threads to work in builds.
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Net;
 using System.Threading;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Mirror
 {
     // buffered events for main thread
-    internal enum ClientMainEventType
+    enum ClientMainEventType
     {
         OnClientConnected,
         OnClientSent,
         OnClientReceived,
         OnClientError,
-        OnClientDisconnected
+        OnClientDisconnected,
     }
 
-    internal enum ServerMainEventType
+    enum ServerMainEventType
     {
         OnServerConnected,
         OnServerSent,
         OnServerReceived,
         OnServerError,
-        OnServerDisconnected
+        OnServerDisconnected,
     }
 
     // buffered events for worker thread
-    internal enum ThreadEventType
+    enum ThreadEventType
     {
         DoServerStart,
         DoServerSend,
@@ -42,10 +45,13 @@ namespace Mirror
         DoClientSend,
         DoClientDisconnect,
 
+        Sleep,
+        Wake,
+
         DoShutdown
     }
 
-    internal struct ClientMainEvent
+    struct ClientMainEvent
     {
         public ClientMainEventType type;
         public object        param;
@@ -68,7 +74,7 @@ namespace Mirror
         }
     }
 
-    internal struct ServerMainEvent
+    struct ServerMainEvent
     {
         public ServerMainEventType type;
         public object        param;
@@ -94,7 +100,7 @@ namespace Mirror
         }
     }
 
-    internal struct ThreadEvent
+    struct ThreadEvent
     {
         public ThreadEventType type;
         public object          param;
@@ -119,31 +125,35 @@ namespace Mirror
 
     public abstract class ThreadedTransport : Transport
     {
-        private WorkerThread thread;
+        WorkerThread thread;
 
         // main thread's event queue.
         // worker thread puts events in, main thread processes them.
         // client & server separate because EarlyUpdate is separate too.
         // TODO nonalloc
-        private readonly ConcurrentQueue<ClientMainEvent> clientMainQueue = new ConcurrentQueue<ClientMainEvent>();
-        private readonly ConcurrentQueue<ServerMainEvent> serverMainQueue = new ConcurrentQueue<ServerMainEvent>();
+        readonly ConcurrentQueue<ClientMainEvent> clientMainQueue = new ConcurrentQueue<ClientMainEvent>();
+        readonly ConcurrentQueue<ServerMainEvent> serverMainQueue = new ConcurrentQueue<ServerMainEvent>();
 
         // worker thread's event queue
         // main thread puts events in, worker thread processes them.
         // TODO nonalloc
-        private readonly ConcurrentQueue<ThreadEvent> threadQueue = new ConcurrentQueue<ThreadEvent>();
+        readonly ConcurrentQueue<ThreadEvent> threadQueue = new ConcurrentQueue<ThreadEvent>();
 
         // active flags, since we can't access server/client from main thread
-        private volatile bool serverActive;
-        private volatile bool clientConnected;
+        volatile bool serverActive;
+        volatile bool clientConnected;
 
         // max number of thread messages to process per tick in main thread.
         // very large limit to prevent deadlocks.
-        private const int MaxProcessingPerTick = 10_000_000;
+        const int MaxProcessingPerTick = 10_000_000;
+
+        [Tooltip("Detect device sleep mode and automatically disconnect + hibernate the thread after 'sleepTimeout' seconds.\nFor example: on mobile / VR, we don't want to drain the battery after putting down the device.")]
+        public bool sleepDetection = true;
+        public float sleepTimeoutInSeconds = 30;
 
         // communication between main & worker thread //////////////////////////
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnqueueClientMain(
+        void EnqueueClientMain(
             ClientMainEventType type,
             object param,
             int? channelId,
@@ -152,7 +162,7 @@ namespace Mirror
 
         // add an event for main thread
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnqueueServerMain(
+        void EnqueueServerMain(
             ServerMainEventType type,
             object param,
             int? connectionId,
@@ -160,7 +170,7 @@ namespace Mirror
             TransportError? error) =>
             serverMainQueue.Enqueue(new ServerMainEvent(type, param, connectionId, channelId, error));
 
-        private void EnqueueThread(
+        void EnqueueThread(
             ThreadEventType type,
             object param,
             int? channelId,
@@ -172,10 +182,19 @@ namespace Mirror
         {
             // start the thread.
             // if main application terminates, this thread needs to terminate too.
+            EnsureThread();
+        }
+
+        // starts the thread if not created or not active yet.
+        void EnsureThread()
+        {
+            if (thread != null && thread.IsAlive) return;
+
             thread         = new WorkerThread(ToString());
             thread.Tick    = ThreadTick;
             thread.Cleanup = ThreadedShutdown;
             thread.Start();
+            Debug.Log($"ThreadedTransport: started worker thread!");
         }
 
         protected virtual void OnDestroy()
@@ -187,10 +206,12 @@ namespace Mirror
         }
 
         // worker thread ///////////////////////////////////////////////////////
-        private void ProcessThreadQueue()
+        // sleep timeout to automatically end if the device was put to sleep.
+        Stopwatch sleepTimer = null; // NOT THREAD SAFE: ONLY USE THIS IN WORKER THREAD!
+        void ProcessThreadQueue()
         {
             // TODO deadlock protection. worker thread may be to slow to process all.
-            while (threadQueue.TryDequeue(out var elem))
+            while (threadQueue.TryDequeue(out ThreadEvent elem))
             {
                 switch (elem.type)
                 {
@@ -204,7 +225,7 @@ namespace Mirror
                     case ThreadEventType.DoServerSend:
                     {
                         // call the threaded function
-                        var writer = (ConcurrentNetworkWriterPooled)elem.param;
+                        ConcurrentNetworkWriterPooled writer = (ConcurrentNetworkWriterPooled)elem.param;
                         ThreadedServerSend(elem.connectionId.Value, writer, elem.channelId.Value);
 
                         // recycle writer to thread safe pool for reuse
@@ -237,7 +258,7 @@ namespace Mirror
                     case ThreadEventType.DoClientSend:
                     {
                         // call the threaded function
-                        var writer = (ConcurrentNetworkWriterPooled)elem.param;
+                        ConcurrentNetworkWriterPooled writer = (ConcurrentNetworkWriterPooled)elem.param;
                         ThreadedClientSend(writer, elem.channelId.Value);
 
                         // recycle writer to thread safe pool for reuse
@@ -248,6 +269,28 @@ namespace Mirror
                     {
                         // call the threaded function
                         ThreadedClientDisconnect();
+                        break;
+                    }
+
+                    // SLEEP ////////////////////////////////////////////////
+                    case ThreadEventType.Sleep:
+                    {
+                        // start the sleep timer if not started yet
+                        if (sleepTimer == null)
+                        {
+                            Debug.Log($"ThreadedTransport: sleep detected, sleeping in {sleepTimeoutInSeconds:F0}s!");
+                            sleepTimer = Stopwatch.StartNew();
+                        }
+                        break;
+                    }
+                    case ThreadEventType.Wake:
+                    {
+                        // stop the sleep timer (if any)
+                        if (sleepTimer != null)
+                        {
+                            Debug.Log($"ThreadedTransport: Woke up, interrupting sleep timer!");
+                            sleepTimer = null;
+                        }
                         break;
                     }
 
@@ -262,8 +305,25 @@ namespace Mirror
             }
         }
 
-        private void ThreadTick()
+        // Tick() returns a bool so it can easily stop the thread
+        // without needing to throw InterruptExceptions or similar.
+        bool ThreadTick()
         {
+            // was the device put to sleep?
+            if (sleepTimer != null &&
+                sleepTimer.Elapsed.TotalSeconds >= sleepTimeoutInSeconds)
+            {
+                Debug.Log("ThreadedTransport: entering sleep mode and stopping/disconnecting.");
+                ThreadedServerStop();
+                ThreadedClientDisconnect();
+                sleepTimer = null;
+
+                // if the device was put to sleep, end the thread gracefully.
+                // all threads must end, otherwise putting down the device would
+                // slowly drain the battery after a day or more.
+                return false;
+            }
+
             // early update the implementation first
             ThreadedClientEarlyUpdate();
             ThreadedServerEarlyUpdate();
@@ -276,8 +336,8 @@ namespace Mirror
             ThreadedServerLateUpdate();
 
             // save some cpu power.
-            // TODO update interval and sleep extra time would be ideal
             Thread.Sleep(1);
+            return true;
         }
 
         // threaded callbacks to call from transport thread.
@@ -292,7 +352,7 @@ namespace Mirror
             // ArraySegment is only valid until returning.
             // copy to a writer until main thread processes it.
             // make sure to recycle the writer in main thread.
-            var writer = ConcurrentNetworkWriterPool.Get();
+            ConcurrentNetworkWriterPooled writer = ConcurrentNetworkWriterPool.Get();
             writer.WriteBytes(message.Array, message.Offset, message.Count);
             EnqueueClientMain(ClientMainEventType.OnClientSent, writer, channelId, null);
         }
@@ -302,7 +362,7 @@ namespace Mirror
             // ArraySegment is only valid until returning.
             // copy to a writer until main thread processes it.
             // make sure to recycle the writer in main thread.
-            var writer = ConcurrentNetworkWriterPool.Get();
+            ConcurrentNetworkWriterPooled writer = ConcurrentNetworkWriterPool.Get();
             writer.WriteBytes(message.Array, message.Offset, message.Count);
             EnqueueClientMain(ClientMainEventType.OnClientReceived, writer, channelId, null);
         }
@@ -317,9 +377,11 @@ namespace Mirror
             EnqueueClientMain(ClientMainEventType.OnClientDisconnected, null, null, null);
         }
 
-        protected void OnThreadedServerConnected(int connectionId)
+        protected void OnThreadedServerConnected(int connectionId, IPEndPoint endPoint)
         {
-            EnqueueServerMain(ServerMainEventType.OnServerConnected, null, connectionId, null, null);
+            // create string copy of address immediately before sending to another thread
+            string address = endPoint.PrettyAddress();
+            EnqueueServerMain(ServerMainEventType.OnServerConnected, address, connectionId, null, null);
         }
 
         protected void OnThreadedServerSend(int connectionId, ArraySegment<byte> message, int channelId)
@@ -327,7 +389,7 @@ namespace Mirror
             // ArraySegment is only valid until returning.
             // copy to a writer until main thread processes it.
             // make sure to recycle the writer in main thread.
-            var writer = ConcurrentNetworkWriterPool.Get();
+            ConcurrentNetworkWriterPooled writer = ConcurrentNetworkWriterPool.Get();
             writer.WriteBytes(message.Array, message.Offset, message.Count);
             EnqueueServerMain(ServerMainEventType.OnServerSent, writer, connectionId, channelId, null);
         }
@@ -337,7 +399,7 @@ namespace Mirror
             // ArraySegment is only valid until returning.
             // copy to a writer until main thread processes it.
             // make sure to recycle the writer in main thread.
-            var writer = ConcurrentNetworkWriterPool.Get();
+            ConcurrentNetworkWriterPooled writer = ConcurrentNetworkWriterPool.Get();
             writer.WriteBytes(message.Array, message.Offset, message.Count);
             EnqueueServerMain(ServerMainEventType.OnServerReceived, writer, connectionId, channelId, null);
         }
@@ -381,8 +443,8 @@ namespace Mirror
             //
             // process only up to N messages per tick here.
             // if main thread becomes too slow, we don't want to deadlock.
-            var processed = 0;
-            while (clientMainQueue.TryDequeue(out var elem))
+            int processed = 0;
+            while (clientMainQueue.TryDequeue(out ClientMainEvent elem))
             {
                 switch (elem.type)
                 {
@@ -396,7 +458,7 @@ namespace Mirror
                     case ClientMainEventType.OnClientSent:
                     {
                         // call original transport event
-                        var writer = (ConcurrentNetworkWriterPooled)elem.param;
+                        ConcurrentNetworkWriterPooled writer = (ConcurrentNetworkWriterPooled)elem.param;
                         OnClientDataSent?.Invoke(writer, elem.channelId.Value);
 
                         // recycle writer to thread safe pool for reuse
@@ -406,7 +468,7 @@ namespace Mirror
                     case ClientMainEventType.OnClientReceived:
                     {
                         // call original transport event
-                        var writer = (ConcurrentNetworkWriterPooled)elem.param;
+                        ConcurrentNetworkWriterPooled writer = (ConcurrentNetworkWriterPooled)elem.param;
                         OnClientDataReceived?.Invoke(writer, elem.channelId.Value);
 
                         // recycle writer to thread safe pool for reuse
@@ -450,6 +512,9 @@ namespace Mirror
                 return;
             }
 
+            // start worker thread if not started yet
+            EnsureThread();
+
             // enqueue to process in worker thread
             EnqueueThread(ThreadEventType.DoClientConnect, address, null, null);
 
@@ -467,6 +532,9 @@ namespace Mirror
                 return;
             }
 
+            // start worker thread if not started yet
+            EnsureThread();
+
             // enqueue to process in worker thread
             EnqueueThread(ThreadEventType.DoClientConnect, uri, null, null);
 
@@ -482,7 +550,7 @@ namespace Mirror
             // segment is only valid until returning.
             // copy it to a writer.
             // make sure to recycle it from worker thread.
-            var writer = ConcurrentNetworkWriterPool.Get();
+            ConcurrentNetworkWriterPooled writer = ConcurrentNetworkWriterPool.Get();
             writer.WriteBytes(segment.Array, segment.Offset, segment.Count);
 
             // enqueue to process in worker thread
@@ -507,23 +575,23 @@ namespace Mirror
             //
             // process only up to N messages per tick here.
             // if main thread becomes too slow, we don't want to deadlock.
-            var processed = 0;
-            while (serverMainQueue.TryDequeue(out var elem))
+            int processed = 0;
+            while (serverMainQueue.TryDequeue(out ServerMainEvent elem))
             {
                 switch (elem.type)
                 {
                     // SERVER EVENTS ///////////////////////////////////////////
                     case ServerMainEventType.OnServerConnected:
                     {
-                        // call original transport event
-                        // TODO pass client address in OnConnect here later
-                        OnServerConnected?.Invoke(elem.connectionId.Value);//, (string)elem.param);
+                        // call original transport event with connectionId, address
+                        string address = (string)elem.param;
+                        OnServerConnectedWithAddress?.Invoke(elem.connectionId.Value, address);
                         break;
                     }
                     case ServerMainEventType.OnServerSent:
                     {
                         // call original transport event
-                        var writer = (ConcurrentNetworkWriterPooled)elem.param;
+                        ConcurrentNetworkWriterPooled writer = (ConcurrentNetworkWriterPooled)elem.param;
                         OnServerDataSent?.Invoke(elem.connectionId.Value, writer, elem.channelId.Value);
 
                         // recycle writer to thread safe pool for reuse
@@ -533,7 +601,7 @@ namespace Mirror
                     case ServerMainEventType.OnServerReceived:
                     {
                         // call original transport event
-                        var writer = (ConcurrentNetworkWriterPooled)elem.param;
+                        ConcurrentNetworkWriterPooled writer = (ConcurrentNetworkWriterPooled)elem.param;
                         OnServerDataReceived?.Invoke(elem.connectionId.Value, writer, elem.channelId.Value);
 
                         // recycle writer to thread safe pool for reuse
@@ -580,6 +648,9 @@ namespace Mirror
                 return;
             }
 
+            // start worker thread if not started yet
+            EnsureThread();
+
             // enqueue to process in worker thread
             EnqueueThread(ThreadEventType.DoServerStart, null, null, null);
 
@@ -595,7 +666,7 @@ namespace Mirror
             // segment is only valid until returning.
             // copy it to a writer.
             // make sure to recycle it from worker thread.
-            var writer = ConcurrentNetworkWriterPool.Get();
+            ConcurrentNetworkWriterPooled writer = ConcurrentNetworkWriterPool.Get();
             writer.WriteBytes(segment.Array, segment.Offset, segment.Count);
 
             // enqueue to process in worker thread
@@ -612,7 +683,7 @@ namespace Mirror
         // querying this at runtime won't work for threaded transports.
         public override string ServerGetClientAddress(int connectionId)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("ThreadedTransport passes each connection's address in OnServerConnectedThreaded. Don't use ServerGetClientAddress.");
         }
 
         public override void ServerStop()
@@ -623,6 +694,30 @@ namespace Mirror
             // manual state flag because implementations can't access their
             // threaded .server/.client state from main thread.
             serverActive = false;
+        }
+
+        // sleep ///////////////////////////////////////////////////////////////
+        // when a device goes to sleep, we must end the worker thread after a while.
+        // otherwise putting down the device would slowly drain the battery after a day or more.
+        void OnApplicationPause(bool pauseStatus)
+        {
+            Debug.Log($"{GetType()}: OnApplicationPause={pauseStatus}");
+
+            // is sleep detection feature enabled?
+            if (!sleepDetection) return;
+
+            // pause thread if application pauses
+            if (pauseStatus)
+            {
+                // enqueue to process in worker thread
+                EnqueueThread(ThreadEventType.Sleep, null, null, null);
+            }
+            // resume thread if application resumes
+            else
+            {
+                // enqueue to process in worker thread
+                EnqueueThread(ThreadEventType.Wake, null, null, null);
+            }
         }
 
         // shutdown ////////////////////////////////////////////////////////////

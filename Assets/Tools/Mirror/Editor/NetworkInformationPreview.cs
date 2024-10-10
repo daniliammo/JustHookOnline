@@ -5,22 +5,22 @@ using UnityEngine;
 namespace Mirror
 {
     [CustomPreview(typeof(GameObject))]
-    internal class NetworkInformationPreview : ObjectPreview
+    class NetworkInformationPreview : ObjectPreview
     {
-        private struct NetworkIdentityInfo
+        struct NetworkIdentityInfo
         {
             public GUIContent name;
             public GUIContent value;
         }
 
-        private struct NetworkBehaviourInfo
+        struct NetworkBehaviourInfo
         {
             // This is here just so we can check if it's enabled/disabled
             public NetworkBehaviour behaviour;
             public GUIContent name;
         }
 
-        private class Styles
+        class Styles
         {
             public GUIStyle labelStyle = new GUIStyle(EditorStyles.label);
             public GUIStyle componentName = new GUIStyle(EditorStyles.boldLabel);
@@ -28,7 +28,7 @@ namespace Mirror
 
             public Styles()
             {
-                var fontColor = new Color(0.7f, 0.7f, 0.7f);
+                Color fontColor = new Color(0.7f, 0.7f, 0.7f);
                 labelStyle.padding.right += 20;
                 labelStyle.normal.textColor = fontColor;
                 labelStyle.active.textColor = fontColor;
@@ -59,8 +59,8 @@ namespace Mirror
             }
         }
 
-        private GUIContent title;
-        private Styles styles = new Styles();
+        GUIContent title;
+        Styles styles = new Styles();
 
         public override GUIContent GetPreviewTitle()
         {
@@ -85,12 +85,12 @@ namespace Mirror
             if (target == null)
                 return;
 
-            var targetGameObject = target as GameObject;
+            GameObject targetGameObject = target as GameObject;
 
             if (targetGameObject == null)
                 return;
 
-            var identity = targetGameObject.GetComponent<NetworkIdentity>();
+            NetworkIdentity identity = targetGameObject.GetComponent<NetworkIdentity>();
 
             if (identity == null)
                 return;
@@ -100,12 +100,12 @@ namespace Mirror
 
 
             // padding
-            var previewPadding = new RectOffset(-5, -5, -5, -5);
-            var paddedr = previewPadding.Add(r);
+            RectOffset previewPadding = new RectOffset(-5, -5, -5, -5);
+            Rect paddedr = previewPadding.Add(r);
 
             //Centering
-            var initialX = paddedr.x + 10;
-            var Y = paddedr.y + 10;
+            float initialX = paddedr.x + 10;
+            float Y = paddedr.y + 10;
 
             Y = DrawNetworkIdentityInfo(identity, initialX, Y);
 
@@ -117,20 +117,20 @@ namespace Mirror
 
         }
 
-        private float DrawNetworkIdentityInfo(NetworkIdentity identity, float initialX, float Y)
+        float DrawNetworkIdentityInfo(NetworkIdentity identity, float initialX, float Y)
         {
-            var infos = GetNetworkIdentityInfo(identity);
+            IEnumerable<NetworkIdentityInfo> infos = GetNetworkIdentityInfo(identity);
             // Get required label size for the names of the information values we're going to show
             // There are two columns, one with label for the name of the info and the next for the value
-            var maxNameLabelSize = new Vector2(140, 16);
-            var maxValueLabelSize = GetMaxNameLabelSize(infos);
+            Vector2 maxNameLabelSize = new Vector2(140, 16);
+            Vector2 maxValueLabelSize = GetMaxNameLabelSize(infos);
 
-            var labelRect = new Rect(initialX, Y, maxNameLabelSize.x, maxNameLabelSize.y);
+            Rect labelRect = new Rect(initialX, Y, maxNameLabelSize.x, maxNameLabelSize.y);
 
             // height needs a +1 to line up nicely
-            var idLabelRect = new Rect(maxNameLabelSize.x, Y, maxValueLabelSize.x, maxValueLabelSize.y + 1);
+            Rect idLabelRect = new Rect(maxNameLabelSize.x, Y, maxValueLabelSize.x, maxValueLabelSize.y + 1);
 
-            foreach (var info in infos)
+            foreach (NetworkIdentityInfo info in infos)
             {
                 GUI.Label(labelRect, info.name, styles.labelStyle);
                 GUI.Label(idLabelRect, info.value, styles.componentName);
@@ -142,20 +142,20 @@ namespace Mirror
             return labelRect.y;
         }
 
-        private float DrawNetworkBehaviors(NetworkIdentity identity, float initialX, float Y)
+        float DrawNetworkBehaviors(NetworkIdentity identity, float initialX, float Y)
         {
-            var behavioursInfo = GetNetworkBehaviorInfo(identity);
+            IEnumerable<NetworkBehaviourInfo> behavioursInfo = GetNetworkBehaviorInfo(identity);
 
             // Show behaviours list in a different way than the name/value pairs above
-            var maxBehaviourLabelSize = GetMaxBehaviourLabelSize(behavioursInfo);
-            var behaviourRect = new Rect(initialX, Y + 10, maxBehaviourLabelSize.x, maxBehaviourLabelSize.y);
+            Vector2 maxBehaviourLabelSize = GetMaxBehaviourLabelSize(behavioursInfo);
+            Rect behaviourRect = new Rect(initialX, Y + 10, maxBehaviourLabelSize.x, maxBehaviourLabelSize.y);
 
             GUI.Label(behaviourRect, new GUIContent("Network Behaviours"), styles.labelStyle);
             // indent names
             behaviourRect.x += 20;
             behaviourRect.y += behaviourRect.height;
 
-            foreach (var info in behavioursInfo)
+            foreach (NetworkBehaviourInfo info in behavioursInfo)
             {
                 if (info.behaviour == null)
                 {
@@ -171,18 +171,18 @@ namespace Mirror
             return Y;
         }
 
-        private float DrawObservers(NetworkIdentity identity, float initialX, float Y)
+        float DrawObservers(NetworkIdentity identity, float initialX, float Y)
         {
             if (identity.observers.Count > 0)
             {
-                var observerRect = new Rect(initialX, Y + 10, 200, 20);
+                Rect observerRect = new Rect(initialX, Y + 10, 200, 20);
 
                 GUI.Label(observerRect, new GUIContent("Network observers"), styles.labelStyle);
                 // indent names
                 observerRect.x += 20;
                 observerRect.y += observerRect.height;
 
-                foreach (var kvp in identity.observers)
+                foreach (KeyValuePair<int, NetworkConnectionToClient> kvp in identity.observers)
                 {
                     GUI.Label(observerRect, $"{kvp.Value.address}:{kvp.Value}", styles.componentName);
                     observerRect.y += observerRect.height;
@@ -193,11 +193,11 @@ namespace Mirror
             return Y;
         }
 
-        private float DrawOwner(NetworkIdentity identity, float initialX, float Y)
+        float DrawOwner(NetworkIdentity identity, float initialX, float Y)
         {
             if (identity.connectionToClient != null)
             {
-                var ownerRect = new Rect(initialX, Y + 10, 400, 20);
+                Rect ownerRect = new Rect(initialX, Y + 10, 400, 20);
                 GUI.Label(ownerRect, new GUIContent($"Client Authority: {identity.connectionToClient}"), styles.labelStyle);
                 Y += ownerRect.height;
             }
@@ -205,12 +205,12 @@ namespace Mirror
         }
 
         // Get the maximum size used by the value of information items
-        private Vector2 GetMaxNameLabelSize(IEnumerable<NetworkIdentityInfo> infos)
+        Vector2 GetMaxNameLabelSize(IEnumerable<NetworkIdentityInfo> infos)
         {
-            var maxLabelSize = Vector2.zero;
-            foreach (var info in infos)
+            Vector2 maxLabelSize = Vector2.zero;
+            foreach (NetworkIdentityInfo info in infos)
             {
-                var labelSize = styles.labelStyle.CalcSize(info.value);
+                Vector2 labelSize = styles.labelStyle.CalcSize(info.value);
                 if (maxLabelSize.x < labelSize.x)
                 {
                     maxLabelSize.x = labelSize.x;
@@ -223,12 +223,12 @@ namespace Mirror
             return maxLabelSize;
         }
 
-        private Vector2 GetMaxBehaviourLabelSize(IEnumerable<NetworkBehaviourInfo> behavioursInfo)
+        Vector2 GetMaxBehaviourLabelSize(IEnumerable<NetworkBehaviourInfo> behavioursInfo)
         {
-            var maxLabelSize = Vector2.zero;
-            foreach (var behaviour in behavioursInfo)
+            Vector2 maxLabelSize = Vector2.zero;
+            foreach (NetworkBehaviourInfo behaviour in behavioursInfo)
             {
-                var labelSize = styles.labelStyle.CalcSize(behaviour.name);
+                Vector2 labelSize = styles.labelStyle.CalcSize(behaviour.name);
                 if (maxLabelSize.x < labelSize.x)
                 {
                     maxLabelSize.x = labelSize.x;
@@ -241,9 +241,9 @@ namespace Mirror
             return maxLabelSize;
         }
 
-        private IEnumerable<NetworkIdentityInfo> GetNetworkIdentityInfo(NetworkIdentity identity)
+        IEnumerable<NetworkIdentityInfo> GetNetworkIdentityInfo(NetworkIdentity identity)
         {
-            var infos = new List<NetworkIdentityInfo>
+            List<NetworkIdentityInfo> infos = new List<NetworkIdentityInfo>
             {
                 GetAssetId(identity),
                 GetString("Scene ID", identity.sceneId.ToString("X"))
@@ -260,12 +260,12 @@ namespace Mirror
             return infos;
         }
 
-        private IEnumerable<NetworkBehaviourInfo> GetNetworkBehaviorInfo(NetworkIdentity identity)
+        IEnumerable<NetworkBehaviourInfo> GetNetworkBehaviorInfo(NetworkIdentity identity)
         {
-            var behaviourInfos = new List<NetworkBehaviourInfo>();
+            List<NetworkBehaviourInfo> behaviourInfos = new List<NetworkBehaviourInfo>();
 
-            var behaviours = identity.GetComponents<NetworkBehaviour>();
-            foreach (var behaviour in behaviours)
+            NetworkBehaviour[] behaviours = identity.GetComponents<NetworkBehaviour>();
+            foreach (NetworkBehaviour behaviour in behaviours)
             {
                 behaviourInfos.Add(new NetworkBehaviourInfo
                 {
@@ -276,9 +276,9 @@ namespace Mirror
             return behaviourInfos;
         }
 
-        private NetworkIdentityInfo GetAssetId(NetworkIdentity identity)
+        NetworkIdentityInfo GetAssetId(NetworkIdentity identity)
         {
-            var assetId = identity.assetId.ToString();
+            string assetId = identity.assetId.ToString();
             if (string.IsNullOrWhiteSpace(assetId))
             {
                 assetId = "<object has no prefab>";
@@ -286,7 +286,7 @@ namespace Mirror
             return GetString("Asset ID", assetId);
         }
 
-        private static NetworkIdentityInfo GetString(string name, string value)
+        static NetworkIdentityInfo GetString(string name, string value)
         {
             return new NetworkIdentityInfo
             {
@@ -295,12 +295,12 @@ namespace Mirror
             };
         }
 
-        private static NetworkIdentityInfo GetBoolean(string name, bool value)
+        static NetworkIdentityInfo GetBoolean(string name, bool value)
         {
             return new NetworkIdentityInfo
             {
                 name = new GUIContent(name),
-                value = new GUIContent(value ? "Yes" : "No")
+                value = new GUIContent((value ? "Yes" : "No"))
             };
         }
     }

@@ -9,12 +9,12 @@ namespace Mirror
     [HelpURL("https://mirror-networking.gitbook.io/docs/guides/interest-management")]
     public class NetworkMatch : NetworkBehaviour
     {
-        private Guid _matchId;
+        Guid _matchId;
 
 #pragma warning disable IDE0052 // Suppress warning for unused field...this is for debugging purposes
         [SerializeField, ReadOnly]
         [Tooltip("Match ID is shown here on server for debugging purposes.")]
-        private string MatchID = string.Empty;
+        string MatchID = string.Empty;
 #pragma warning restore IDE0052
 
         ///<summary>Set this to the same value on all networked objects that belong to a given match</summary>
@@ -29,7 +29,7 @@ namespace Mirror
                 if (_matchId == value)
                     return;
 
-                var oldMatch = _matchId;
+                Guid oldMatch = _matchId;
                 _matchId = value;
                 MatchID = value.ToString();
 

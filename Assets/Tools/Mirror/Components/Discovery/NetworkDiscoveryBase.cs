@@ -39,7 +39,7 @@ namespace Mirror.Discovery
         [SerializeField]
         [Tooltip("Time in seconds between multi-cast messages")]
         [Range(1, 60)]
-        private float ActiveDiscoveryInterval = 3;
+        float ActiveDiscoveryInterval = 3;
 
         [Tooltip("Transport to be advertised during discovery")]
         public Transport transport;
@@ -93,31 +93,31 @@ namespace Mirror.Discovery
 
         public static long RandomLong()
         {
-            var value1 = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-            var value2 = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            int value1 = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            int value2 = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
             return value1 + ((long)value2 << 32);
         }
 
         // Ensure the ports are cleared no matter when Game/Unity UI exits
-        private void OnApplicationQuit()
+        void OnApplicationQuit()
         {
             //Debug.Log("NetworkDiscoveryBase OnApplicationQuit");
             Shutdown();
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             //Debug.Log("NetworkDiscoveryBase OnDisable");
             Shutdown();
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
             //Debug.Log("NetworkDiscoveryBase OnDestroy");
             Shutdown();
         }
 
-        private void Shutdown()
+        void Shutdown()
         {
             EndpMulticastLock();
             if (serverUdpClient != null)
@@ -192,23 +192,23 @@ namespace Mirror.Discovery
             }
         }
 
-        private async Task ReceiveRequestAsync(UdpClient udpClient)
+        async Task ReceiveRequestAsync(UdpClient udpClient)
         {
             // only proceed if there is available data in network buffer, or otherwise Receive() will block
             // average time for UdpClient.Available : 10 us
 
-            var udpReceiveResult = await udpClient.ReceiveAsync();
+            UdpReceiveResult udpReceiveResult = await udpClient.ReceiveAsync();
 
-            using (var networkReader = NetworkReaderPool.Get(udpReceiveResult.Buffer))
+            using (NetworkReaderPooled networkReader = NetworkReaderPool.Get(udpReceiveResult.Buffer))
             {
-                var handshake = networkReader.ReadLong();
+                long handshake = networkReader.ReadLong();
                 if (handshake != secretHandshake)
                 {
                     // message is not for us
                     throw new ProtocolViolationException("Invalid handshake");
                 }
 
-                var request = networkReader.Read<Request>();
+                Request request = networkReader.Read<Request>();
 
                 ProcessClientRequest(request, udpReceiveResult.RemoteEndPoint);
             }
@@ -225,12 +225,12 @@ namespace Mirror.Discovery
         /// <param name="endpoint">Address of the client that sent the request</param>
         protected virtual void ProcessClientRequest(Request request, IPEndPoint endpoint)
         {
-            var info = ProcessRequest(request, endpoint);
+            Response info = ProcessRequest(request, endpoint);
 
             if (info == null)
                 return;
 
-            using (var writer = NetworkWriterPool.Get())
+            using (NetworkWriterPooled writer = NetworkWriterPool.Get())
             {
                 try
                 {
@@ -238,7 +238,7 @@ namespace Mirror.Discovery
 
                     writer.Write(info);
 
-                    var data = writer.ToArraySegment();
+                    ArraySegment<byte> data = writer.ToArraySegment();
                     // signature matches
                     // send response
                     serverUdpClient.Send(data.Array, data.Count, endpoint);
@@ -268,7 +268,7 @@ namespace Mirror.Discovery
         bool hasMulticastLock;
 #endif
 
-        private void BeginMulticastLock()
+        void BeginMulticastLock()
 		{
 #if UNITY_ANDROID
             if (hasMulticastLock) return;
@@ -288,7 +288,7 @@ namespace Mirror.Discovery
 #endif
         }
 
-        private void EndpMulticastLock()
+        void EndpMulticastLock()
         {
 #if UNITY_ANDROID
             if (!hasMulticastLock) return;
@@ -392,7 +392,7 @@ namespace Mirror.Discovery
                 return;
             }
 
-            var endPoint = new IPEndPoint(IPAddress.Broadcast, serverBroadcastListenPort);
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Broadcast, serverBroadcastListenPort);
 
             if (!string.IsNullOrWhiteSpace(BroadcastAddress))
             {
@@ -406,17 +406,17 @@ namespace Mirror.Discovery
                 }
             }
 
-            using (var writer = NetworkWriterPool.Get())
+            using (NetworkWriterPooled writer = NetworkWriterPool.Get())
             {
                 writer.WriteLong(secretHandshake);
 
                 try
                 {
-                    var request = GetRequest();
+                    Request request = GetRequest();
 
                     writer.Write(request);
 
-                    var data = writer.ToArraySegment();
+                    ArraySegment<byte> data = writer.ToArraySegment();
 
                     clientUdpClient.SendAsync(data.Array, data.Count, endPoint);
                 }
@@ -436,19 +436,19 @@ namespace Mirror.Discovery
         /// <returns>An instance of ServerRequest with data to be broadcasted</returns>
         protected virtual Request GetRequest() => default;
 
-        private async Task ReceiveGameBroadcastAsync(UdpClient udpClient)
+        async Task ReceiveGameBroadcastAsync(UdpClient udpClient)
         {
             // only proceed if there is available data in network buffer, or otherwise Receive() will block
             // average time for UdpClient.Available : 10 us
 
-            var udpReceiveResult = await udpClient.ReceiveAsync();
+            UdpReceiveResult udpReceiveResult = await udpClient.ReceiveAsync();
 
-            using (var networkReader = NetworkReaderPool.Get(udpReceiveResult.Buffer))
+            using (NetworkReaderPooled networkReader = NetworkReaderPool.Get(udpReceiveResult.Buffer))
             {
                 if (networkReader.ReadLong() != secretHandshake)
                     return;
 
-                var response = networkReader.Read<Response>();
+                Response response = networkReader.Read<Response>();
 
                 ProcessResponse(response, udpReceiveResult.RemoteEndPoint);
             }

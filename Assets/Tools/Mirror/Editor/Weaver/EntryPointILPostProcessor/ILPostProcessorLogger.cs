@@ -9,7 +9,7 @@ namespace Mirror.Weaver
         // can't Debug.Log in ILPostProcessor. need to add to this list.
         internal List<DiagnosticMessage> Logs = new List<DiagnosticMessage>();
 
-        private void Add(string message, DiagnosticType logType)
+        void Add(string message, DiagnosticType logType)
         {
             Logs.Add(new DiagnosticMessage
             {
@@ -32,7 +32,7 @@ namespace Mirror.Weaver
             //message = message.Replace("\n", "/");
 
             // lets break it into several messages instead so it's easier readable
-            var lines = message.Split('\n');
+            string[] lines = message.Split('\n');
 
             // if it's just one line, simply log it
             if (lines.Length == 1)
@@ -46,7 +46,7 @@ namespace Mirror.Weaver
             {
                 // first line with Weaver: ... first
                 Add("----------------------------------------------", logType);
-                foreach (var line in lines) Add(line, logType);
+                foreach (string line in lines) Add(line, logType);
                 Add("----------------------------------------------", logType);
             }
         }

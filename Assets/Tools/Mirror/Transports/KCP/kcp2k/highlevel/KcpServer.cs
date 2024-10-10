@@ -18,7 +18,7 @@ namespace kcp2k
         // events are readonly, set in constructor.
         // this ensures they are always initialized when used.
         // fixes https://github.com/MirrorNetworking/Mirror/issues/3337 and more
-        protected readonly Action<int> OnConnected;
+        protected readonly Action<int, IPEndPoint> OnConnected; // connectionId, address
         protected readonly Action<int, ArraySegment<byte>, KcpChannel> OnData;
         protected readonly Action<int> OnDisconnected;
         protected readonly Action<int, ErrorCode, string> OnError;
@@ -28,7 +28,7 @@ namespace kcp2k
 
         // state
         protected Socket socket;
-        private EndPoint newClientEP;
+        EndPoint newClientEP;
 
         // expose local endpoint for users / relays / nat traversal etc.
         public EndPoint LocalEndPoint => socket?.LocalEndPoint;
@@ -43,7 +43,7 @@ namespace kcp2k
         public Dictionary<int, KcpServerConnection> connections =
             new Dictionary<int, KcpServerConnection>();
 
-        public KcpServer(Action<int> OnConnected,
+        public KcpServer(Action<int, IPEndPoint> OnConnected,
                          Action<int, ArraySegment<byte>, KcpChannel> OnData,
                          Action<int> OnDisconnected,
                          Action<int, ErrorCode, string> OnError,
@@ -67,12 +67,12 @@ namespace kcp2k
 
         public virtual bool IsActive() => socket != null;
 
-        private static Socket CreateServerSocket(bool DualMode, ushort port)
+        static Socket CreateServerSocket(bool DualMode, ushort port)
         {
             if (DualMode)
             {
                 // IPv6 socket with DualMode @ "::" : port
-                var socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
+                Socket socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
 
                 // enabling DualMode may throw:
                 // https://learn.microsoft.com/en-us/dotnet/api/System.Net.Sockets.Socket.DualMode?view=net-7.0
@@ -140,7 +140,7 @@ namespace kcp2k
             else
             {
                 // IPv4 socket @ "0.0.0.0" : port
-                var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 socket.Bind(new IPEndPoint(IPAddress.Any, port));
                 return socket;
             }
@@ -169,7 +169,7 @@ namespace kcp2k
 
         public void Send(int connectionId, ArraySegment<byte> segment, KcpChannel channel)
         {
-            if (connections.TryGetValue(connectionId, out var connection))
+            if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
             {
                 connection.SendData(segment, channel);
             }
@@ -177,7 +177,7 @@ namespace kcp2k
 
         public void Disconnect(int connectionId)
         {
-            if (connections.TryGetValue(connectionId, out var connection))
+            if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
             {
                 connection.Disconnect();
             }
@@ -186,7 +186,7 @@ namespace kcp2k
         // expose the whole IPEndPoint, not just the IP address. some need it.
         public IPEndPoint GetClientEndPoint(int connectionId)
         {
-            if (connections.TryGetValue(connectionId, out var connection))
+            if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
             {
                 return connection.remoteEndPoint as IPEndPoint;
             }
@@ -231,7 +231,7 @@ namespace kcp2k
         protected virtual void RawSend(int connectionId, ArraySegment<byte> data)
         {
             // get the connection's endpoint
-            if (!connections.TryGetValue(connectionId, out var connection))
+            if (!connections.TryGetValue(connectionId, out KcpServerConnection connection))
             {
                 Log.Warning($"[KCP] Server: RawSend invalid connectionId={connectionId}");
                 return;
@@ -251,13 +251,13 @@ namespace kcp2k
         {
             // generate a random cookie for this connection to avoid UDP spoofing.
             // needs to be random, but without allocations to avoid GC.
-            var cookie = Common.GenerateCookie();
+            uint cookie = Common.GenerateCookie();
 
             // create empty connection without peer first.
             // we need it to set up peer callbacks.
             // afterwards we assign the peer.
             // events need to be wrapped with connectionIds
-            var connection = new KcpServerConnection(
+            KcpServerConnection connection = new KcpServerConnection(
                 OnConnectedCallback,
                 (message,  channel) => OnData(connectionId, message, channel),
                 OnDisconnectedCallback,
@@ -285,7 +285,8 @@ namespace kcp2k
 
                 // finally, call mirror OnConnected event
                 Log.Info($"[KCP] Server: OnConnected({connectionId})");
-                OnConnected(connectionId);
+                IPEndPoint endPoint = conn.remoteEndPoint as IPEndPoint;
+                OnConnected(connectionId, endPoint);
             }
 
             void OnDisconnectedCallback()
@@ -303,12 +304,12 @@ namespace kcp2k
 
         // receive + add + process once.
         // best to call this as long as there is more data to receive.
-        private void ProcessMessage(ArraySegment<byte> segment, int connectionId)
+        void ProcessMessage(ArraySegment<byte> segment, int connectionId)
         {
             //Log.Info($"[KCP] server raw recv {msgLength} bytes = {BitConverter.ToString(buffer, 0, msgLength)}");
 
             // is this a new connection?
-            if (!connections.TryGetValue(connectionId, out var connection))
+            if (!connections.TryGetValue(connectionId, out KcpServerConnection connection))
             {
                 // create a new KcpConnection based on last received
                 // EndPoint. can be overwritten for where-allocation.
@@ -353,18 +354,18 @@ namespace kcp2k
 
         // process incoming messages. should be called before updating the world.
         // virtual because relay may need to inject their own ping or similar.
-        private readonly HashSet<int> connectionsToRemove = new HashSet<int>();
+        readonly HashSet<int> connectionsToRemove = new HashSet<int>();
         public virtual void TickIncoming()
         {
             // input all received messages into kcp
-            while (RawReceiveFrom(out var segment, out var connectionId))
+            while (RawReceiveFrom(out ArraySegment<byte> segment, out int connectionId))
             {
                 ProcessMessage(segment, connectionId);
             }
 
             // process inputs for all server connections
             // (even if we didn't receive anything. need to tick ping etc.)
-            foreach (var connection in connections.Values)
+            foreach (KcpServerConnection connection in connections.Values)
             {
                 connection.TickIncoming();
             }
@@ -372,7 +373,7 @@ namespace kcp2k
             // remove disconnected connections
             // (can't do it in connection.OnDisconnected because Tick is called
             //  while iterating connections)
-            foreach (var connectionId in connectionsToRemove)
+            foreach (int connectionId in connectionsToRemove)
             {
                 connections.Remove(connectionId);
             }
@@ -384,7 +385,7 @@ namespace kcp2k
         public virtual void TickOutgoing()
         {
             // flush all server connections
-            foreach (var connection in connections.Values)
+            foreach (KcpServerConnection connection in connections.Values)
             {
                 connection.TickOutgoing();
             }

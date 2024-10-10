@@ -1,12 +1,12 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Agreement;
-using Org.BouncyCastle.Crypto.Digests;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.Modes;
-using Org.BouncyCastle.Crypto.Parameters;
+using Mirror.BouncyCastle.Crypto;
+using Mirror.BouncyCastle.Crypto.Agreement;
+using Mirror.BouncyCastle.Crypto.Digests;
+using Mirror.BouncyCastle.Crypto.Generators;
+using Mirror.BouncyCastle.Crypto.Modes;
+using Mirror.BouncyCastle.Crypto.Parameters;
 using UnityEngine.Profiling;
 
 namespace Mirror.Transports.Encryption
@@ -64,16 +64,16 @@ namespace Mirror.Transports.Encryption
         private static byte[] _tmpCryptBuffer = new byte[2048];
 
         // packet headers
-        private enum OpCodes : byte
+        enum OpCodes : byte
         {
             // start at 1 to maybe filter out random noise
             Data = 1,
             HandshakeStart = 2,
             HandshakeAck = 3,
-            HandshakeFin = 4
+            HandshakeFin = 4,
         }
 
-        private enum State
+        enum State
         {
             // Waiting for a handshake to arrive
             // this is for _sendsFirst:
@@ -157,8 +157,8 @@ namespace Mirror.Transports.Encryption
         // Generates a random starting nonce
         private static byte[] GenerateSecureBytes(int size)
         {
-            var bytes = new byte[size];
-            using (var rng = RandomNumberGenerator.Create())
+            byte[] bytes = new byte[size];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(bytes);
             }
@@ -174,9 +174,9 @@ namespace Mirror.Transports.Encryption
                 return;
             }
 
-            using (var reader = NetworkReaderPool.Get(data))
+            using (NetworkReaderPooled reader = NetworkReaderPool.Get(data))
             {
-                var opcode = (OpCodes)reader.ReadByte();
+                OpCodes opcode = (OpCodes)reader.ReadByte();
                 switch (opcode)
                 {
                     case OpCodes.Data:
@@ -196,11 +196,11 @@ namespace Mirror.Transports.Encryption
                             return;
                         }
 
-                        var ciphertext = reader.ReadBytesSegment(reader.Remaining - NonceSize);
+                        ArraySegment<byte> ciphertext = reader.ReadBytesSegment(reader.Remaining - NonceSize);
                         reader.ReadBytes(ReceiveNonce, NonceSize);
 
                         Profiler.BeginSample("EncryptedConnection.Decrypt");
-                        var plaintext = Decrypt(ciphertext);
+                        ArraySegment<byte> plaintext = Decrypt(ciphertext);
                         Profiler.EndSample();
                         if (plaintext.Count == 0)
                         {
@@ -299,11 +299,11 @@ namespace Mirror.Transports.Encryption
 
         public void Send(ArraySegment<byte> data, int channel)
         {
-            using (var writer = NetworkWriterPool.Get())
+            using (NetworkWriterPooled writer = NetworkWriterPool.Get())
             {
                 writer.WriteByte((byte)OpCodes.Data);
                 Profiler.BeginSample("EncryptedConnection.Encrypt");
-                var encrypted = Encrypt(data);
+                ArraySegment<byte> encrypted = Encrypt(data);
                 Profiler.EndSample();
 
                 if (encrypted.Count == 0)
@@ -331,7 +331,7 @@ namespace Mirror.Transports.Encryption
             Cipher.Init(true, _cipherParametersEncrypt);
 
             // Calculate the expected output size, this should always be input size + mac size
-            var outSize = Cipher.GetOutputSize(plaintext.Count);
+            int outSize = Cipher.GetOutputSize(plaintext.Count);
 #if UNITY_EDITOR
             // expecting the outSize to be input size + MacSize
             if (outSize != plaintext.Count + MacSizeBytes)
@@ -379,7 +379,7 @@ namespace Mirror.Transports.Encryption
             Cipher.Init(false, _cipherParametersDecrypt);
 
             // Calculate the expected output size, this should always be input size - mac size
-            var outSize = Cipher.GetOutputSize(ciphertext.Count);
+            int outSize = Cipher.GetOutputSize(ciphertext.Count);
 #if UNITY_EDITOR
             // expecting the outSize to be input size - MacSize
             if (outSize != ciphertext.Count - MacSizeBytes)
@@ -419,7 +419,7 @@ namespace Mirror.Transports.Encryption
             // increment the nonce by one
             // we need to ensure the nonce is *always* unique and not reused
             // easiest way to do this is by simply incrementing it
-            for (var i = 0; i < NonceSize; i++)
+            for (int i = 0; i < NonceSize; i++)
             {
                 _nonce[i]++;
                 if (_nonce[i] != 0)
@@ -440,7 +440,7 @@ namespace Mirror.Transports.Encryption
 
         private void SendHandshakeAndPubKey(OpCodes opcode)
         {
-            using (var writer = NetworkWriterPool.Get())
+            using (NetworkWriterPooled writer = NetworkWriterPool.Get())
             {
                 writer.WriteByte((byte)opcode);
                 if (opcode == OpCodes.HandshakeAck)
@@ -454,7 +454,7 @@ namespace Mirror.Transports.Encryption
 
         private void SendHandshakeFin()
         {
-            using (var writer = NetworkWriterPool.Get())
+            using (NetworkWriterPooled writer = NetworkWriterPool.Get())
             {
                 writer.WriteByte((byte)OpCodes.HandshakeFin);
                 _send(writer.ToArraySegment(), Channels.Unreliable);
@@ -476,7 +476,7 @@ namespace Mirror.Transports.Encryption
 
             if (_validateRemoteKey != null)
             {
-                var info = new PubKeyInfo
+                PubKeyInfo info = new PubKeyInfo
                 {
                     Fingerprint = EncryptionCredentials.PubKeyFingerprint(remotePubKeyRaw),
                     Serialized = remotePubKeyRaw,
@@ -492,7 +492,7 @@ namespace Mirror.Transports.Encryption
             // Calculate a common symmetric key from our private key and the remotes public key
             // This gives us the same key on the other side, with our public key and their remote
             // It's like magic, but with math!
-            var ecdh = new ECDHBasicAgreement();
+            ECDHBasicAgreement ecdh = new ECDHBasicAgreement();
             ecdh.Init(_credentials.PrivateKey);
             byte[] sharedSecret;
             try
@@ -515,12 +515,12 @@ namespace Mirror.Transports.Encryption
             Hkdf.Init(new HkdfParameters(sharedSecret, salt, HkdfInfo));
 
             // Allocate a buffer for the output key
-            var keyRaw = new byte[KeyLength];
+            byte[] keyRaw = new byte[KeyLength];
 
             // Generate the output keying material
             Hkdf.GenerateBytes(keyRaw, 0, keyRaw.Length);
 
-            var key = new KeyParameter(keyRaw);
+            KeyParameter key = new KeyParameter(keyRaw);
 
             // generate a starting nonce
             _nonce = GenerateSecureBytes(NonceSize);

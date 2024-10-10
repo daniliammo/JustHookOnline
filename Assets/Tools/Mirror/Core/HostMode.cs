@@ -13,8 +13,8 @@ namespace Mirror
         {
             // create local connections pair, both are connected
             Utils.CreateLocalConnections(
-                out var connectionToClient,
-                out var connectionToServer);
+                out LocalConnectionToClient connectionToClient,
+                out LocalConnectionToServer connectionToServer);
 
             // set client connection
             NetworkClient.connection = connectionToServer;

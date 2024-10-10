@@ -67,14 +67,41 @@ namespace Mirror
         [Tooltip("Local by default. World may be better when changing hierarchy, or non-NetworkTransforms root position/rotation/scale values.")]
         public CoordinateSpace coordinateSpace = CoordinateSpace.Local;
 
-        [Header("Send Interval Multiplier")]
-        [Tooltip("Check/Sync every multiple of Network Manager send interval (= 1 / NM Send Rate), instead of every send interval.\n(30 NM send rate, and 3 interval, is a send every 0.1 seconds)\nA larger interval means less network sends, which has a variety of upsides. The drawbacks are delays and lower accuracy, you should find a nice balance between not sending too much, but the results looking good for your particular scenario.")]
-        [Range(1, 120)]
-        public uint sendIntervalMultiplier = 1;
+        // convert syncInterval to sendIntervalMultiplier.
+        // in the future this can be moved into core to support tick aligned Sync,
+        public uint sendIntervalMultiplier
+        {
+            get
+            {
+                if (syncInterval > 0)
+                {
+                    // if syncInterval is > 0, calculate how many multiples of NetworkManager.sendRate it is
+                    //
+                    // for example:
+                    //   NetworkServer.sendInterval is 1/60 = 0.16
+                    //   NetworkTransform.syncInterval is 0.5 (500ms).
+                    //   0.5 / 0.16 = 3.125
+                    //   in other words: 3.125 x sendInterval
+                    //
+                    // note that NetworkServer.sendInterval is usually set on start.
+                    // to make this work in Edit mode, make sure that NetworkManager
+                    // OnValidate sets NetworkServer.sendInterval immediately.
+                    float multiples = syncInterval / NetworkServer.sendInterval;
+
+                    // syncInterval is always supposed to sync at a minimum of 1 x sendInterval.
+                    // that's what we do for every other NetworkBehaviour since
+                    // we only sync in Broadcast() which is called @ sendInterval.
+                    return multiples > 1 ? (uint)Mathf.RoundToInt(multiples) : 1;
+                }
+
+                // if syncInterval is 0, use NetworkManager.sendRate (x1)
+                return 1;
+            }
+        }
 
         [Header("Timeline Offset")]
         [Tooltip("Add a small timeline offset to account for decoupled arrival of NetworkTime and NetworkTransform snapshots.\nfixes: https://github.com/MirrorNetworking/Mirror/issues/3427")]
-        public bool timelineOffset = false;
+        public bool timelineOffset = true;
 
         // Ninja's Notes on offset & mulitplier:
         //
@@ -98,19 +125,23 @@ namespace Mirror
         public bool showOverlay;
         public Color overlayColor = new Color(0, 0, 0, 0.5f);
 
+        protected override void OnValidate()
+        {
+            // Skip if Editor is in Play mode
+            if (Application.isPlaying) return;
+
+            base.OnValidate();
+
+            // configure in awake
+            Configure();
+        }
+
         // initialization //////////////////////////////////////////////////////
         // forcec configuration of some settings
         protected virtual void Configure()
         {
             // set target to self if none yet
             if (target == null) target = transform;
-
-            // time snapshot interpolation happens globally.
-            // value (transform) happens in here.
-            // both always need to be on the same send interval.
-            // force the setting to '0' in OnValidate to make it obvious that we
-            // actually use NetworkServer.sendInterval.
-            syncInterval = 0;
 
             // Unity doesn't support setting world scale.
             // OnValidate force disables syncScale in world mode.
@@ -122,14 +153,6 @@ namespace Mirror
         {
             // sometimes OnValidate() doesn't run before launching a project.
             // need to guarantee configuration runs.
-            Configure();
-        }
-
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-
-            // configure in awake
             Configure();
         }
 
@@ -322,8 +345,16 @@ namespace Mirror
             OnTeleport(destination, rotation);
         }
 
+        // teleport on server, broadcast to clients.
+        [Server]
+        public void ServerTeleport(Vector3 destination, Quaternion rotation)
+        {
+            OnTeleport(destination, rotation);
+            RpcTeleport(destination, rotation);
+        }
+
         [ClientRpc]
-        private void RpcResetState()
+        void RpcResetState()
         {
             ResetState();
         }
@@ -409,7 +440,7 @@ namespace Mirror
         }
 
         [ServerCallback]
-        private void OnClientAuthorityChanged(NetworkConnectionToClient conn, NetworkIdentity identity, bool authorityState)
+        void OnClientAuthorityChanged(NetworkConnectionToClient conn, NetworkIdentity identity, bool authorityState)
         {
             if (identity != netIdentity) return;
 
@@ -439,7 +470,7 @@ namespace Mirror
             if (!Debug.isDebugBuild) return;
 
             // project position to screen
-            var point = Camera.main.WorldToScreenPoint(target.position);
+            Vector3 point = Camera.main.WorldToScreenPoint(target.position);
 
             // enough alpha, in front of camera and in screen?
             if (point.z >= 0 && Utils.IsPointInScreen(point))
@@ -463,17 +494,17 @@ namespace Mirror
             if (buffer.Count < 2) return;
 
             // calculate threshold for 'old enough' snapshots
-            var threshold = NetworkTime.localTime - NetworkClient.bufferTime;
-            var oldEnoughColor = new Color(0, 1, 0, 0.5f);
-            var notOldEnoughColor = new Color(0.5f, 0.5f, 0.5f, 0.3f);
+            double threshold = NetworkTime.localTime - NetworkClient.bufferTime;
+            Color oldEnoughColor = new Color(0, 1, 0, 0.5f);
+            Color notOldEnoughColor = new Color(0.5f, 0.5f, 0.5f, 0.3f);
 
             // draw the whole buffer for easier debugging.
             // it's worth seeing how much we have buffered ahead already
-            for (var i = 0; i < buffer.Count; ++i)
+            for (int i = 0; i < buffer.Count; ++i)
             {
                 // color depends on if old enough or not
-                var entry = buffer.Values[i];
-                var oldEnough = entry.localTime <= threshold;
+                TransformSnapshot entry = buffer.Values[i];
+                bool oldEnough = entry.localTime <= threshold;
                 Gizmos.color = oldEnough ? oldEnoughColor : notOldEnoughColor;
                 Gizmos.DrawWireCube(entry.position, Vector3.one);
             }

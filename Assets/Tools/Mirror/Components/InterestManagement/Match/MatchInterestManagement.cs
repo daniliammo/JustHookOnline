@@ -11,19 +11,19 @@ namespace Mirror
         [ReadOnly, SerializeField]
         internal ushort matchCount;
 
-        private readonly Dictionary<Guid, HashSet<NetworkMatch>> matchObjects =
+        readonly Dictionary<Guid, HashSet<NetworkMatch>> matchObjects =
             new Dictionary<Guid, HashSet<NetworkMatch>>();
 
-        private readonly HashSet<Guid> dirtyMatches = new HashSet<Guid>();
+        readonly HashSet<Guid> dirtyMatches = new HashSet<Guid>();
 
         // LateUpdate so that all spawns/despawns/changes are done
         [ServerCallback]
-        private void LateUpdate()
+        void LateUpdate()
         {
             // Rebuild all dirty matches
             // dirtyMatches will be empty if no matches changed members
             // by spawning or destroying or changing matchId in this frame.
-            foreach (var dirtyMatch in dirtyMatches)
+            foreach (Guid dirtyMatch in dirtyMatches)
             {
                 // rebuild always, even if matchObjects[dirtyMatch] is empty.
                 // Players might have left the match, but they may still be spawned.
@@ -40,9 +40,9 @@ namespace Mirror
         }
 
         [ServerCallback]
-        private void RebuildMatchObservers(Guid matchId)
+        void RebuildMatchObservers(Guid matchId)
         {
-            foreach (var networkMatch in matchObjects[matchId])
+            foreach (NetworkMatch networkMatch in matchObjects[matchId])
                 if (networkMatch.netIdentity != null)
                     NetworkServer.RebuildObservers(networkMatch.netIdentity, false);
         }
@@ -82,14 +82,14 @@ namespace Mirror
             if (!identity.TryGetComponent(out NetworkMatch networkMatch))
                 return;
 
-            var networkMatchId = networkMatch.matchId;
+            Guid networkMatchId = networkMatch.matchId;
 
             // Guid.Empty is never a valid matchId...do not add to matchObjects collection
             if (networkMatchId == Guid.Empty)
                 return;
 
             // Debug.Log($"MatchInterestManagement.OnSpawned({identity.name}) currentMatch: {currentMatch}");
-            if (!matchObjects.TryGetValue(networkMatchId, out var objects))
+            if (!matchObjects.TryGetValue(networkMatchId, out HashSet<NetworkMatch> objects))
             {
                 objects = new HashSet<NetworkMatch>();
                 matchObjects.Add(networkMatchId, objects);
@@ -113,7 +113,7 @@ namespace Mirror
             if (identity.TryGetComponent(out NetworkMatch currentMatch))
             {
                 if (currentMatch.matchId != Guid.Empty &&
-                    matchObjects.TryGetValue(currentMatch.matchId, out var objects) &&
+                    matchObjects.TryGetValue(currentMatch.matchId, out HashSet<NetworkMatch> objects) &&
                     objects.Remove(currentMatch))
                     dirtyMatches.Add(currentMatch.matchId);
             }
@@ -152,11 +152,11 @@ namespace Mirror
                 return;
 
             // Abort if this match hasn't been created yet by OnSpawned or OnMatchChanged
-            if (!matchObjects.TryGetValue(networkMatch.matchId, out var objects))
+            if (!matchObjects.TryGetValue(networkMatch.matchId, out HashSet<NetworkMatch> objects))
                 return;
 
             // Add everything in the hashset for this object's current match
-            foreach (var netMatch in objects)
+            foreach (NetworkMatch netMatch in objects)
                 if (netMatch.netIdentity != null && netMatch.netIdentity.connectionToClient != null)
                     newObservers.Add(netMatch.netIdentity.connectionToClient);
         }

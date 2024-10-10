@@ -23,8 +23,8 @@ namespace Mirror
         public static bool ReadBool(this NetworkReader reader) => reader.ReadBlittable<byte>() != 0;
         public static bool? ReadBoolNullable(this NetworkReader reader)
         {
-            var value = reader.ReadBlittableNullable<byte>();
-            return value.HasValue ? value.Value != 0 : default(bool?);
+            byte? value = reader.ReadBlittableNullable<byte>();
+            return value.HasValue ? (value.Value != 0) : default(bool?);
         }
 
         public static short ReadShort(this NetworkReader reader) => (short)reader.ReadUShort();
@@ -45,6 +45,14 @@ namespace Mirror
         public static ulong ReadULong(this NetworkReader reader) => reader.ReadBlittable<ulong>();
         public static ulong? ReadULongNullable(this NetworkReader reader) => reader.ReadBlittableNullable<ulong>();
 
+        // ReadInt/UInt/Long/ULong writes full bytes by default.
+        // define additional "VarInt" versions that Weaver will automatically prefer.
+        // 99% of the time [SyncVar] ints are small values, which makes this very much worth it.
+        [WeaverPriority] public static int ReadVarInt(this NetworkReader reader) => (int)Compression.DecompressVarInt(reader);
+        [WeaverPriority] public static uint ReadVarUInt(this NetworkReader reader) => (uint)Compression.DecompressVarUInt(reader);
+        [WeaverPriority] public static long ReadVarLong(this NetworkReader reader) => Compression.DecompressVarInt(reader);
+        [WeaverPriority] public static ulong ReadVarULong(this NetworkReader reader) => Compression.DecompressVarUInt(reader);
+
         public static float ReadFloat(this NetworkReader reader) => reader.ReadBlittable<float>();
         public static float? ReadFloatNullable(this NetworkReader reader) => reader.ReadBlittableNullable<float>();
 
@@ -58,19 +66,19 @@ namespace Mirror
         public static string ReadString(this NetworkReader reader)
         {
             // read number of bytes
-            var size = reader.ReadUShort();
+            ushort size = reader.ReadUShort();
 
             // null support, see NetworkWriter
             if (size == 0)
                 return null;
 
-            var realSize = (ushort)(size - 1);
+            ushort realSize = (ushort)(size - 1);
 
             // make sure it's within limits to avoid allocation attacks etc.
             if (realSize > NetworkWriter.MaxStringLength)
                 throw new EndOfStreamException($"NetworkReader.ReadString - Value too long: {realSize} bytes. Limit is: {NetworkWriter.MaxStringLength} bytes");
 
-            var data = reader.ReadBytesSegment(realSize);
+            ArraySegment<byte> data = reader.ReadBytesSegment(realSize);
 
             // convert directly from buffer to string via encoding
             // throws in case of invalid utf8.
@@ -89,7 +97,7 @@ namespace Mirror
                 throw new EndOfStreamException($"NetworkReader attempted to allocate {count} bytes, which is larger than the allowed limit of {NetworkReader.AllocationLimit} bytes.");
             }
 
-            var bytes = new byte[count];
+            byte[] bytes = new byte[count];
             reader.ReadBytes(bytes, count);
             return bytes;
         }
@@ -97,9 +105,13 @@ namespace Mirror
         /// <exception cref="T:OverflowException">if count is invalid</exception>
         public static byte[] ReadBytesAndSize(this NetworkReader reader)
         {
-            // count = 0 means the array was null
-            // otherwise count -1 is the length of the array
-            var count = reader.ReadUInt();
+            // we offset count by '1' to easily support null without writing another byte.
+            // encoding null as '0' instead of '-1' also allows for better compression
+            // (ushort vs. short / varuint vs. varint) etc.
+
+            // most sizes are small, read size as VarUInt!
+            uint count = (uint)Compression.DecompressVarUInt(reader);
+            // uint count = reader.ReadUInt();
             // Use checked() to force it to throw OverflowException if data is invalid
             return count == 0 ? null : reader.ReadBytes(checked((int)(count - 1u)));
         }
@@ -107,9 +119,13 @@ namespace Mirror
         /// <exception cref="T:OverflowException">if count is invalid</exception>
         public static ArraySegment<byte> ReadArraySegmentAndSize(this NetworkReader reader)
         {
-            // count = 0 means the array was null
-            // otherwise count - 1 is the length of the array
-            var count = reader.ReadUInt();
+            // we offset count by '1' to easily support null without writing another byte.
+            // encoding null as '0' instead of '-1' also allows for better compression
+            // (ushort vs. short / varuint vs. varint) etc.
+
+            // most sizes are small, read size as VarUInt!
+            uint count = (uint)Compression.DecompressVarUInt(reader);
+            // uint count = reader.ReadUInt();
             // Use checked() to force it to throw OverflowException if data is invalid
             return count == 0 ? default : reader.ReadBytesSegment(checked((int)(count - 1u)));
         }
@@ -175,7 +191,7 @@ namespace Mirror
             // Guid is Sequential, but we can't guarantee packing.
             if (reader.Remaining >= 16)
             {
-                var span = new ReadOnlySpan<byte>(reader.buffer.Array, reader.buffer.Offset + reader.Position, 16);
+                ReadOnlySpan<byte> span = new ReadOnlySpan<byte>(reader.buffer.Array, reader.buffer.Offset + reader.Position, 16);
                 reader.Position += 16;
                 return new Guid(span);
             }
@@ -186,7 +202,7 @@ namespace Mirror
 
         public static NetworkIdentity ReadNetworkIdentity(this NetworkReader reader)
         {
-            var netId = reader.ReadUInt();
+            uint netId = reader.ReadUInt();
             if (netId == 0)
                 return null;
 
@@ -206,19 +222,19 @@ namespace Mirror
             //   even if netId was != 0 but the identity disappeared on the client,
             //   resulting in unequal amounts of data being written / read.
             //   https://github.com/vis2k/Mirror/issues/2972
-            var netId = reader.ReadUInt();
+            uint netId = reader.ReadUInt();
             if (netId == 0)
                 return null;
 
             // read component index in any case, BEFORE searching the spawned
             // NetworkIdentity by netId.
-            var componentIndex = reader.ReadByte();
+            byte componentIndex = reader.ReadByte();
 
             // NOTE: a netId not being in spawned is common.
             // for example, "[SyncVar] NetworkIdentity target" netId would not
             // be known on client if the monster walks out of proximity for a
             // moment. no need to log any error or warning here.
-            var identity = Utils.GetSpawnedInServerOrClient(netId);
+            NetworkIdentity identity = Utils.GetSpawnedInServerOrClient(netId);
 
             return identity != null
                 ? identity.NetworkBehaviours[componentIndex]
@@ -232,7 +248,7 @@ namespace Mirror
 
         public static NetworkBehaviourSyncVar ReadNetworkBehaviourSyncVar(this NetworkReader reader)
         {
-            var netId = reader.ReadUInt();
+            uint netId = reader.ReadUInt();
             byte componentIndex = default;
 
             // if netId is not 0, then index is also sent to read before returning
@@ -247,14 +263,14 @@ namespace Mirror
         public static Transform ReadTransform(this NetworkReader reader)
         {
             // Don't use null propagation here as it could lead to MissingReferenceException
-            var networkIdentity = reader.ReadNetworkIdentity();
+            NetworkIdentity networkIdentity = reader.ReadNetworkIdentity();
             return networkIdentity != null ? networkIdentity.transform : null;
         }
 
         public static GameObject ReadGameObject(this NetworkReader reader)
         {
             // Don't use null propagation here as it could lead to MissingReferenceException
-            var networkIdentity = reader.ReadNetworkIdentity();
+            NetworkIdentity networkIdentity = reader.ReadNetworkIdentity();
             return networkIdentity != null ? networkIdentity.gameObject : null;
         }
 
@@ -264,10 +280,15 @@ namespace Mirror
         // note that Weaver/Readers/GenerateReader() handles this manually.
         public static List<T> ReadList<T>(this NetworkReader reader)
         {
-            var length = reader.ReadInt();
+            // we offset count by '1' to easily support null without writing another byte.
+            // encoding null as '0' instead of '-1' also allows for better compression
+            // (ushort vs. short / varuint vs. varint) etc.
 
-            // 'null' is encoded as '-1'
-            if (length < 0) return null;
+            // most sizes are small, read size as VarUInt!
+            uint length = (uint)Compression.DecompressVarUInt(reader);
+            // uint length = reader.ReadUInt();
+            if (length == 0) return null;
+            length -= 1;
 
             // prevent allocation attacks with a reasonable limit.
             //   server shouldn't allocate too much on client devices.
@@ -278,8 +299,8 @@ namespace Mirror
                 throw new EndOfStreamException($"NetworkReader attempted to allocate a List<{typeof(T)}> {length} elements, which is larger than the allowed limit of {NetworkReader.AllocationLimit}.");
             }
 
-            var result = new List<T>(length);
-            for (var i = 0; i < length; i++)
+            List<T> result = new List<T>((checked((int)length)));
+            for (int i = 0; i < length; i++)
             {
                 result.Add(reader.Read<T>());
             }
@@ -294,9 +315,16 @@ namespace Mirror
         /*
         public static HashSet<T> ReadHashSet<T>(this NetworkReader reader)
         {
-            int length = reader.ReadInt();
-            if (length < 0)
-                return null;
+            // we offset count by '1' to easily support null without writing another byte.
+            // encoding null as '0' instead of '-1' also allows for better compression
+            // (ushort vs. short / varuint vs. varint) etc.
+
+            // most sizes are small, read size as VarUInt!
+            uint length = (uint)Compression.DecompressVarUInt(reader);
+            //uint length = reader.ReadUInt();
+            if (length == 0) return null;
+            length -= 1;
+
             HashSet<T> result = new HashSet<T>();
             for (int i = 0; i < length; i++)
             {
@@ -308,10 +336,15 @@ namespace Mirror
 
         public static T[] ReadArray<T>(this NetworkReader reader)
         {
-            var length = reader.ReadInt();
+            // we offset count by '1' to easily support null without writing another byte.
+            // encoding null as '0' instead of '-1' also allows for better compression
+            // (ushort vs. short / varuint vs. varint) etc.
 
-            // 'null' is encoded as '-1'
-            if (length < 0) return null;
+            // most sizes are small, read size as VarUInt!
+            uint length = (uint)Compression.DecompressVarUInt(reader);
+            //uint length = reader.ReadUInt();
+            if (length == 0) return null;
+            length -= 1;
 
             // prevent allocation attacks with a reasonable limit.
             //   server shouldn't allocate too much on client devices.
@@ -326,8 +359,8 @@ namespace Mirror
             // because we don't know sizeof(T) since it's a managed type.
             // if (length > reader.Remaining) throw new EndOfStreamException($"Received array that is too large: {length}");
 
-            var result = new T[length];
-            for (var i = 0; i < length; i++)
+            T[] result = new T[length];
+            for (int i = 0; i < length; i++)
             {
                 result[i] = reader.Read<T>();
             }
@@ -336,36 +369,36 @@ namespace Mirror
 
         public static Uri ReadUri(this NetworkReader reader)
         {
-            var uriString = reader.ReadString();
-            return string.IsNullOrWhiteSpace(uriString) ? null : new Uri(uriString);
+            string uriString = reader.ReadString();
+            return (string.IsNullOrWhiteSpace(uriString) ? null : new Uri(uriString));
         }
 
         public static Texture2D ReadTexture2D(this NetworkReader reader)
         {
             // support 'null' textures for [SyncVar]s etc.
             // https://github.com/vis2k/Mirror/issues/3144
-            var width = reader.ReadShort();
+            short width = reader.ReadShort();
             if (width == -1) return null;
 
             // read height
-            var height = reader.ReadShort();
+            short height = reader.ReadShort();
 
             // prevent allocation attacks with a reasonable limit.
             //   server shouldn't allocate too much on client devices.
             //   client shouldn't allocate too much on server in ClientToServer [SyncVar]s.
             // log an error and return default.
             // we don't want attackers to be able to trigger exceptions.
-            var totalSize = width * height;
+            int totalSize = width * height;
             if (totalSize > NetworkReader.AllocationLimit)
             {
                 Debug.LogWarning($"NetworkReader attempted to allocate a Texture2D with total size (width * height) of {totalSize}, which is larger than the allowed limit of {NetworkReader.AllocationLimit}.");
                 return null;
             }
 
-            var texture2D = new Texture2D(width, height);
+            Texture2D texture2D = new Texture2D(width, height);
 
             // read pixel content
-            var pixels = reader.ReadArray<Color32>();
+            Color32[] pixels = reader.ReadArray<Color32>();
             texture2D.SetPixels32(pixels);
             texture2D.Apply();
             return texture2D;
@@ -375,7 +408,7 @@ namespace Mirror
         {
             // support 'null' textures for [SyncVar]s etc.
             // https://github.com/vis2k/Mirror/issues/3144
-            var texture = reader.ReadTexture2D();
+            Texture2D texture = reader.ReadTexture2D();
             if (texture == null) return null;
 
             // otherwise create a valid sprite

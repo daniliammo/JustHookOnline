@@ -15,12 +15,12 @@ namespace Mirror.Weaver
         // Writers are only for this assembly.
         // can't be used from another assembly, otherwise we will get:
         // "System.ArgumentException: Member ... is declared in another module and needs to be imported"
-        private AssemblyDefinition assembly;
-        private WeaverTypes weaverTypes;
-        private TypeDefinition GeneratedCodeClass;
-        private Logger Log;
+        AssemblyDefinition assembly;
+        WeaverTypes weaverTypes;
+        TypeDefinition GeneratedCodeClass;
+        Logger Log;
 
-        private Dictionary<TypeReference, MethodReference> writeFuncs =
+        Dictionary<TypeReference, MethodReference> writeFuncs =
             new Dictionary<TypeReference, MethodReference>(new TypeReferenceComparer());
 
         public Writers(AssemblyDefinition assembly, WeaverTypes weaverTypes, TypeDefinition GeneratedCodeClass, Logger Log)
@@ -33,20 +33,32 @@ namespace Mirror.Weaver
 
         public void Register(TypeReference dataType, MethodReference methodReference)
         {
-            if (writeFuncs.ContainsKey(dataType))
+            // sometimes we define multiple write methods for the same type.
+            // for example:
+            //   WriteInt()     // alwasy writes 4 bytes: should be available to the user for binary protocols etc.
+            //   WriteVarInt()  // varint compression: we may want Weaver to always use this for minimal bandwidth
+            // give the user a way to define the weaver prefered one if two exists:
+            //   "[WeaverPriority]" attribute is automatically detected and prefered.
+            MethodDefinition methodDefinition = methodReference.Resolve();
+            bool priority = methodDefinition.HasCustomAttribute<WeaverPriorityAttribute>();
+            // if (priority) Log.Warning($"Weaver: Registering priority Write<{dataType.FullName}> with {methodReference.FullName}.", methodReference);
+
+            // Weaver sometimes calls Register for <T> multiple times because we resolve assemblies multiple times.
+            // if the function name is the same: always use the latest one.
+            // if the function name differes: use the priority one.
+            if (writeFuncs.TryGetValue(dataType, out MethodReference existingMethod) && // if it was already defined
+                existingMethod.FullName != methodReference.FullName && // and this one is a different name
+                !priority) // and it's not the priority one
             {
-                // TODO enable this again later.
-                // Writer has some obsolete functions that were renamed.
-                // Don't want weaver warnings for all of them.
-                //Log.Warning($"Registering a Write method for {dataType.FullName} when one already exists", methodReference);
+                return; // then skip
             }
 
             // we need to import type when we Initialize Writers so import here in case it is used anywhere else
-            var imported = assembly.MainModule.ImportReference(dataType);
+            TypeReference imported = assembly.MainModule.ImportReference(dataType);
             writeFuncs[imported] = methodReference;
         }
 
-        private void RegisterWriteFunc(TypeReference typeReference, MethodDefinition newWriterFunc)
+        void RegisterWriteFunc(TypeReference typeReference, MethodDefinition newWriterFunc)
         {
             Register(typeReference, newWriterFunc);
             GeneratedCodeClass.Methods.Add(newWriterFunc);
@@ -55,13 +67,13 @@ namespace Mirror.Weaver
         // Finds existing writer for type, if non exists trys to create one
         public MethodReference GetWriteFunc(TypeReference variable, ref bool WeavingFailed)
         {
-            if (writeFuncs.TryGetValue(variable, out var foundFunc))
+            if (writeFuncs.TryGetValue(variable, out MethodReference foundFunc))
                 return foundFunc;
 
             // this try/catch will be removed in future PR and make `GetWriteFunc` throw instead
             try
             {
-                var importedVariable = assembly.MainModule.ImportReference(variable);
+                TypeReference importedVariable = assembly.MainModule.ImportReference(variable);
                 return GenerateWriter(importedVariable, ref WeavingFailed);
             }
             catch (GenerateWriterException e)
@@ -73,7 +85,7 @@ namespace Mirror.Weaver
         }
 
         //Throws GenerateWriterException when writer could not be generated for type
-        private MethodReference GenerateWriter(TypeReference variableReference, ref bool WeavingFailed)
+        MethodReference GenerateWriter(TypeReference variableReference, ref bool WeavingFailed)
         {
             if (variableReference.IsByReference)
             {
@@ -89,7 +101,7 @@ namespace Mirror.Weaver
                 {
                     throw new GenerateWriterException($"{variableReference.Name} is an unsupported type. Multidimensional arrays are not supported", variableReference);
                 }
-                var elementType = variableReference.GetElementType();
+                TypeReference elementType = variableReference.GetElementType();
                 return GenerateCollectionWriter(variableReference, elementType, nameof(NetworkWriterExtensions.WriteArray), ref WeavingFailed);
             }
 
@@ -102,15 +114,15 @@ namespace Mirror.Weaver
             // check for collections
             if (variableReference.Is(typeof(ArraySegment<>)))
             {
-                var genericInstance = (GenericInstanceType)variableReference;
-                var elementType = genericInstance.GenericArguments[0];
+                GenericInstanceType genericInstance = (GenericInstanceType)variableReference;
+                TypeReference elementType = genericInstance.GenericArguments[0];
 
                 return GenerateCollectionWriter(variableReference, elementType, nameof(NetworkWriterExtensions.WriteArraySegment), ref WeavingFailed);
             }
             if (variableReference.Is(typeof(List<>)))
             {
-                var genericInstance = (GenericInstanceType)variableReference;
-                var elementType = genericInstance.GenericArguments[0];
+                GenericInstanceType genericInstance = (GenericInstanceType)variableReference;
+                TypeReference elementType = genericInstance.GenericArguments[0];
 
                 return GenerateCollectionWriter(variableReference, elementType, nameof(NetworkWriterExtensions.WriteList), ref WeavingFailed);
             }
@@ -123,7 +135,7 @@ namespace Mirror.Weaver
             }
 
             // check for invalid types
-            var variableDefinition = variableReference.Resolve();
+            TypeDefinition variableDefinition = variableReference.Resolve();
             if (variableDefinition == null)
             {
                 throw new GenerateWriterException($"{variableReference.Name} is not a supported type. Use a supported type or provide a custom writer", variableReference);
@@ -157,10 +169,10 @@ namespace Mirror.Weaver
             return GenerateClassOrStructWriterFunction(variableReference, ref WeavingFailed);
         }
 
-        private MethodReference GetNetworkBehaviourWriter(TypeReference variableReference)
+        MethodReference GetNetworkBehaviourWriter(TypeReference variableReference)
         {
             // all NetworkBehaviours can use the same write function
-            if (writeFuncs.TryGetValue(weaverTypes.Import<NetworkBehaviour>(), out var func))
+            if (writeFuncs.TryGetValue(weaverTypes.Import<NetworkBehaviour>(), out MethodReference func))
             {
                 // register function so it is added to writer<T>
                 // use Register instead of RegisterWriteFunc because this is not a generated function
@@ -175,13 +187,13 @@ namespace Mirror.Weaver
             }
         }
 
-        private MethodDefinition GenerateEnumWriteFunc(TypeReference variable, ref bool WeavingFailed)
+        MethodDefinition GenerateEnumWriteFunc(TypeReference variable, ref bool WeavingFailed)
         {
-            var writerFunc = GenerateWriterFunc(variable);
+            MethodDefinition writerFunc = GenerateWriterFunc(variable);
 
-            var worker = writerFunc.Body.GetILProcessor();
+            ILProcessor worker = writerFunc.Body.GetILProcessor();
 
-            var underlyingWriter = GetWriteFunc(variable.Resolve().GetEnumUnderlyingType(), ref WeavingFailed);
+            MethodReference underlyingWriter = GetWriteFunc(variable.Resolve().GetEnumUnderlyingType(), ref WeavingFailed);
 
             worker.Emit(OpCodes.Ldarg_0);
             worker.Emit(OpCodes.Ldarg_1);
@@ -191,11 +203,11 @@ namespace Mirror.Weaver
             return writerFunc;
         }
 
-        private MethodDefinition GenerateWriterFunc(TypeReference variable)
+        MethodDefinition GenerateWriterFunc(TypeReference variable)
         {
-            var functionName = $"_Write_{variable.FullName}";
+            string functionName = $"_Write_{variable.FullName}";
             // create new writer for this type
-            var writerFunc = new MethodDefinition(functionName,
+            MethodDefinition writerFunc = new MethodDefinition(functionName,
                     MethodAttributes.Public |
                     MethodAttributes.Static |
                     MethodAttributes.HideBySig,
@@ -209,11 +221,11 @@ namespace Mirror.Weaver
             return writerFunc;
         }
 
-        private MethodDefinition GenerateClassOrStructWriterFunction(TypeReference variable, ref bool WeavingFailed)
+        MethodDefinition GenerateClassOrStructWriterFunction(TypeReference variable, ref bool WeavingFailed)
         {
-            var writerFunc = GenerateWriterFunc(variable);
+            MethodDefinition writerFunc = GenerateWriterFunc(variable);
 
-            var worker = writerFunc.Body.GetILProcessor();
+            ILProcessor worker = writerFunc.Body.GetILProcessor();
 
             if (!variable.Resolve().IsValueType)
                 WriteNullCheck(worker, ref WeavingFailed);
@@ -225,7 +237,7 @@ namespace Mirror.Weaver
             return writerFunc;
         }
 
-        private void WriteNullCheck(ILProcessor worker, ref bool WeavingFailed)
+        void WriteNullCheck(ILProcessor worker, ref bool WeavingFailed)
         {
             // if (value == null)
             // {
@@ -234,7 +246,7 @@ namespace Mirror.Weaver
             // }
             //
 
-            var labelNotNull = worker.Create(OpCodes.Nop);
+            Instruction labelNotNull = worker.Create(OpCodes.Nop);
             worker.Emit(OpCodes.Ldarg_1);
             worker.Emit(OpCodes.Brtrue, labelNotNull);
             worker.Emit(OpCodes.Ldarg_0);
@@ -250,15 +262,15 @@ namespace Mirror.Weaver
         }
 
         // Find all fields in type and write them
-        private bool WriteAllFields(TypeReference variable, ILProcessor worker, ref bool WeavingFailed)
+        bool WriteAllFields(TypeReference variable, ILProcessor worker, ref bool WeavingFailed)
         {
-            foreach (var field in variable.FindAllPublicFields())
+            foreach (FieldDefinition field in variable.FindAllPublicFields())
             {
-                var writeFunc = GetWriteFunc(field.FieldType, ref WeavingFailed);
+                MethodReference writeFunc = GetWriteFunc(field.FieldType, ref WeavingFailed);
                 // need this null check till later PR when GetWriteFunc throws exception instead
                 if (writeFunc == null) { return false; }
 
-                var fieldRef = assembly.MainModule.ImportReference(field);
+                FieldReference fieldRef = assembly.MainModule.ImportReference(field);
 
                 worker.Emit(OpCodes.Ldarg_0);
                 worker.Emit(OpCodes.Ldarg_1);
@@ -269,13 +281,13 @@ namespace Mirror.Weaver
             return true;
         }
 
-        private MethodDefinition GenerateCollectionWriter(TypeReference variable, TypeReference elementType, string writerFunction, ref bool WeavingFailed)
+        MethodDefinition GenerateCollectionWriter(TypeReference variable, TypeReference elementType, string writerFunction, ref bool WeavingFailed)
         {
 
-            var writerFunc = GenerateWriterFunc(variable);
+            MethodDefinition writerFunc = GenerateWriterFunc(variable);
 
-            var elementWriteFunc = GetWriteFunc(elementType, ref WeavingFailed);
-            var intWriterFunc = GetWriteFunc(weaverTypes.Import<int>(), ref WeavingFailed);
+            MethodReference elementWriteFunc = GetWriteFunc(elementType, ref WeavingFailed);
+            MethodReference intWriterFunc = GetWriteFunc(weaverTypes.Import<int>(), ref WeavingFailed);
 
             // need this null check till later PR when GetWriteFunc throws exception instead
             if (elementWriteFunc == null)
@@ -285,17 +297,17 @@ namespace Mirror.Weaver
                 return writerFunc;
             }
 
-            var module = assembly.MainModule;
-            var readerExtensions = module.ImportReference(typeof(NetworkWriterExtensions));
-            var collectionWriter = Resolvers.ResolveMethod(readerExtensions, assembly, Log, writerFunction, ref WeavingFailed);
+            ModuleDefinition module = assembly.MainModule;
+            TypeReference readerExtensions = module.ImportReference(typeof(NetworkWriterExtensions));
+            MethodReference collectionWriter = Resolvers.ResolveMethod(readerExtensions, assembly, Log, writerFunction, ref WeavingFailed);
 
-            var methodRef = new GenericInstanceMethod(collectionWriter);
+            GenericInstanceMethod methodRef = new GenericInstanceMethod(collectionWriter);
             methodRef.GenericArguments.Add(elementType);
 
             // generates
             // reader.WriteArray<T>(array);
 
-            var worker = writerFunc.Body.GetILProcessor();
+            ILProcessor worker = writerFunc.Body.GetILProcessor();
             worker.Emit(OpCodes.Ldarg_0); // writer
             worker.Emit(OpCodes.Ldarg_1); // collection
 
@@ -309,31 +321,31 @@ namespace Mirror.Weaver
         // Save a delegate for each one of the writers into Writer{T}.write
         internal void InitializeWriters(ILProcessor worker)
         {
-            var module = assembly.MainModule;
+            ModuleDefinition module = assembly.MainModule;
 
-            var genericWriterClassRef = module.ImportReference(typeof(Writer<>));
+            TypeReference genericWriterClassRef = module.ImportReference(typeof(Writer<>));
 
-            var fieldInfo = typeof(Writer<>).GetField(nameof(Writer<object>.write));
-            var fieldRef = module.ImportReference(fieldInfo);
-            var networkWriterRef = module.ImportReference(typeof(NetworkWriter));
-            var actionRef = module.ImportReference(typeof(Action<,>));
-            var actionConstructorRef = module.ImportReference(typeof(Action<,>).GetConstructors()[0]);
+            System.Reflection.FieldInfo fieldInfo = typeof(Writer<>).GetField(nameof(Writer<object>.write));
+            FieldReference fieldRef = module.ImportReference(fieldInfo);
+            TypeReference networkWriterRef = module.ImportReference(typeof(NetworkWriter));
+            TypeReference actionRef = module.ImportReference(typeof(Action<,>));
+            MethodReference actionConstructorRef = module.ImportReference(typeof(Action<,>).GetConstructors()[0]);
 
-            foreach (var kvp in writeFuncs)
+            foreach (KeyValuePair<TypeReference, MethodReference> kvp in writeFuncs)
             {
-                var targetType = kvp.Key;
-                var writeFunc = kvp.Value;
+                TypeReference targetType = kvp.Key;
+                MethodReference writeFunc = kvp.Value;
 
                 // create a Action<NetworkWriter, T> delegate
                 worker.Emit(OpCodes.Ldnull);
                 worker.Emit(OpCodes.Ldftn, writeFunc);
-                var actionGenericInstance = actionRef.MakeGenericInstanceType(networkWriterRef, targetType);
-                var actionRefInstance = actionConstructorRef.MakeHostInstanceGeneric(assembly.MainModule, actionGenericInstance);
+                GenericInstanceType actionGenericInstance = actionRef.MakeGenericInstanceType(networkWriterRef, targetType);
+                MethodReference actionRefInstance = actionConstructorRef.MakeHostInstanceGeneric(assembly.MainModule, actionGenericInstance);
                 worker.Emit(OpCodes.Newobj, actionRefInstance);
 
                 // save it in Writer<T>.write
-                var genericInstance = genericWriterClassRef.MakeGenericInstanceType(targetType);
-                var specializedField = fieldRef.SpecializeField(assembly.MainModule, genericInstance);
+                GenericInstanceType genericInstance = genericWriterClassRef.MakeGenericInstanceType(targetType);
+                FieldReference specializedField = fieldRef.SpecializeField(assembly.MainModule, genericInstance);
                 worker.Emit(OpCodes.Stsfld, specializedField);
             }
         }

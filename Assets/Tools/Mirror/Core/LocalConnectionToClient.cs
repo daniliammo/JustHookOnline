@@ -14,8 +14,6 @@ namespace Mirror
 
         public LocalConnectionToClient() : base(LocalConnectionId) {}
 
-        public override string address => "localhost";
-
         internal override void Send(ArraySegment<byte> segment, int channelId = Channels.Reliable)
         {
             // instead of invoking it directly, we enqueue and process next update.
@@ -24,7 +22,7 @@ namespace Mirror
             // both directions do this, so [Command] and [Rpc] behave the same way.
 
             //Debug.Log($"Enqueue {BitConverter.ToString(segment.Array, segment.Offset, segment.Count)}");
-            var writer = NetworkWriterPool.Get();
+            NetworkWriterPooled writer = NetworkWriterPool.Get();
             writer.WriteBytes(segment.Array, segment.Offset, segment.Count);
             connectionToServer.queue.Enqueue(writer);
         }
@@ -43,15 +41,15 @@ namespace Mirror
             while (queue.Count > 0)
             {
                 // call receive on queued writer's content, return to pool
-                var writer = queue.Dequeue();
-                var message = writer.ToArraySegment();
+                NetworkWriterPooled writer = queue.Dequeue();
+                ArraySegment<byte> message = writer.ToArraySegment();
 
                 // OnTransportData assumes a proper batch with timestamp etc.
                 // let's make a proper batch and pass it to OnTransportData.
-                var batcher = GetBatchForChannelId(Channels.Reliable);
+                Batcher batcher = GetBatchForChannelId(Channels.Reliable);
                 batcher.AddMessage(message, NetworkTime.localTime);
 
-                using (var batchWriter = NetworkWriterPool.Get())
+                using (NetworkWriterPooled batchWriter = NetworkWriterPool.Get())
                 {
                     // make a batch with our local time (double precision)
                     if (batcher.GetBatch(batchWriter))

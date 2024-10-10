@@ -11,18 +11,20 @@ namespace Mirror
 {
     public class WorkerThread
     {
-        private readonly Thread thread;
+        readonly Thread thread;
 
         protected volatile bool active;
 
         // stopwatch so we don't need to use Unity's Time (engine independent)
-        private readonly Stopwatch watch = new Stopwatch();
+        readonly Stopwatch watch = new Stopwatch();
 
         // callbacks need to be set after constructor.
         // inheriting classes can't pass their member funcs to base ctor.
         // don't set them while the thread is running!
+        // -> Tick() returns a bool so it can easily stop the thread
+        //    without needing to throw InterruptExceptions or similar.
         public Action Init;
-        public Action Tick;
+        public Func<bool> Tick;
         public Action Cleanup;
 
         public WorkerThread(string identifier)
@@ -103,9 +105,9 @@ namespace Mirror
         // thread constructor needs callbacks.
         // always define them, and make them call actions.
         // those can be set at any time.
-        private void OnInit()    => Init?.Invoke();
-        private void OnTick()    => Tick?.Invoke();
-        private void OnCleanup() => Cleanup?.Invoke();
+        void OnInit()    => Init?.Invoke();
+        bool OnTick()    => Tick?.Invoke() ?? false;
+        void OnCleanup() => Cleanup?.Invoke();
 
         // guarded wrapper for thread code.
         // catches exceptions which would otherwise be silent.
@@ -128,7 +130,9 @@ namespace Mirror
                 // run thread func while active
                 while (active)
                 {
-                    OnTick();
+                    // Tick() returns a bool so it can easily stop the thread
+                    // without needing to throw InterruptExceptions or similar.
+                    if (!OnTick()) break;
                 }
             }
             // Thread.Interrupt() will gracefully raise a InterruptedException.

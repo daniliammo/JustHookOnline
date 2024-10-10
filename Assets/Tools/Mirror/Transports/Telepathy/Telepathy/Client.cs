@@ -12,7 +12,7 @@ namespace Telepathy
     //    while attempting to use it for a new connection attempt etc.
     // => creating a fresh client state each time is the best solution against
     //    data races here!
-    internal class ClientConnectionState : ConnectionState
+    class ClientConnectionState : ConnectionState
     {
         public Thread receiveThread;
 
@@ -103,7 +103,7 @@ namespace Telepathy
         // all client state wrapped into an object that is passed to ReceiveThread
         // => we create a new one each time we connect to avoid data races with
         //    old dieing threads still using the previous object!
-        private ClientConnectionState state;
+        ClientConnectionState state;
 
         // Connected & Connecting
         public bool Connected => state != null && state.Connected;
@@ -120,7 +120,7 @@ namespace Telepathy
         // => pass ClientState object. a new one is created for each new thread!
         // => avoids data races where an old dieing thread might still modify
         //    the current thread's state :/
-        private static void ReceiveThreadFunction(ClientConnectionState state, string ip, int port, int MaxMessageSize, bool NoDelay, int SendTimeout, int ReceiveTimeout, int ReceiveQueueLimit)
+        static void ReceiveThreadFunction(ClientConnectionState state, string ip, int port, int MaxMessageSize, bool NoDelay, int SendTimeout, int ReceiveTimeout, int ReceiveQueueLimit)
 
         {
             Thread sendThread = null;
@@ -323,7 +323,7 @@ namespace Telepathy
                 return 0;
 
             // process up to 'processLimit' messages
-            for (var i = 0; i < processLimit; ++i)
+            for (int i = 0; i < processLimit; ++i)
             {
                 // check enabled in case a Mirror scene message arrived
                 if (checkEnabled != null && !checkEnabled())
@@ -331,7 +331,7 @@ namespace Telepathy
 
                 // peek first. allows us to process the first queued entry while
                 // still keeping the pooled byte[] alive by not removing anything.
-                if (state.receivePipe.TryPeek(out var _, out var eventType, out var message))
+                if (state.receivePipe.TryPeek(out int _, out EventType eventType, out ArraySegment<byte> message))
                 {
                     switch (eventType)
                     {

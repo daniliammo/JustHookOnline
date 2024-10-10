@@ -134,7 +134,7 @@ namespace Mirror
             // => our 1mio writes benchmark is 6x slower with Marshal.SizeOf<T>
             // => for blittable types, sizeof(T) is even recommended:
             // https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
-            var size = sizeof(T);
+            int size = sizeof(T);
 
             // ensure remaining
             if (Remaining < size)
@@ -217,7 +217,7 @@ namespace Mirror
             }
 
             // return the segment
-            var result = new ArraySegment<byte>(buffer.Array, buffer.Offset + Position, count);
+            ArraySegment<byte> result = new ArraySegment<byte>(buffer.Array, buffer.Offset + Position, count);
             Position += count;
             return result;
         }
@@ -225,7 +225,7 @@ namespace Mirror
         /// <summary>Reads any data type that mirror supports. Uses weaver populated Reader(T).read</summary>
         public T Read<T>()
         {
-            var readerDelegate = Reader<T>.read;
+            Func<NetworkReader, T> readerDelegate = Reader<T>.read;
             if (readerDelegate == null)
             {
                 Debug.LogError($"No reader found for {typeof(T)}. Use a type supported by Mirror or define a custom reader extension for {typeof(T)}.");

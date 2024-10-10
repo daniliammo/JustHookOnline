@@ -18,7 +18,7 @@ namespace Mirror.SimpleWeb
 
         [FormerlySerializedAs("handshakeMaxSize")]
         [Tooltip("Max size for http header send as handshake for websockets")]
-        public int maxHandshakeSize = 3000;
+        public int maxHandshakeSize = 16 * 1024;
 
         [FormerlySerializedAs("serverMaxMessagesPerTick")]
         [Tooltip("Caps the number of messages the server will process per tick. Allows LateUpdate to finish to let the reset of unity continue in case more messages arrive before they are processed")]
@@ -51,7 +51,7 @@ namespace Mirror.SimpleWeb
         [Header("Server settings")]
 
         [Tooltip("Port to use for server")]
-        public ushort port = 7778;
+        public ushort port = 27777;
         public ushort Port
         {
             get
@@ -90,13 +90,12 @@ namespace Mirror.SimpleWeb
 
         [Tooltip("Sets connect scheme to wss. Useful when client needs to connect using wss when TLS is outside of transport.\nNOTE: if sslEnabled is true clientUseWss is also true")]
         public bool clientUseWss;
-        public ClientWebsocketSettings clientWebsocketSettings;
+        public ClientWebsocketSettings clientWebsocketSettings = new ClientWebsocketSettings { ClientPortOption = WebsocketPortOption.DefaultSameAsServer, CustomClientPort = 7777 };
 
         [Header("Logging")]
 
         [Tooltip("Choose minimum severity level for logging\nFlood level requires Debug build")]
-        [SerializeField]
-        private Log.Levels minimumLogLevel = Log.Levels.Warn;
+        [SerializeField] Log.Levels minimumLogLevel = Log.Levels.Warn;
 
         /// <summary>
         /// <para>Gets _logLevels field</para>
@@ -112,19 +111,19 @@ namespace Mirror.SimpleWeb
             }
         }
 
-        private SimpleWebClient client;
-        private SimpleWebServer server;
+        SimpleWebClient client;
+        SimpleWebServer server;
 
-        private TcpConfig TcpConfig => new TcpConfig(noDelay, sendTimeout, receiveTimeout);
+        TcpConfig TcpConfig => new TcpConfig(noDelay, sendTimeout, receiveTimeout);
 
-        private void Awake()
+        void Awake()
         {
             Log.minLogLevel = minimumLogLevel;
         }
 
         public override string ToString() => $"SWT [{port}]";
 
-        private void OnValidate()
+        void OnValidate()
         {
             Log.minLogLevel = minimumLogLevel;
         }
@@ -143,7 +142,7 @@ namespace Mirror.SimpleWeb
 
         #region Client
 
-        private string GetClientScheme() => sslEnabled || clientUseWss ? SecureScheme : NormalScheme;
+        string GetClientScheme() => (sslEnabled || clientUseWss) ? SecureScheme : NormalScheme;
 
         public override bool IsEncrypted => ClientConnected() && (clientUseWss || sslEnabled) || ServerActive() && sslEnabled;
 
@@ -159,10 +158,10 @@ namespace Mirror.SimpleWeb
 
         public override void ClientConnect(string hostname)
         {
-            var builder = new UriBuilder
+            UriBuilder builder = new UriBuilder
             {
                 Scheme = GetClientScheme(),
-                Host = hostname
+                Host = hostname,
             };
 
             switch (clientWebsocketSettings.ClientPortOption)
@@ -275,11 +274,11 @@ namespace Mirror.SimpleWeb
 
         #region Server
 
-        private string GetServerScheme() => sslEnabled ? SecureScheme : NormalScheme;
+        string GetServerScheme() => sslEnabled ? SecureScheme : NormalScheme;
 
         public override Uri ServerUri()
         {
-            var builder = new UriBuilder
+            UriBuilder builder = new UriBuilder
             {
                 Scheme = GetServerScheme(),
                 Host = Dns.GetHostName(),
@@ -298,10 +297,10 @@ namespace Mirror.SimpleWeb
             if (ServerActive())
                 Log.Warn("[SWT-ServerStart]: Server Already Started");
 
-            var config = SslConfigLoader.Load(sslEnabled, sslCertJson, sslProtocols);
+            SslConfig config = SslConfigLoader.Load(sslEnabled, sslCertJson, sslProtocols);
             server = new SimpleWebServer(serverMaxMsgsPerTick, TcpConfig, maxMessageSize, maxHandshakeSize, config);
 
-            server.onConnect += OnServerConnected.Invoke;
+            server.onConnect += OnServerConnectedWithAddress.Invoke;
             server.onDisconnect += OnServerDisconnected.Invoke;
             server.onData += (int connId, ArraySegment<byte> data) => OnServerDataReceived.Invoke(connId, data, Channels.Reliable);
 

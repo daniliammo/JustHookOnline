@@ -24,9 +24,9 @@ namespace Mirror.Weaver
             // find NetworkReader/Writer extensions in referenced assemblies
             // save a copy of the collection enumerator since it appears to be modified at some point during iteration
             IEnumerable<AssemblyNameReference> assemblyReferences = CurrentAssembly.MainModule.AssemblyReferences.ToList();
-            foreach (var assemblyNameReference in assemblyReferences)
+            foreach (AssemblyNameReference assemblyNameReference in assemblyReferences)
             {
-                var referencedAssembly = resolver.Resolve(assemblyNameReference);
+                AssemblyDefinition referencedAssembly = resolver.Resolve(assemblyNameReference);
                 if (referencedAssembly != null)
                 {
                     ProcessAssemblyClasses(CurrentAssembly, referencedAssembly, writers, readers, ref WeavingFailed);
@@ -37,19 +37,19 @@ namespace Mirror.Weaver
             return ProcessAssemblyClasses(CurrentAssembly, CurrentAssembly, writers, readers, ref WeavingFailed);
         }
 
-        private static void ProcessMirrorAssemblyClasses(AssemblyDefinition CurrentAssembly, IAssemblyResolver resolver, Logger Log, Writers writers, Readers readers, ref bool WeavingFailed)
+        static void ProcessMirrorAssemblyClasses(AssemblyDefinition CurrentAssembly, IAssemblyResolver resolver, Logger Log, Writers writers, Readers readers, ref bool WeavingFailed)
         {
             // find Mirror.dll in assembly's references.
             // those are guaranteed to be resolvable and correct.
             // after all, it references them :)
-            var mirrorAssemblyReference = CurrentAssembly.MainModule.FindReference(Weaver.MirrorAssemblyName);
+            AssemblyNameReference mirrorAssemblyReference = CurrentAssembly.MainModule.FindReference(Weaver.MirrorAssemblyName);
             if (mirrorAssemblyReference != null)
             {
                 // resolve the assembly to load the AssemblyDefinition.
                 // we need to search all types in it.
                 // if we only were to resolve one known type like in WeaverTypes,
                 // then we wouldn't need it.
-                var mirrorAssembly = resolver.Resolve(mirrorAssemblyReference);
+                AssemblyDefinition mirrorAssembly = resolver.Resolve(mirrorAssemblyReference);
                 if (mirrorAssembly != null)
                 {
                     ProcessAssemblyClasses(CurrentAssembly, mirrorAssembly, writers, readers, ref WeavingFailed);
@@ -59,10 +59,10 @@ namespace Mirror.Weaver
             else Log.Error("Failed to find Mirror AssemblyNameReference. Can't register Mirror.dll readers/writers.");
         }
 
-        private static bool ProcessAssemblyClasses(AssemblyDefinition CurrentAssembly, AssemblyDefinition assembly, Writers writers, Readers readers, ref bool WeavingFailed)
+        static bool ProcessAssemblyClasses(AssemblyDefinition CurrentAssembly, AssemblyDefinition assembly, Writers writers, Readers readers, ref bool WeavingFailed)
         {
-            var modified = false;
-            foreach (var klass in assembly.MainModule.Types)
+            bool modified = false;
+            foreach (TypeDefinition klass in assembly.MainModule.Types)
             {
                 // extension methods only live in static classes
                 // static classes are represented as sealed and abstract
@@ -74,7 +74,7 @@ namespace Mirror.Weaver
                 }
             }
 
-            foreach (var klass in assembly.MainModule.Types)
+            foreach (TypeDefinition klass in assembly.MainModule.Types)
             {
                 // if assembly has any network message then it is modified
                 modified |= LoadMessageReadWriter(CurrentAssembly.MainModule, writers, readers, klass, ref WeavingFailed);
@@ -82,9 +82,9 @@ namespace Mirror.Weaver
             return modified;
         }
 
-        private static bool LoadMessageReadWriter(ModuleDefinition module, Writers writers, Readers readers, TypeDefinition klass, ref bool WeavingFailed)
+        static bool LoadMessageReadWriter(ModuleDefinition module, Writers writers, Readers readers, TypeDefinition klass, ref bool WeavingFailed)
         {
-            var modified = false;
+            bool modified = false;
             if (!klass.IsAbstract && !klass.IsInterface && klass.ImplementsInterface<NetworkMessage>())
             {
                 readers.GetReadFunc(module.ImportReference(klass), ref WeavingFailed);
@@ -92,18 +92,18 @@ namespace Mirror.Weaver
                 modified = true;
             }
 
-            foreach (var td in klass.NestedTypes)
+            foreach (TypeDefinition td in klass.NestedTypes)
             {
                 modified |= LoadMessageReadWriter(module, writers, readers, td, ref WeavingFailed);
             }
             return modified;
         }
 
-        private static bool LoadDeclaredWriters(AssemblyDefinition currentAssembly, TypeDefinition klass, Writers writers)
+        static bool LoadDeclaredWriters(AssemblyDefinition currentAssembly, TypeDefinition klass, Writers writers)
         {
             // register all the writers in this class.  Skip the ones with wrong signature
-            var modified = false;
-            foreach (var method in klass.Methods)
+            bool modified = false;
+            foreach (MethodDefinition method in klass.Methods)
             {
                 if (method.Parameters.Count != 2)
                     continue;
@@ -120,18 +120,18 @@ namespace Mirror.Weaver
                 if (method.HasGenericParameters)
                     continue;
 
-                var dataType = method.Parameters[1].ParameterType;
+                TypeReference dataType = method.Parameters[1].ParameterType;
                 writers.Register(dataType, currentAssembly.MainModule.ImportReference(method));
                 modified = true;
             }
             return modified;
         }
 
-        private static bool LoadDeclaredReaders(AssemblyDefinition currentAssembly, TypeDefinition klass, Readers readers)
+        static bool LoadDeclaredReaders(AssemblyDefinition currentAssembly, TypeDefinition klass, Readers readers)
         {
             // register all the reader in this class.  Skip the ones with wrong signature
-            var modified = false;
-            foreach (var method in klass.Methods)
+            bool modified = false;
+            foreach (MethodDefinition method in klass.Methods)
             {
                 if (method.Parameters.Count != 1)
                     continue;
@@ -155,7 +155,7 @@ namespace Mirror.Weaver
         }
 
         // helper function to add [RuntimeInitializeOnLoad] attribute to method
-        private static void AddRuntimeInitializeOnLoadAttribute(AssemblyDefinition assembly, WeaverTypes weaverTypes, MethodDefinition method)
+        static void AddRuntimeInitializeOnLoadAttribute(AssemblyDefinition assembly, WeaverTypes weaverTypes, MethodDefinition method)
         {
             // NOTE: previously we used reflection because according paul,
             // 'weaving Mirror.dll caused unity to rebuild all dlls but in wrong
@@ -166,11 +166,11 @@ namespace Mirror.Weaver
             // to add a CustomAttribute, we need the attribute's constructor.
             // in this case, there are two: empty, and RuntimeInitializeOnLoadType.
             // we want the last one, with the type parameter.
-            var ctor = weaverTypes.runtimeInitializeOnLoadMethodAttribute.GetConstructors().Last();
+            MethodDefinition ctor = weaverTypes.runtimeInitializeOnLoadMethodAttribute.GetConstructors().Last();
             //MethodDefinition ctor = weaverTypes.runtimeInitializeOnLoadMethodAttribute.GetConstructors().First();
             // using ctor directly throws: ArgumentException: Member 'System.Void UnityEditor.InitializeOnLoadMethodAttribute::.ctor()' is declared in another module and needs to be imported
             // we need to import it first.
-            var attribute = new CustomAttribute(assembly.MainModule.ImportReference(ctor));
+            CustomAttribute attribute = new CustomAttribute(assembly.MainModule.ImportReference(ctor));
             // add the RuntimeInitializeLoadType.BeforeSceneLoad argument to ctor
             attribute.ConstructorArguments.Add(new CustomAttributeArgument(weaverTypes.Import<RuntimeInitializeLoadType>(), RuntimeInitializeLoadType.BeforeSceneLoad));
             method.CustomAttributes.Add(attribute);
@@ -178,7 +178,7 @@ namespace Mirror.Weaver
 
         // helper function to add [InitializeOnLoad] attribute to method
         // (only works in Editor assemblies. check IsEditorAssembly first.)
-        private static void AddInitializeOnLoadAttribute(AssemblyDefinition assembly, WeaverTypes weaverTypes, MethodDefinition method)
+        static void AddInitializeOnLoadAttribute(AssemblyDefinition assembly, WeaverTypes weaverTypes, MethodDefinition method)
         {
             // NOTE: previously we used reflection because according paul,
             // 'weaving Mirror.dll caused unity to rebuild all dlls but in wrong
@@ -188,10 +188,10 @@ namespace Mirror.Weaver
 
             // to add a CustomAttribute, we need the attribute's constructor.
             // in this case, there's only one - and it's an empty constructor.
-            var ctor = weaverTypes.initializeOnLoadMethodAttribute.GetConstructors().First();
+            MethodDefinition ctor = weaverTypes.initializeOnLoadMethodAttribute.GetConstructors().First();
             // using ctor directly throws: ArgumentException: Member 'System.Void UnityEditor.InitializeOnLoadMethodAttribute::.ctor()' is declared in another module and needs to be imported
             // we need to import it first.
-            var attribute = new CustomAttribute(assembly.MainModule.ImportReference(ctor));
+            CustomAttribute attribute = new CustomAttribute(assembly.MainModule.ImportReference(ctor));
             method.CustomAttributes.Add(attribute);
         }
 
@@ -204,8 +204,8 @@ namespace Mirror.Weaver
         // use ILSpy to see the result (it's in the DLL's 'Mirror' namespace)
         public static void InitializeReaderAndWriters(AssemblyDefinition currentAssembly, WeaverTypes weaverTypes, Writers writers, Readers readers, TypeDefinition GeneratedCodeClass)
         {
-            var initReadWriters = new MethodDefinition("InitReadWriters", MethodAttributes.Public |
-                                                                          MethodAttributes.Static,
+            MethodDefinition initReadWriters = new MethodDefinition("InitReadWriters", MethodAttributes.Public |
+                    MethodAttributes.Static,
                     weaverTypes.Import(typeof(void)));
 
             // add [RuntimeInitializeOnLoad] in any case
@@ -218,7 +218,7 @@ namespace Mirror.Weaver
             }
 
             // fill function body with reader/writer initializers
-            var worker = initReadWriters.Body.GetILProcessor();
+            ILProcessor worker = initReadWriters.Body.GetILProcessor();
             // for debugging: add a log to see if initialized on load
             //worker.Emit(OpCodes.Ldstr, $"[InitReadWriters] called!");
             //worker.Emit(OpCodes.Call, Weaver.weaverTypes.logWarningReference);

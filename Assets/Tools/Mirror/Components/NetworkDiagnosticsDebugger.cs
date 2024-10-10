@@ -7,26 +7,22 @@ namespace Mirror
     {
         public bool logInMessages = true;
         public bool logOutMessages = true;
-
-        private void OnInMessage(NetworkDiagnostics.MessageInfo msgInfo)
+        void OnInMessage(NetworkDiagnostics.MessageInfo msgInfo)
         {
             if (logInMessages)
                 Debug.Log(msgInfo);
         }
-
-        private void OnOutMessage(NetworkDiagnostics.MessageInfo msgInfo)
+        void OnOutMessage(NetworkDiagnostics.MessageInfo msgInfo)
         {
             if (logOutMessages)
                 Debug.Log(msgInfo);
         }
-
-        private void OnEnable()
+        void OnEnable()
         {
             NetworkDiagnostics.InMessageEvent += OnInMessage;
             NetworkDiagnostics.OutMessageEvent += OnOutMessage;
         }
-
-        private void OnDisable()
+        void OnDisable()
         {
             NetworkDiagnostics.InMessageEvent -= OnInMessage;
             NetworkDiagnostics.OutMessageEvent -= OnOutMessage;

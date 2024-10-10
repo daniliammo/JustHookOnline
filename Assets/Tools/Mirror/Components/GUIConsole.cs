@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace Mirror
 {
-    internal struct LogEntry
+    struct LogEntry
     {
         public string message;
         public LogType type;
@@ -43,7 +43,7 @@ namespace Mirror
         public bool showInEditor = false;
 
         // log as queue so we can remove the first entry easily
-        private readonly Queue<LogEntry> log = new Queue<LogEntry>();
+        readonly Queue<LogEntry> log = new Queue<LogEntry>();
 
         // hotkey to show/hide at runtime for easier debugging
         // (sometimes we need to temporarily hide/show it)
@@ -52,13 +52,13 @@ namespace Mirror
         public KeyCode hotKey = KeyCode.BackQuote;
 
         // GUI
-        private bool visible;
-        private Vector2 scroll = Vector2.zero;
+        bool visible;
+        Vector2 scroll = Vector2.zero;
 
         // only show at runtime, or if showInEditor is enabled
-        private bool show => !Application.isEditor || showInEditor;
+        bool show => !Application.isEditor || showInEditor;
 
-        private void Awake()
+        void Awake()
         {
             // only show at runtime, or if showInEditor is enabled
             if (show)
@@ -68,13 +68,13 @@ namespace Mirror
         // OnLog logs everything, even Debug.Log messages in release builds
         // => this makes a lot of things easier. e.g. addon initialization logs.
         // => it's really better to have than not to have those
-        private void OnLog(string message, string stackTrace, LogType type)
+        void OnLog(string message, string stackTrace, LogType type)
         {
             // is this important?
             // => always show exceptions & errors
             // => usually a good idea to show warnings too, otherwise it's too
             //    easy to miss OnDeserialize warnings etc. in builds
-            var isImportant = type == LogType.Error || type == LogType.Exception || type == LogType.Warning;
+            bool isImportant = type == LogType.Error || type == LogType.Exception || type == LogType.Warning;
 
             // use stack trace only if important
             // (otherwise users would have to find and search the log file.
@@ -99,23 +99,23 @@ namespace Mirror
             scroll.y = float.MaxValue;
         }
 
-        private void Update()
+        void Update()
         {
             if (show && Input.GetKeyDown(hotKey))
                 visible = !visible;
         }
 
-        private void OnGUI()
+        void OnGUI()
         {
             if (!visible) return;
 
             // If this offset is changed, also change width in NetworkManagerHUD::OnGUI
-            var offsetX = 300 + 20;
+            int offsetX = 300 + 20;
 
             GUILayout.BeginArea(new Rect(offsetX, offsetY, Screen.width - offsetX - 10, height));
 
             scroll = GUILayout.BeginScrollView(scroll, "Box", GUILayout.Width(Screen.width - offsetX - 10), GUILayout.Height(height));
-            foreach (var entry in log)
+            foreach (LogEntry entry in log)
             {
                 if (entry.type == LogType.Error || entry.type == LogType.Exception)
                     GUI.color = Color.red;

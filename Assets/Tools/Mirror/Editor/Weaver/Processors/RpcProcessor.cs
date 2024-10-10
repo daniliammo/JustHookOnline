@@ -8,13 +8,13 @@ namespace Mirror.Weaver
     {
         public static MethodDefinition ProcessRpcInvoke(WeaverTypes weaverTypes, Writers writers, Readers readers, Logger Log, TypeDefinition td, MethodDefinition md, MethodDefinition rpcCallFunc, ref bool WeavingFailed)
         {
-            var rpcName = Weaver.GenerateMethodName(RemoteCalls.RemoteProcedureCalls.InvokeRpcPrefix, md);
+            string rpcName = Weaver.GenerateMethodName(RemoteCalls.RemoteProcedureCalls.InvokeRpcPrefix, md);
 
-            var rpc = new MethodDefinition(rpcName, MethodAttributes.Family | MethodAttributes.Static | MethodAttributes.HideBySig,
+            MethodDefinition rpc = new MethodDefinition(rpcName, MethodAttributes.Family | MethodAttributes.Static | MethodAttributes.HideBySig,
                                                         weaverTypes.Import(typeof(void)));
 
-            var worker = rpc.Body.GetILProcessor();
-            var label = worker.Create(OpCodes.Nop);
+            ILProcessor worker = rpc.Body.GetILProcessor();
+            Instruction label = worker.Create(OpCodes.Nop);
 
             NetworkBehaviourProcessor.WriteClientActiveCheck(worker, weaverTypes, md.Name, label, "RPC");
 
@@ -58,9 +58,9 @@ namespace Mirror.Weaver
         */
         public static MethodDefinition ProcessRpcCall(WeaverTypes weaverTypes, Writers writers, Logger Log, TypeDefinition td, MethodDefinition md, CustomAttribute clientRpcAttr, ref bool WeavingFailed)
         {
-            var rpc = MethodProcessor.SubstituteMethod(Log, td, md, ref WeavingFailed);
+            MethodDefinition rpc = MethodProcessor.SubstituteMethod(Log, td, md, ref WeavingFailed);
 
-            var worker = md.Body.GetILProcessor();
+            ILProcessor worker = md.Body.GetILProcessor();
 
             NetworkBehaviourProcessor.WriteSetupLocals(worker, weaverTypes);
 
@@ -74,8 +74,8 @@ namespace Mirror.Weaver
             if (!NetworkBehaviourProcessor.WriteArguments(worker, writers, Log, md, RemoteCallType.ClientRpc, ref WeavingFailed))
                 return null;
 
-            var channel = clientRpcAttr.GetField("channel", 0);
-            var includeOwner = clientRpcAttr.GetField("includeOwner", true);
+            int channel = clientRpcAttr.GetField("channel", 0);
+            bool includeOwner = clientRpcAttr.GetField("includeOwner", true);
 
             // invoke SendInternal and return
             // this

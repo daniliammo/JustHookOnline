@@ -29,6 +29,12 @@ namespace Mirror
         public int tick;
         public NetworkWriter ownerWriter;
         public NetworkWriter observersWriter;
+
+        public void ResetWriters()
+        {
+            ownerWriter.Position = 0;
+            observersWriter.Position = 0;
+        }
     }
 
     /// <summary>NetworkIdentity identifies objects across the network.</summary>
@@ -114,7 +120,7 @@ namespace Mirror
         //
         // it's also easier to work with for serialization etc.
         // serialized and visible in inspector for easier debugging
-        [SerializeField, HideInInspector] private uint _assetId;
+        [SerializeField, HideInInspector] uint _assetId;
 
         // The AssetId trick:
         //   Ideally we would have a serialized 'Guid m_AssetId' but Unity can't
@@ -181,8 +187,7 @@ namespace Mirror
                 _connectionToClient?.AddOwnedObject(this);
             }
         }
-
-        private NetworkConnectionToClient _connectionToClient;
+        NetworkConnectionToClient _connectionToClient;
 
         // get all NetworkBehaviour components
         public NetworkBehaviour[] NetworkBehaviours { get; private set; }
@@ -190,7 +195,7 @@ namespace Mirror
         // to save bandwidth, we send one 64 bit dirty mask
         // instead of 1 byte index per dirty component.
         // which means we can't allow > 64 components (it's enough).
-        private const int MaxNetworkBehaviours = 64;
+        const int MaxNetworkBehaviours = 64;
 
         // current visibility
         //
@@ -202,15 +207,6 @@ namespace Mirror
         [FormerlySerializedAs("visible")]
         public Visibility visibility = Visibility.Default;
 
-        // Deprecated 2024-01-21
-        [HideInInspector]
-        [Obsolete("Deprecated - Use .visibility instead. This will be removed soon.")]
-        public Visibility visible
-        {
-            get => visibility;
-            set => visibility = value;
-        }
-
         // broadcasting serializes all entities around a player for each player.
         // we don't want to serialize one entity twice in the same tick.
         // so we cache the last serialization and remember the timestamp so we
@@ -218,14 +214,14 @@ namespace Mirror
         // (timestamp is the same while inside Update)
         // => this way we don't need to pool thousands of writers either.
         // => way easier to store them per object
-        private NetworkIdentitySerialization lastSerialization = new NetworkIdentitySerialization
+        NetworkIdentitySerialization lastSerialization = new NetworkIdentitySerialization
         {
             ownerWriter = new NetworkWriter(),
             observersWriter = new NetworkWriter()
         };
 
         // Keep track of all sceneIds to detect scene duplicates
-        private static readonly Dictionary<ulong, NetworkIdentity> sceneIds =
+        static readonly Dictionary<ulong, NetworkIdentity> sceneIds =
             new Dictionary<ulong, NetworkIdentity>();
 
         // Helper function to handle Command/Rpc
@@ -245,7 +241,7 @@ namespace Mirror
                 return;
             }
 
-            var invokeComponent = NetworkBehaviours[componentIndex];
+            NetworkBehaviour invokeComponent = NetworkBehaviours[componentIndex];
             if (!RemoteProcedureCalls.Invoke(functionHash, remoteCallType, reader, invokeComponent, senderConnection))
             {
                 Debug.LogError($"Found no receiver for incoming {remoteCallType} [{functionHash}] on {gameObject.name}, the server and client should have the same NetworkBehaviour instances [netId={netId}].");
@@ -279,7 +275,7 @@ namespace Mirror
         /// <summary>Gets the NetworkIdentity from the sceneIds dictionary with the corresponding id</summary>
         public static NetworkIdentity GetSceneIdentity(ulong id) => sceneIds[id];
 
-        private static uint nextNetworkId = 1;
+        static uint nextNetworkId = 1;
         internal static uint GetNextNetworkId() => nextNetworkId++;
 
         /// <summary>Resets nextNetworkId = 1</summary>
@@ -292,7 +288,7 @@ namespace Mirror
         public static event ClientAuthorityCallback clientAuthorityCallback;
 
         // hasSpawned should always be false before runtime
-        [SerializeField, HideInInspector] private bool hasSpawned;
+        [SerializeField, HideInInspector] bool hasSpawned;
         public bool SpawnedFromInstantiate { get; private set; }
 
         // NetworkBehaviour components are initialized in Awake once.
@@ -309,15 +305,15 @@ namespace Mirror
             ValidateComponents();
 
             // initialize each one
-            for (var i = 0; i < NetworkBehaviours.Length; ++i)
+            for (int i = 0; i < NetworkBehaviours.Length; ++i)
             {
-                var component = NetworkBehaviours[i];
+                NetworkBehaviour component = NetworkBehaviours[i];
                 component.netIdentity = this;
                 component.ComponentIndex = (byte)i;
             }
         }
 
-        private void ValidateComponents()
+        void ValidateComponents()
         {
             if (NetworkBehaviours == null)
             {
@@ -351,7 +347,7 @@ namespace Mirror
             hasSpawned = true;
         }
 
-        private void OnValidate()
+        void OnValidate()
         {
             // OnValidate is not called when using Instantiate, so we can use
             // it to make sure that hasSpawned is false
@@ -373,10 +369,10 @@ namespace Mirror
         // Disallow them and show an error for the user to fix.
         // This needs to work for Prefabs & Scene objects, so the previous check
         // in NetworkClient.RegisterPrefab is not enough.
-        private void DisallowChildNetworkIdentities()
+        void DisallowChildNetworkIdentities()
         {
 #if UNITY_2020_3_OR_NEWER
-            var identities = GetComponentsInChildren<NetworkIdentity>(true);
+            NetworkIdentity[] identities = GetComponentsInChildren<NetworkIdentity>(true);
 #else
             NetworkIdentity[] identities = GetComponentsInChildren<NetworkIdentity>();
 #endif
@@ -384,11 +380,11 @@ namespace Mirror
             {
                 // always log the next child component so it's easy to fix.
                 // if there are multiple, then after removing it'll log the next.
-                Debug.Log($"'{name}' has another NetworkIdentity component on '{identities[1].name}'. There should only be one NetworkIdentity, and it must be on the root object. Please remove the other one.", this);
+                Debug.LogError($"'{name}' has another NetworkIdentity component on '{identities[1].name}'. There should only be one NetworkIdentity, and it must be on the root object. Please remove the other one.", this);
             }
         }
 
-        private void AssignAssetID(string path)
+        void AssignAssetID(string path)
         {
             // only set if not empty. fixes https://github.com/vis2k/Mirror/issues/2765
             if (!string.IsNullOrWhiteSpace(path))
@@ -405,13 +401,13 @@ namespace Mirror
                 Undo.RecordObject(this, "Assigned AssetId");
 
                 // uint before = _assetId;
-                var guid = new Guid(AssetDatabase.AssetPathToGUID(path));
+                Guid guid = new Guid(AssetDatabase.AssetPathToGUID(path));
                 assetId = AssetGuidToUint(guid);
                 // if (_assetId != before) Debug.Log($"Assigned assetId={assetId} to {name}");
             }
         }
 
-        private void AssignAssetID(GameObject prefab) => AssignAssetID(AssetDatabase.GetAssetPath(prefab));
+        void AssignAssetID(GameObject prefab) => AssignAssetID(AssetDatabase.GetAssetPath(prefab));
 
         // persistent sceneId assignment
         // (because scene objects have no persistent unique ID in Unity)
@@ -456,7 +452,7 @@ namespace Mirror
         // * sceneIds should never be generated temporarily for unopened scenes
         //   when building, otherwise editor and build get out of sync
         //   => BuildPipeline.isBuildingPlayer check solves that
-        private void AssignSceneID()
+        void AssignSceneID()
         {
             // we only ever assign sceneIds at edit time, never at runtime.
             // by definition, only the original scene objects should get one.
@@ -466,7 +462,7 @@ namespace Mirror
                 return;
 
             // no valid sceneId yet, or duplicate?
-            var duplicate = sceneIds.TryGetValue(sceneId, out var existing) && existing != null && existing != this;
+            bool duplicate = sceneIds.TryGetValue(sceneId, out NetworkIdentity existing) && existing != null && existing != this;
             if (sceneId == 0 || duplicate)
             {
                 // clear in any case, because it might have been a duplicate
@@ -491,7 +487,7 @@ namespace Mirror
                 Undo.RecordObject(this, "Generated SceneId");
 
                 // generate random sceneId part (0x00000000FFFFFFFF)
-                var randomId = Utils.GetTrueRandomUInt();
+                uint randomId = Utils.GetTrueRandomUInt();
 
                 // only assign if not a duplicate of an existing scene id
                 // (small chance, but possible)
@@ -528,13 +524,13 @@ namespace Mirror
             // Using ToLower will mean the hash will be the same for these 2 paths
             // Assets/Scenes/Forest.unity
             // Assets/Scenes/forest.unity
-            var scenePath = gameObject.scene.path.ToLower();
+            string scenePath = gameObject.scene.path.ToLower();
 
             // get deterministic scene hash
-            var pathHash = (uint)scenePath.GetStableHashCode();
+            uint pathHash = (uint)scenePath.GetStableHashCode();
 
             // shift hash from 0x000000FFFFFFFF to 0xFFFFFFFF00000000
-            var shiftedHash = (ulong)pathHash << 32;
+            ulong shiftedHash = (ulong)pathHash << 32;
 
             // OR into scene id
             sceneId = (sceneId & 0xFFFFFFFF) | shiftedHash;
@@ -543,7 +539,7 @@ namespace Mirror
             //Debug.Log($"{name} in scene {gameObject.scene.name} scene index hash {pathHash:X} copied into sceneId {sceneId:X}");
         }
 
-        private void SetupIDs()
+        void SetupIDs()
         {
             // is this a prefab?
             if (Utils.IsPrefab(gameObject))
@@ -578,7 +574,7 @@ namespace Mirror
 
                     // get path from PrefabStage for this prefab
 #if UNITY_2020_1_OR_NEWER
-                    var path = PrefabStageUtility.GetPrefabStage(gameObject).assetPath;
+                    string path = PrefabStageUtility.GetPrefabStage(gameObject).assetPath;
 #else
                     string path = PrefabStageUtility.GetPrefabStage(gameObject).prefabAssetPath;
 #endif
@@ -587,7 +583,7 @@ namespace Mirror
                 }
             }
             // is this a scene object with prefab parent?
-            else if (Utils.IsSceneObjectWithPrefabParent(gameObject, out var prefab))
+            else if (Utils.IsSceneObjectWithPrefabParent(gameObject, out GameObject prefab))
             {
                 AssignSceneID();
                 AssignAssetID(prefab);
@@ -621,7 +617,7 @@ namespace Mirror
         // Note: Unity will Destroy all networked objects on Scene Change, so we
         // have to handle that here silently. That means we cannot have any
         // warning or logging in this method.
-        private void OnDestroy()
+        void OnDestroy()
         {
             // Objects spawned from Instantiate are not allowed so are destroyed right away
             // we don't want to call NetworkServer.Destroy if this is the case
@@ -677,11 +673,16 @@ namespace Mirror
                 // fixes: https://github.com/MirrorNetworking/Mirror/issues/3324
                 NetworkClient.spawned.Remove(netId);
             }
+
+            // workaround for cyclid NI<->NB reference causing memory leaks
+            // after Destroy. [Credits: BigBoxVR/R.S.]
+            // TODO report this to Unity!
+            this.NetworkBehaviours = null;
         }
 
         internal void OnStartServer()
         {
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 // an exception in OnStartServer should be caught, so that one
                 // component's exception doesn't stop all other components from
@@ -701,7 +702,7 @@ namespace Mirror
 
         internal void OnStopServer()
         {
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 // an exception in OnStartServer should be caught, so that one
                 // component's exception doesn't stop all other components from
@@ -726,7 +727,7 @@ namespace Mirror
             clientStarted = true;
 
             // Debug.Log($"OnStartClient {gameObject} netId:{netId}");
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 // an exception in OnStartClient should be caught, so that one
                 // component's exception doesn't stop all other components from
@@ -751,7 +752,7 @@ namespace Mirror
             // OnStopClient if OnStartClient hasn't been called.
             if (!clientStarted) return;
 
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 // an exception in OnStopClient should be caught, so that
                 // one component's exception doesn't stop all other components
@@ -796,7 +797,7 @@ namespace Mirror
                 return;
             previousLocalPlayer = this;
 
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 // an exception in OnStartLocalPlayer should be caught, so that
                 // one component's exception doesn't stop all other components
@@ -816,7 +817,7 @@ namespace Mirror
 
         internal void OnStopLocalPlayer()
         {
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 // an exception in OnStopLocalPlayer should be caught, so that
                 // one component's exception doesn't stop all other components
@@ -836,18 +837,18 @@ namespace Mirror
 
         // build dirty mask for server owner & observers (= all dirty components).
         // faster to do it in one iteration instead of iterating separately.
-        private (ulong, ulong) ServerDirtyMasks(bool initialState)
+        (ulong, ulong) ServerDirtyMasks(bool initialState)
         {
             ulong ownerMask = 0;
             ulong observerMask = 0;
 
-            var components = NetworkBehaviours;
-            for (var i = 0; i < components.Length; ++i)
+            NetworkBehaviour[] components = NetworkBehaviours;
+            for (int i = 0; i < components.Length; ++i)
             {
-                var component = components[i];
+                NetworkBehaviour component = components[i];
+                ulong nthBit = (1u << i);
 
-                var dirty = component.IsDirty();
-                ulong nthBit = 1u << i;
+                bool dirty = component.IsDirty();
 
                 // owner needs to be considered for both SyncModes, because
                 // Observers mode always includes the Owner.
@@ -858,14 +859,17 @@ namespace Mirror
                 if (initialState || (component.syncDirection == SyncDirection.ServerToClient && dirty))
                     ownerMask |= nthBit;
 
-                // observers need to be considered only in Observers mode
-                //
-                // for initial, it should always sync to observers.
-                // for delta, only if dirty.
-                // SyncDirection is irrelevant, as both are broadcast to
-                // observers which aren't the owner.
-                if (component.syncMode == SyncMode.Observers && (initialState || dirty))
-                    observerMask |= nthBit;
+                // observers need to be considered only in Observers mode,
+                // otherwise they receive no sync data of this component ever.
+                if (component.syncMode == SyncMode.Observers)
+                {
+                    // for initial, it should always sync to observers.
+                    // for delta, only if dirty.
+                    // SyncDirection is irrelevant, as both are broadcast to
+                    // observers which aren't the owner.
+                    if (initialState || dirty)
+                        observerMask |= nthBit;
+                }
             }
 
             return (ownerMask, observerMask);
@@ -873,12 +877,12 @@ namespace Mirror
 
         // build dirty mask for client.
         // server always knows initialState, so we don't need it here.
-        private ulong ClientDirtyMask()
+        ulong ClientDirtyMask()
         {
             ulong mask = 0;
 
-            var components = NetworkBehaviours;
-            for (var i = 0; i < components.Length; ++i)
+            NetworkBehaviour[] components = NetworkBehaviours;
+            for (int i = 0; i < components.Length; ++i)
             {
                 // on the client, we need to consider different sync scenarios:
                 //
@@ -888,12 +892,14 @@ namespace Mirror
                 //     serialize only if owned.
 
                 // on client, only consider owned components with SyncDirection to server
-                var component = components[i];
+                NetworkBehaviour component = components[i];
+                ulong nthBit = (1u << i);
+
                 if (isOwned && component.syncDirection == SyncDirection.ClientToServer)
                 {
                     // set the n-th bit if dirty
                     // shifting from small to large numbers is varint-efficient.
-                    if (component.IsDirty()) mask |= 1u << i;
+                    if (component.IsDirty()) mask |= nthBit;
                 }
             }
 
@@ -905,19 +911,17 @@ namespace Mirror
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsDirty(ulong mask, int index)
         {
-            var nthBit = (ulong)(1 << index);
+            ulong nthBit = (ulong)(1 << index);
             return (mask & nthBit) != 0;
         }
 
         // serialize components into writer on the server.
         // check ownerWritten/observersWritten to know if anything was written
-        // We pass dirtyComponentsMask into this function so that we can check
-        // if any Components are dirty before creating writers
         internal void SerializeServer(bool initialState, NetworkWriter ownerWriter, NetworkWriter observersWriter)
         {
             // ensure NetworkBehaviours are valid before usage
             ValidateComponents();
-            var components = NetworkBehaviours;
+            NetworkBehaviour[] components = NetworkBehaviours;
 
             // check which components are dirty for owner / observers.
             // this is quite complicated with SyncMode + SyncDirection.
@@ -926,7 +930,7 @@ namespace Mirror
             // instead of writing a 1 byte index per component,
             // we limit components to 64 bits and write one ulong instead.
             // the ulong is also varint compressed for minimum bandwidth.
-            (var ownerMask, var observerMask) = ServerDirtyMasks(initialState);
+            (ulong ownerMask, ulong observerMask) = ServerDirtyMasks(initialState);
 
             // if nothing dirty, then don't even write the mask.
             // otherwise, every unchanged object would send a 1 byte dirty mask!
@@ -937,9 +941,9 @@ namespace Mirror
             // perf: only iterate if either dirty mask has dirty bits.
             if ((ownerMask | observerMask) != 0)
             {
-                for (var i = 0; i < components.Length; ++i)
+                for (int i = 0; i < components.Length; ++i)
                 {
-                    var comp = components[i];
+                    NetworkBehaviour comp = components[i];
 
                     // is the component dirty for anyone (owner or observers)?
                     // may be serialized to owner, observer, both, or neither.
@@ -953,15 +957,15 @@ namespace Mirror
                     // SyncDirection it's not guaranteed to be in owner anymore.
                     // so we need to serialize to temporary writer first.
                     // and then copy as needed.
-                    var ownerDirty = IsDirty(ownerMask, i);
-                    var observersDirty = IsDirty(observerMask, i);
+                    bool ownerDirty = IsDirty(ownerMask, i);
+                    bool observersDirty = IsDirty(observerMask, i);
                     if (ownerDirty || observersDirty)
                     {
                         // serialize into helper writer
-                        using (var temp = NetworkWriterPool.Get())
+                        using (NetworkWriterPooled temp = NetworkWriterPool.Get())
                         {
                             comp.Serialize(temp, initialState);
-                            var segment = temp.ToArraySegment();
+                            ArraySegment<byte> segment = temp.ToArraySegment();
 
                             // copy to owner / observers as needed
                             if (ownerDirty) ownerWriter.WriteBytes(segment.Array, segment.Offset, segment.Count);
@@ -990,7 +994,7 @@ namespace Mirror
         {
             // ensure NetworkBehaviours are valid before usage
             ValidateComponents();
-            var components = NetworkBehaviours;
+            NetworkBehaviour[] components = NetworkBehaviours;
 
             // check which components are dirty.
             // this is quite complicated with SyncMode + SyncDirection.
@@ -999,7 +1003,7 @@ namespace Mirror
             // instead of writing a 1 byte index per component,
             // we limit components to 64 bits and write one ulong instead.
             // the ulong is also varint compressed for minimum bandwidth.
-            var dirtyMask = ClientDirtyMask();
+            ulong dirtyMask = ClientDirtyMask();
 
             // varint compresses the mask to 1 byte in most cases.
             // instead of writing an 8 byte ulong.
@@ -1017,9 +1021,9 @@ namespace Mirror
             if (dirtyMask != 0)
             {
                 // serialize all components
-                for (var i = 0; i < components.Length; ++i)
+                for (int i = 0; i < components.Length; ++i)
                 {
-                    var comp = components[i];
+                    NetworkBehaviour comp = components[i];
 
                     // is this component dirty?
                     // reuse the mask instead of calling comp.IsDirty() again here.
@@ -1048,18 +1052,18 @@ namespace Mirror
         {
             // ensure NetworkBehaviours are valid before usage
             ValidateComponents();
-            var components = NetworkBehaviours;
+            NetworkBehaviour[] components = NetworkBehaviours;
 
             // first we deserialize the varinted dirty mask
-            var mask = Compression.DecompressVarUInt(reader);
+            ulong mask = Compression.DecompressVarUInt(reader);
 
             // now deserialize every dirty component
-            for (var i = 0; i < components.Length; ++i)
+            for (int i = 0; i < components.Length; ++i)
             {
                 // was this one dirty?
                 if (IsDirty(mask, i))
                 {
-                    var comp = components[i];
+                    NetworkBehaviour comp = components[i];
 
                     // safety check to ensure clients can only modify their own
                     // ClientToServer components, nothing else.
@@ -1091,19 +1095,19 @@ namespace Mirror
         {
             // ensure NetworkBehaviours are valid before usage
             ValidateComponents();
-            var components = NetworkBehaviours;
+            NetworkBehaviour[] components = NetworkBehaviours;
 
             // first we deserialize the varinted dirty mask
-            var mask = Compression.DecompressVarUInt(reader);
+            ulong mask = Compression.DecompressVarUInt(reader);
 
             // now deserialize every dirty component
-            for (var i = 0; i < components.Length; ++i)
+            for (int i = 0; i < components.Length; ++i)
             {
                 // was this one dirty?
                 if (IsDirty(mask, i))
                 {
                     // deserialize this component
-                    var comp = components[i];
+                    NetworkBehaviour comp = components[i];
                     comp.Deserialize(reader, initialState);
                 }
             }
@@ -1127,8 +1131,7 @@ namespace Mirror
                )
             {
                 // reset
-                lastSerialization.ownerWriter.Position = 0;
-                lastSerialization.observersWriter.Position = 0;
+                lastSerialization.ResetWriters();
 
                 // serialize
                 SerializeServer(false,
@@ -1186,7 +1189,7 @@ namespace Mirror
         // clear all component's dirty bits no matter what
         internal void ClearAllComponentsDirtyBits()
         {
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 comp.ClearAllDirtyBits();
             }
@@ -1272,7 +1275,7 @@ namespace Mirror
             if (connectionToClient != null)
             {
                 clientAuthorityCallback?.Invoke(connectionToClient, this, false);
-                var previousOwner = connectionToClient;
+                NetworkConnectionToClient previousOwner = connectionToClient;
                 connectionToClient = null;
                 NetworkServer.SendChangeOwnerMessage(this, previousOwner);
             }
@@ -1328,7 +1331,7 @@ namespace Mirror
             isLocalPlayer = false;
         }
 
-        private bool hadAuthority;
+        bool hadAuthority;
         internal void NotifyAuthority()
         {
             if (!hadAuthority && isOwned)
@@ -1340,7 +1343,7 @@ namespace Mirror
 
         internal void OnStartAuthority()
         {
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 // an exception in OnStartAuthority should be caught, so that one
                 // component's exception doesn't stop all other components from
@@ -1360,7 +1363,7 @@ namespace Mirror
 
         internal void OnStopAuthority()
         {
-            foreach (var comp in NetworkBehaviours)
+            foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
                 // an exception in OnStopAuthority should be caught, so that one
                 // component's exception doesn't stop all other components from
@@ -1381,7 +1384,7 @@ namespace Mirror
         // Called when NetworkIdentity is destroyed
         internal void ClearObservers()
         {
-            foreach (var conn in observers.Values)
+            foreach (NetworkConnectionToClient conn in observers.Values)
             {
                 conn.RemoveFromObserving(this, true);
             }

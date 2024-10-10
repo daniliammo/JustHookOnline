@@ -11,7 +11,7 @@ namespace Mirror
     {
         [SerializeField]
         [Tooltip("Set teamId on Server at runtime to the same value on all networked objects that belong to a given team")]
-        private string _teamId;
+        string _teamId;
 
         public string teamId
         {
@@ -24,7 +24,7 @@ namespace Mirror
                 if (_teamId == value)
                     return;
 
-                var oldTeam = _teamId;
+                string oldTeam = _teamId;
                 _teamId = value;
 
                 //Only inform the AOI if this netIdentity has been spawned(isServer) and only if using a TeamInterestManagement

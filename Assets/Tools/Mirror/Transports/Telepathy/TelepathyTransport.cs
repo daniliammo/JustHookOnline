@@ -54,15 +54,15 @@ namespace Mirror
         [Tooltip("Client receive queue limit for pending messages. Telepathy will disconnect if the connection's queues reach that limit in order to avoid ever growing latencies.")]
         public int clientReceiveQueueLimit = 10000;
 
-        private Telepathy.Client client;
-        private Telepathy.Server server;
+        Telepathy.Client client;
+        Telepathy.Server server;
 
         // scene change message needs to halt  message processing immediately
         // Telepathy.Tick() has a enabledCheck parameter that we can use, but
         // let's only allocate it once.
-        private Func<bool> enabledCheck;
+        Func<bool> enabledCheck;
 
-        private void Awake()
+        void Awake()
         {
             // tell Telepathy to use Unity's Debug.Log
             Telepathy.Log.Info = Debug.Log;
@@ -124,7 +124,7 @@ namespace Mirror
             if (uri.Scheme != Scheme)
                 throw new ArgumentException($"Invalid url {uri}, use {Scheme}://host:port instead", nameof(uri));
 
-            var serverPort = uri.IsDefaultPort ? port : uri.Port;
+            int serverPort = uri.IsDefaultPort ? port : uri.Port;
             client.Connect(uri.Host, serverPort);
         }
         public override void ClientSend(ArraySegment<byte> segment, int channelId)
@@ -159,7 +159,7 @@ namespace Mirror
         // server
         public override Uri ServerUri()
         {
-            var builder = new UriBuilder();
+            UriBuilder builder = new UriBuilder();
             builder.Scheme = Scheme;
             builder.Host = Dns.GetHostName();
             builder.Port = port;
@@ -178,7 +178,7 @@ namespace Mirror
             // system's hook (e.g. statistics OnData) was added is to wrap
             // them all in a lambda and always call the latest hook.
             // (= lazy call)
-            server.OnConnected = (connectionId) => OnServerConnected.Invoke(connectionId);
+            server.OnConnected = (connectionId, remoteClientAddress) => OnServerConnectedWithAddress.Invoke(connectionId, remoteClientAddress);
             server.OnData = (connectionId, segment) => OnServerDataReceived.Invoke(connectionId, segment, Channels.Reliable);
             server.OnDisconnected = (connectionId) => OnServerDisconnected.Invoke(connectionId);
 

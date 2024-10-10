@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace Mirror
 {
-    internal class SyncObjectCollectionField
+    class SyncObjectCollectionField
     {
         public bool visible;
         public readonly FieldInfo field;
@@ -30,14 +30,14 @@ namespace Mirror
 
     public class SyncObjectCollectionsDrawer
     {
-        private readonly UnityEngine.Object targetObject;
-        private readonly List<SyncObjectCollectionField> syncObjectCollectionFields;
+        readonly UnityEngine.Object targetObject;
+        readonly List<SyncObjectCollectionField> syncObjectCollectionFields;
 
         public SyncObjectCollectionsDrawer(UnityEngine.Object targetObject)
         {
             this.targetObject = targetObject;
             syncObjectCollectionFields = new List<SyncObjectCollectionField>();
-            foreach (var field in InspectorHelper.GetAllFields(targetObject.GetType(), typeof(NetworkBehaviour)))
+            foreach (FieldInfo field in InspectorHelper.GetAllFields(targetObject.GetType(), typeof(NetworkBehaviour)))
             {
                 // only draw SyncObjects that are IEnumerable (SyncList/Set/Dictionary)
                 if (field.IsVisibleSyncObject() &&
@@ -56,27 +56,27 @@ namespace Mirror
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Sync Collections", EditorStyles.boldLabel);
 
-            for (var i = 0; i < syncObjectCollectionFields.Count; i++)
+            for (int i = 0; i < syncObjectCollectionFields.Count; i++)
             {
                 DrawSyncObjectCollection(syncObjectCollectionFields[i]);
             }
         }
 
-        private void DrawSyncObjectCollection(SyncObjectCollectionField syncObjectCollectionField)
+        void DrawSyncObjectCollection(SyncObjectCollectionField syncObjectCollectionField)
         {
             syncObjectCollectionField.visible = EditorGUILayout.Foldout(syncObjectCollectionField.visible, syncObjectCollectionField.label);
             if (syncObjectCollectionField.visible)
             {
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    var fieldValue = syncObjectCollectionField.field.GetValue(targetObject);
+                    object fieldValue = syncObjectCollectionField.field.GetValue(targetObject);
                     if (fieldValue is IEnumerable syncObject)
                     {
-                        var index = 0;
-                        foreach (var item in syncObject)
+                        int index = 0;
+                        foreach (object item in syncObject)
                         {
-                            var itemValue = item != null ? item.ToString() : "NULL";
-                            var itemLabel = $"Element {index}";
+                            string itemValue = item != null ? item.ToString() : "NULL";
+                            string itemLabel = $"Element {index}";
                             EditorGUILayout.LabelField(itemLabel, itemValue);
 
                             index++;

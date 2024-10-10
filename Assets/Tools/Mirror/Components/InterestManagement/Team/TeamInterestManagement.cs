@@ -6,19 +6,19 @@ namespace Mirror
     [AddComponentMenu("Network/ Interest Management/ Team/Team Interest Management")]
     public class TeamInterestManagement : InterestManagement
     {
-        private readonly Dictionary<string, HashSet<NetworkTeam>> teamObjects =
+        readonly Dictionary<string, HashSet<NetworkTeam>> teamObjects =
             new Dictionary<string, HashSet<NetworkTeam>>();
 
-        private readonly HashSet<string> dirtyTeams = new HashSet<string>();
+        readonly HashSet<string> dirtyTeams = new HashSet<string>();
 
         // LateUpdate so that all spawns/despawns/changes are done
         [ServerCallback]
-        private void LateUpdate()
+        void LateUpdate()
         {
             // Rebuild all dirty teams
             // dirtyTeams will be empty if no teams changed members
             // by spawning or destroying or changing teamId in this frame.
-            foreach (var dirtyTeam in dirtyTeams)
+            foreach (string dirtyTeam in dirtyTeams)
             {
                 // rebuild always, even if teamObjects[dirtyTeam] is empty.
                 // Players might have left the team, but they may still be spawned.
@@ -33,9 +33,9 @@ namespace Mirror
         }
 
         [ServerCallback]
-        private void RebuildTeamObservers(string teamId)
+        void RebuildTeamObservers(string teamId)
         {
-            foreach (var networkTeam in teamObjects[teamId])
+            foreach (NetworkTeam networkTeam in teamObjects[teamId])
                 if (networkTeam.netIdentity != null)
                     NetworkServer.RebuildObservers(networkTeam.netIdentity, false);
         }
@@ -75,14 +75,14 @@ namespace Mirror
             if (!identity.TryGetComponent(out NetworkTeam networkTeam))
                 return;
 
-            var networkTeamId = networkTeam.teamId;
+            string networkTeamId = networkTeam.teamId;
 
             // Null / Empty string is never a valid teamId...do not add to teamObjects collection
             if (string.IsNullOrWhiteSpace(networkTeamId))
                 return;
 
             // Debug.Log($"TeamInterestManagement.OnSpawned({identity.name}) currentTeam: {currentTeam}");
-            if (!teamObjects.TryGetValue(networkTeamId, out var objects))
+            if (!teamObjects.TryGetValue(networkTeamId, out HashSet<NetworkTeam> objects))
             {
                 objects = new HashSet<NetworkTeam>();
                 teamObjects.Add(networkTeamId, objects);
@@ -106,7 +106,7 @@ namespace Mirror
             if (identity.TryGetComponent(out NetworkTeam currentTeam))
             {
                 if (!string.IsNullOrWhiteSpace(currentTeam.teamId) &&
-                    teamObjects.TryGetValue(currentTeam.teamId, out var objects) &&
+                    teamObjects.TryGetValue(currentTeam.teamId, out HashSet<NetworkTeam> objects) &&
                     objects.Remove(currentTeam))
                     dirtyTeams.Add(currentTeam.teamId);
             }
@@ -160,18 +160,18 @@ namespace Mirror
                 return;
 
             // Abort if this team hasn't been created yet by OnSpawned or OnTeamChanged
-            if (!teamObjects.TryGetValue(networkTeam.teamId, out var objects))
+            if (!teamObjects.TryGetValue(networkTeam.teamId, out HashSet<NetworkTeam> objects))
                 return;
 
             // Add everything in the hashset for this object's current team
-            foreach (var netTeam in objects)
+            foreach (NetworkTeam netTeam in objects)
                 if (netTeam.netIdentity != null && netTeam.netIdentity.connectionToClient != null)
                     newObservers.Add(netTeam.netIdentity.connectionToClient);
         }
 
-        private void AddAllConnections(HashSet<NetworkConnectionToClient> newObservers)
+        void AddAllConnections(HashSet<NetworkConnectionToClient> newObservers)
         {
-            foreach (var conn in NetworkServer.connections.Values)
+            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
             {
                 // authenticated and joined world with a player?
                 if (conn != null && conn.isAuthenticated && conn.identity != null)

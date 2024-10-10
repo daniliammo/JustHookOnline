@@ -5,7 +5,7 @@ namespace Mirror.Weaver
 {
     public static class MethodProcessor
     {
-        private const string RpcPrefix = "UserCode_";
+        const string RpcPrefix = "UserCode_";
 
         // For a function like
         //   [ClientRpc] void RpcTest(int value),
@@ -17,9 +17,9 @@ namespace Mirror.Weaver
         // FixRemoteCallToBaseMethod replaces them afterwards.
         public static MethodDefinition SubstituteMethod(Logger Log, TypeDefinition td, MethodDefinition md, ref bool WeavingFailed)
         {
-            var newName = Weaver.GenerateMethodName(RpcPrefix, md);
+            string newName = Weaver.GenerateMethodName(RpcPrefix, md);
 
-            var cmd = new MethodDefinition(newName, md.Attributes, md.ReturnType);
+            MethodDefinition cmd = new MethodDefinition(newName, md.Attributes, md.ReturnType);
 
             // force the substitute method to be protected.
             // -> public would show in the Inspector for UnityEvents as
@@ -31,7 +31,7 @@ namespace Mirror.Weaver
             cmd.IsFamily = true;
 
             // add parameters
-            foreach (var pd in md.Parameters)
+            foreach (ParameterDefinition pd in md.Parameters)
             {
                 cmd.Parameters.Add(new ParameterDefinition(pd.Name, ParameterAttributes.None, pd.ParameterType));
             }
@@ -40,11 +40,11 @@ namespace Mirror.Weaver
             (cmd.Body, md.Body) = (md.Body, cmd.Body);
 
             // Move over all the debugging information
-            foreach (var sequencePoint in md.DebugInformation.SequencePoints)
+            foreach (SequencePoint sequencePoint in md.DebugInformation.SequencePoints)
                 cmd.DebugInformation.SequencePoints.Add(sequencePoint);
             md.DebugInformation.SequencePoints.Clear();
 
-            foreach (var customInfo in md.CustomDebugInformations)
+            foreach (CustomDebugInformation customInfo in md.CustomDebugInformations)
                 cmd.CustomDebugInformations.Add(customInfo);
             md.CustomDebugInformations.Clear();
 
@@ -68,7 +68,7 @@ namespace Mirror.Weaver
         //   UserCode_RpcTest(value)
         public static void FixRemoteCallToBaseMethod(Logger Log, TypeDefinition type, MethodDefinition method, ref bool WeavingFailed)
         {
-            var callName = method.Name;
+            string callName = method.Name;
 
             // Cmd/rpc start with Weaver.RpcPrefix
             // e.g. CallCmdDoSomething
@@ -76,13 +76,13 @@ namespace Mirror.Weaver
                 return;
 
             // e.g. CmdDoSomething
-            var baseRemoteCallName = method.Name.Substring(RpcPrefix.Length);
+            string baseRemoteCallName = method.Name.Substring(RpcPrefix.Length);
 
-            foreach (var instruction in method.Body.Instructions)
+            foreach (Instruction instruction in method.Body.Instructions)
             {
                 // is this instruction a Call to a method?
                 // if yes, output the method so we can check it.
-                if (IsCallToMethod(instruction, out var calledMethod))
+                if (IsCallToMethod(instruction, out MethodDefinition calledMethod))
                 {
                     // when considering if 'calledMethod' is a call to 'method',
                     // we originally compared .Name.
@@ -95,11 +95,11 @@ namespace Mirror.Weaver
                     //
                     // calledMethod.Name is still "RpcTest", so we need to
                     // convert this to the generated name as well before comparing.
-                    var calledMethodName_Generated = Weaver.GenerateMethodName("", calledMethod);
+                    string calledMethodName_Generated = Weaver.GenerateMethodName("", calledMethod);
                     if (calledMethodName_Generated == baseRemoteCallName)
                     {
-                        var baseType = type.BaseType.Resolve();
-                        var baseMethod = baseType.GetMethodInBaseType(callName);
+                        TypeDefinition baseType = type.BaseType.Resolve();
+                        MethodDefinition baseMethod = baseType.GetMethodInBaseType(callName);
 
                         if (baseMethod == null)
                         {
@@ -121,7 +121,7 @@ namespace Mirror.Weaver
             }
         }
 
-        private static bool IsCallToMethod(Instruction instruction, out MethodDefinition calledMethod)
+        static bool IsCallToMethod(Instruction instruction, out MethodDefinition calledMethod)
         {
             if (instruction.OpCode == OpCodes.Call &&
                 instruction.Operand is MethodDefinition method)

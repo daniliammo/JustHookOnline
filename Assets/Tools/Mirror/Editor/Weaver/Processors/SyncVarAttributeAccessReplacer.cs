@@ -13,10 +13,10 @@ namespace Mirror.Weaver
         // process the module
         public static void Process(Logger Log, ModuleDefinition moduleDef, SyncVarAccessLists syncVarAccessLists)
         {
-            var startTime = DateTime.Now;
+            DateTime startTime = DateTime.Now;
 
             // process all classes in this module
-            foreach (var td in moduleDef.Types)
+            foreach (TypeDefinition td in moduleDef.Types)
             {
                 if (td.IsClass)
                 {
@@ -24,27 +24,27 @@ namespace Mirror.Weaver
                 }
             }
 
-            Console.WriteLine($"  ProcessSitesModule {moduleDef.Name} elapsed time:{DateTime.Now - startTime}");
+            Console.WriteLine($"  ProcessSitesModule {moduleDef.Name} elapsed time:{(DateTime.Now - startTime)}");
         }
 
-        private static void ProcessClass(Logger Log, SyncVarAccessLists syncVarAccessLists, TypeDefinition td)
+        static void ProcessClass(Logger Log, SyncVarAccessLists syncVarAccessLists, TypeDefinition td)
         {
             //Console.WriteLine($"    ProcessClass {td}");
 
             // process all methods in this class
-            foreach (var md in td.Methods)
+            foreach (MethodDefinition md in td.Methods)
             {
                 ProcessMethod(Log, syncVarAccessLists, md);
             }
 
             // processes all nested classes in this class recursively
-            foreach (var nested in td.NestedTypes)
+            foreach (TypeDefinition nested in td.NestedTypes)
             {
                 ProcessClass(Log, syncVarAccessLists, nested);
             }
         }
 
-        private static void ProcessMethod(Logger Log, SyncVarAccessLists syncVarAccessLists, MethodDefinition md)
+        static void ProcessMethod(Logger Log, SyncVarAccessLists syncVarAccessLists, MethodDefinition md)
         {
             // process all references to replaced members with properties
             //Log.Warning($"      ProcessSiteMethod {md}");
@@ -64,15 +64,15 @@ namespace Mirror.Weaver
             // go through all instructions of this method
             if (md.Body != null && md.Body.Instructions != null)
             {
-                for (var i = 0; i < md.Body.Instructions.Count;)
+                for (int i = 0; i < md.Body.Instructions.Count;)
                 {
-                    var instr = md.Body.Instructions[i];
+                    Instruction instr = md.Body.Instructions[i];
                     i += ProcessInstruction(Log, syncVarAccessLists, md, instr, i);
                 }
             }
         }
 
-        private static int ProcessInstruction(Logger Log, SyncVarAccessLists syncVarAccessLists, MethodDefinition md, Instruction instr, int iCount)
+        static int ProcessInstruction(Logger Log, SyncVarAccessLists syncVarAccessLists, MethodDefinition md, Instruction instr, int iCount)
         {
             // stfld (sets value of a field)?
             if (instr.OpCode == OpCodes.Stfld)
@@ -89,7 +89,7 @@ namespace Mirror.Weaver
                 else if (instr.Operand is FieldReference opFieldstRef)
                 {
                     // resolve it from the other assembly
-                    var field = opFieldstRef.Resolve();
+                    FieldDefinition field = opFieldstRef.Resolve();
 
                     // [SyncVar]?
                     if (field.HasCustomAttribute<SyncVarAttribute>())
@@ -132,14 +132,14 @@ namespace Mirror.Weaver
         }
 
         // replaces syncvar write access with the NetworkXYZ.set property calls
-        private static void ProcessSetInstruction(SyncVarAccessLists syncVarAccessLists, MethodDefinition md, Instruction i, FieldDefinition opField)
+        static void ProcessSetInstruction(SyncVarAccessLists syncVarAccessLists, MethodDefinition md, Instruction i, FieldDefinition opField)
         {
             // don't replace property call sites in constructors
             if (md.Name == ".ctor")
                 return;
 
             // does it set a field that we replaced?
-            if (syncVarAccessLists.replacementSetterProperties.TryGetValue(opField, out var replacement))
+            if (syncVarAccessLists.replacementSetterProperties.TryGetValue(opField, out MethodDefinition replacement))
             {
                 //replace with property
                 //Log.Warning($"    replacing {md.Name}:{i}", opField);
@@ -150,14 +150,14 @@ namespace Mirror.Weaver
         }
 
         // replaces syncvar read access with the NetworkXYZ.get property calls
-        private static void ProcessGetInstruction(SyncVarAccessLists syncVarAccessLists, MethodDefinition md, Instruction i, FieldDefinition opField)
+        static void ProcessGetInstruction(SyncVarAccessLists syncVarAccessLists, MethodDefinition md, Instruction i, FieldDefinition opField)
         {
             // don't replace property call sites in constructors
             if (md.Name == ".ctor")
                 return;
 
             // does it set a field that we replaced?
-            if (syncVarAccessLists.replacementGetterProperties.TryGetValue(opField, out var replacement))
+            if (syncVarAccessLists.replacementGetterProperties.TryGetValue(opField, out MethodDefinition replacement))
             {
                 //replace with property
                 //Log.Warning($"    replacing {md.Name}:{i}");
@@ -167,26 +167,26 @@ namespace Mirror.Weaver
             }
         }
 
-        private static int ProcessLoadAddressInstruction(SyncVarAccessLists syncVarAccessLists, MethodDefinition md, Instruction instr, FieldDefinition opField, int iCount)
+        static int ProcessLoadAddressInstruction(SyncVarAccessLists syncVarAccessLists, MethodDefinition md, Instruction instr, FieldDefinition opField, int iCount)
         {
             // don't replace property call sites in constructors
             if (md.Name == ".ctor")
                 return 1;
 
             // does it set a field that we replaced?
-            if (syncVarAccessLists.replacementSetterProperties.TryGetValue(opField, out var replacement))
+            if (syncVarAccessLists.replacementSetterProperties.TryGetValue(opField, out MethodDefinition replacement))
             {
                 // we have a replacement for this property
                 // is the next instruction a initobj?
-                var nextInstr = md.Body.Instructions[iCount + 1];
+                Instruction nextInstr = md.Body.Instructions[iCount + 1];
 
                 if (nextInstr.OpCode == OpCodes.Initobj)
                 {
                     // we need to replace this code with:
                     //     var tmp = new MyStruct();
                     //     this.set_Networkxxxx(tmp);
-                    var worker = md.Body.GetILProcessor();
-                    var tmpVariable = new VariableDefinition(opField.FieldType);
+                    ILProcessor worker = md.Body.GetILProcessor();
+                    VariableDefinition tmpVariable = new VariableDefinition(opField.FieldType);
                     md.Body.Variables.Add(tmpVariable);
 
                     worker.InsertBefore(instr, worker.Create(OpCodes.Ldloca, tmpVariable));

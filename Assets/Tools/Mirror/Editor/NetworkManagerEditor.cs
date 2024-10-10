@@ -11,8 +11,8 @@ namespace Mirror
     [CanEditMultipleObjects]
     public class NetworkManagerEditor : Editor
     {
-        private SerializedProperty spawnListProperty;
-        private ReorderableList spawnList;
+        SerializedProperty spawnListProperty;
+        ReorderableList spawnList;
         protected NetworkManager networkManager;
 
         protected void Init()
@@ -52,15 +52,15 @@ namespace Mirror
             }
         }
 
-        private void ScanForNetworkIdentities()
+        void ScanForNetworkIdentities()
         {
-            var identities = new List<GameObject>();
-            var cancelled = false;
+            List<GameObject> identities = new List<GameObject>();
+            bool cancelled = false;
             try
             {
-                var paths = EditorHelper.IterateOverProject("t:prefab").ToArray();
-                var count = 0;
-                foreach (var path in paths)
+                string[] paths = EditorHelper.IterateOverProject("t:prefab").ToArray();
+                int count = 0;
+                foreach (string path in paths)
                 {
                     // ignore test & example prefabs.
                     // users sometimes keep the folders in their projects.
@@ -80,7 +80,7 @@ namespace Mirror
 
                     count++;
 
-                    var ni = AssetDatabase.LoadAssetAtPath<NetworkIdentity>(path);
+                    NetworkIdentity ni = AssetDatabase.LoadAssetAtPath<NetworkIdentity>(path);
                     if (!ni)
                     {
                         continue;
@@ -117,15 +117,15 @@ namespace Mirror
             }
         }
 
-        private static void DrawHeader(Rect headerRect)
+        static void DrawHeader(Rect headerRect)
         {
             GUI.Label(headerRect, "Registered Spawnable Prefabs:");
         }
 
         internal void DrawChild(Rect r, int index, bool isActive, bool isFocused)
         {
-            var prefab = spawnListProperty.GetArrayElementAtIndex(index);
-            var go = (GameObject)prefab.objectReferenceValue;
+            SerializedProperty prefab = spawnListProperty.GetArrayElementAtIndex(index);
+            GameObject go = (GameObject)prefab.objectReferenceValue;
 
             GUIContent label;
             if (go == null)
@@ -134,11 +134,11 @@ namespace Mirror
             }
             else
             {
-                var identity = go.GetComponent<NetworkIdentity>();
+                NetworkIdentity identity = go.GetComponent<NetworkIdentity>();
                 label = new GUIContent(go.name, identity != null ? $"AssetId: [{identity.assetId}]" : "No Network Identity");
             }
 
-            var newGameObject = (GameObject)EditorGUI.ObjectField(r, label, go, typeof(GameObject), false);
+            GameObject newGameObject = (GameObject)EditorGUI.ObjectField(r, label, go, typeof(GameObject), false);
 
             if (newGameObject != go)
             {
@@ -161,7 +161,7 @@ namespace Mirror
             spawnListProperty.arraySize += 1;
             list.index = spawnListProperty.arraySize - 1;
 
-            var obj = spawnListProperty.GetArrayElementAtIndex(spawnListProperty.arraySize - 1);
+            SerializedProperty obj = spawnListProperty.GetArrayElementAtIndex(spawnListProperty.arraySize - 1);
             obj.objectReferenceValue = null;
 
             spawnList.index = spawnList.count - 1;

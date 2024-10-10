@@ -15,7 +15,7 @@ namespace kcp2k
         // we already have a KcpHeader for reliable messages.
         // ping is only used to keep it alive, so latency doesn't matter.
         Ping       = 2,
-        Data       = 3
+        Data       = 3,
     }
 
     public enum KcpHeaderUnreliable : byte
@@ -23,7 +23,7 @@ namespace kcp2k
         // users may send unreliable messages
         Data = 4,
         // disconnect always goes through rapid fire unreliable (glenn fielder)
-        Disconnect = 5
+        Disconnect = 5,
     }
 
     // save convert the enums from/to byte.

@@ -40,7 +40,7 @@ namespace kcp2k
         protected readonly Action<ErrorCode, string> OnErrorCallback;
 
         // state
-        private bool active = false; // active between when connect() and disconnect() are called
+        bool active = false; // active between when connect() and disconnect() are called
         public bool connected;
 
         public KcpClient(Action OnConnected,
@@ -98,7 +98,7 @@ namespace kcp2k
 
             // resolve host name before creating peer.
             // fixes: https://github.com/MirrorNetworking/Mirror/issues/3361
-            if (!Common.ResolveHostname(address, out var addresses))
+            if (!Common.ResolveHostname(address, out IPAddress[] addresses))
             {
                 // pass error to user callback. no need to log it manually.
                 OnError(ErrorCode.DnsResolve, $"Failed to resolve host: {address}");
@@ -208,11 +208,11 @@ namespace kcp2k
 
             // parse channel
             // byte channel = segment[0]; ArraySegment[i] isn't supported in some older Unity Mono versions
-            var channel = segment.Array[segment.Offset + 0];
+            byte channel = segment.Array[segment.Offset + 0];
 
             // server messages always contain the security cookie.
             // parse it, assign if not assigned, warn if suddenly different.
-            Utils.Decode32U(segment.Array, segment.Offset + 1, out var messageCookie);
+            Utils.Decode32U(segment.Array, segment.Offset + 1, out uint messageCookie);
             if (messageCookie == 0)
             {
                 Log.Error($"[KCP] Client: received message with cookie=0, this should never happen. Server should always include the security cookie.");
@@ -230,7 +230,7 @@ namespace kcp2k
             }
 
             // parse message
-            var message = new ArraySegment<byte>(segment.Array, segment.Offset + 1+4, segment.Count - 1-4);
+            ArraySegment<byte> message = new ArraySegment<byte>(segment.Array, segment.Offset + 1+4, segment.Count - 1-4);
 
             switch (channel)
             {
@@ -264,7 +264,7 @@ namespace kcp2k
             // (connection is null if not active)
             if (active)
             {
-                while (RawReceive(out var segment))
+                while (RawReceive(out ArraySegment<byte> segment))
                     RawInput(segment);
             }
 

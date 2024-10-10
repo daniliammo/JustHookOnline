@@ -24,8 +24,7 @@ namespace Mirror
 
         [Tooltip("Capture bounds every 'captureInterval' seconds. Larger values will require fewer computations, but may not capture every small move.")]
         public float captureInterval = 0.100f; // 100 ms
-
-        private double lastCaptureTime = 0;
+        double lastCaptureTime = 0;
 
         [Header("Debug")]
         public Color historyColor = new Color(1.0f, 0.5f, 0.0f, 1.0f);
@@ -64,7 +63,7 @@ namespace Mirror
             // grab current collider bounds
             // this is in world space coordinates, and axis aligned
             // TODO double check
-            var bounds = actualCollider.bounds;
+            Bounds bounds = actualCollider.bounds;
 
             // insert into history
             history.Insert(bounds);
@@ -73,7 +72,7 @@ namespace Mirror
         protected virtual void ProjectBounds()
         {
             // grab total collider encapsulating all of history
-            var total = history.total;
+            Bounds total = history.total;
 
             // don't assign empty bounds, this will throw a Unity warning
             if (history.boundsCount == 0) return;

@@ -5,12 +5,12 @@ using Mono.CecilX;
 
 namespace Mirror.Weaver
 {
-    internal static class Helpers
+    static class Helpers
     {
         // This code is taken from SerializationWeaver
         public static string UnityEngineDllDirectoryName()
         {
-            var directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+            string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
             return directoryName?.Replace(@"file:\", "");
         }
 

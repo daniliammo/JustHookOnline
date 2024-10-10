@@ -26,10 +26,6 @@ namespace Mirror
         /// <summary>This is called before the data is cleared</summary>
         public Action OnClear;
 
-        // Deprecated 2024-03-22
-        [Obsolete("Use individual Actions, which pass OLD values where appropriate, instead.")]
-        public Action<Operation, TKey, TValue> Callback;
-
         protected readonly IDictionary<TKey, TValue> objects;
 
         public SyncIDictionary(IDictionary<TKey, TValue> objects)
@@ -48,7 +44,7 @@ namespace Mirror
             OP_SET
         }
 
-        private struct Change
+        struct Change
         {
             internal Operation operation;
             internal TKey key;
@@ -60,13 +56,13 @@ namespace Mirror
         // -> changing the same slot 10x causes 10 changes.
         // -> note that this grows until next sync(!)
         // TODO Dictionary<key, change> to avoid ever growing changes / redundant changes!
-        private readonly List<Change> changes = new List<Change>();
+        readonly List<Change> changes = new List<Change>();
 
         // how many changes we need to ignore
         // this is needed because when we initialize the list,
         // we might later receive changes that have already been applied
         // so we need to skip them
-        private int changesAhead;
+        int changesAhead;
 
         public ICollection<TKey> Keys => objects.Keys;
 
@@ -81,7 +77,7 @@ namespace Mirror
             // if init, write the full list content
             writer.WriteUInt((uint)objects.Count);
 
-            foreach (var syncItem in objects)
+            foreach (KeyValuePair<TKey, TValue> syncItem in objects)
             {
                 writer.Write(syncItem.Key);
                 writer.Write(syncItem.Value);
@@ -99,9 +95,9 @@ namespace Mirror
             // write all the queued up changes
             writer.WriteUInt((uint)changes.Count);
 
-            for (var i = 0; i < changes.Count; i++)
+            for (int i = 0; i < changes.Count; i++)
             {
-                var change = changes[i];
+                Change change = changes[i];
                 writer.WriteByte((byte)change.operation);
 
                 switch (change.operation)
@@ -123,15 +119,15 @@ namespace Mirror
         public override void OnDeserializeAll(NetworkReader reader)
         {
             // if init,  write the full list content
-            var count = (int)reader.ReadUInt();
+            int count = (int)reader.ReadUInt();
 
             objects.Clear();
             changes.Clear();
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var key = reader.Read<TKey>();
-                var obj = reader.Read<TValue>();
+                TKey key = reader.Read<TKey>();
+                TValue obj = reader.Read<TValue>();
                 objects.Add(key, obj);
             }
 
@@ -143,15 +139,15 @@ namespace Mirror
 
         public override void OnDeserializeDelta(NetworkReader reader)
         {
-            var changesCount = (int)reader.ReadUInt();
+            int changesCount = (int)reader.ReadUInt();
 
-            for (var i = 0; i < changesCount; i++)
+            for (int i = 0; i < changesCount; i++)
             {
-                var operation = (Operation)reader.ReadByte();
+                Operation operation = (Operation)reader.ReadByte();
 
                 // apply the operation only if it is a new change
                 // that we have not applied yet
-                var apply = changesAhead == 0;
+                bool apply = changesAhead == 0;
                 TKey key = default;
                 TValue item = default;
 
@@ -167,7 +163,7 @@ namespace Mirror
                             // ClientToServer needs to set dirty in server OnDeserialize.
                             // no access check: server OnDeserialize can always
                             // write, even for ClientToServer (for broadcasting).
-                            if (objects.TryGetValue(key, out var oldItem))
+                            if (objects.TryGetValue(key, out TValue oldItem))
                             {
                                 objects[key] = item; // assign after TryGetValue
                                 AddOperation(Operation.OP_SET, key, item, oldItem, false);
@@ -198,7 +194,7 @@ namespace Mirror
                         key = reader.Read<TKey>();
                         if (apply)
                         {
-                            if (objects.TryGetValue(key, out var oldItem))
+                            if (objects.TryGetValue(key, out TValue oldItem))
                             {
                                 // add dirty + changes.
                                 // ClientToServer needs to set dirty in server OnDeserialize.
@@ -237,7 +233,7 @@ namespace Mirror
             {
                 if (ContainsKey(i))
                 {
-                    var oldItem = objects[i];
+                    TValue oldItem = objects[i];
                     objects[i] = value;
                     AddOperation(Operation.OP_SET, i, value, oldItem, true);
                 }
@@ -253,7 +249,7 @@ namespace Mirror
 
         public bool ContainsKey(TKey key) => objects.ContainsKey(key);
 
-        public bool Contains(KeyValuePair<TKey, TValue> item) => TryGetValue(item.Key, out var val) && EqualityComparer<TValue>.Default.Equals(val, item.Value);
+        public bool Contains(KeyValuePair<TKey, TValue> item) => TryGetValue(item.Key, out TValue val) && EqualityComparer<TValue>.Default.Equals(val, item.Value);
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
@@ -263,8 +259,8 @@ namespace Mirror
             if (array.Length - arrayIndex < Count)
                 throw new System.ArgumentException("The number of items in the SyncDictionary is greater than the available space from arrayIndex to the end of the destination array");
 
-            var i = arrayIndex;
-            foreach (var item in objects)
+            int i = arrayIndex;
+            foreach (KeyValuePair<TKey, TValue> item in objects)
             {
                 array[i] = item;
                 i++;
@@ -281,7 +277,7 @@ namespace Mirror
 
         public bool Remove(TKey key)
         {
-            if (objects.TryGetValue(key, out var oldItem) && objects.Remove(key))
+            if (objects.TryGetValue(key, out TValue oldItem) && objects.Remove(key))
             {
                 AddOperation(Operation.OP_REMOVE, key, oldItem, oldItem, true);
                 return true;
@@ -291,7 +287,7 @@ namespace Mirror
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            var result = objects.Remove(item.Key);
+            bool result = objects.Remove(item.Key);
             if (result)
                 AddOperation(Operation.OP_REMOVE, item.Key, item.Value, item.Value, true);
 
@@ -306,12 +302,12 @@ namespace Mirror
             objects.Clear();
         }
 
-        private void AddOperation(Operation op, TKey key, TValue item, TValue oldItem, bool checkAccess)
+        void AddOperation(Operation op, TKey key, TValue item, TValue oldItem, bool checkAccess)
         {
             if (checkAccess && IsReadOnly)
                 throw new InvalidOperationException("SyncDictionaries can only be modified by the owner.");
 
-            var change = new Change
+            Change change = new Change
             {
                 operation = op,
                 key = key,
@@ -343,10 +339,6 @@ namespace Mirror
                     OnChange?.Invoke(op, default, default);
                     break;
             }
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            Callback?.Invoke(op, key, item);
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => objects.GetEnumerator();

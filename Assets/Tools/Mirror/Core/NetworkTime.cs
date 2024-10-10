@@ -19,16 +19,16 @@ namespace Mirror
         /// <summary>Ping message interval, used to calculate latency / RTT and predicted time.</summary>
         // 2s was enough to get a good average RTT.
         // for prediction, we want to react to latency changes more rapidly.
-        private const float DefaultPingInterval = 0.1f; // for resets
+        const float DefaultPingInterval = 0.1f; // for resets
         public static float PingInterval = DefaultPingInterval;
 
         /// <summary>Average out the last few results from Ping</summary>
         // const because it's used immediately in _rtt constructor.
         public const int PingWindowSize = 50; // average over 50 * 100ms = 5s
 
-        private static double lastPingTime;
+        static double lastPingTime;
 
-        private static ExponentialMovingAverage _rtt = new ExponentialMovingAverage(PingWindowSize);
+        static ExponentialMovingAverage _rtt = new ExponentialMovingAverage(PingWindowSize);
 
         /// <summary>Returns double precision clock time _in this system_, unaffected by the network.</summary>
 #if UNITY_2020_3_OR_NEWER
@@ -90,8 +90,8 @@ namespace Mirror
         // credits: FakeByte, imer, NinjaKickja, mischa
         // const because it's used immediately in _predictionError constructor.
 
-        private static int PredictionErrorWindowSize = 20; // average over 20 * 100ms = 2s
-        private static ExponentialMovingAverage _predictionErrorUnadjusted = new ExponentialMovingAverage(PredictionErrorWindowSize);
+        static int PredictionErrorWindowSize = 20; // average over 20 * 100ms = 2s
+        static ExponentialMovingAverage _predictionErrorUnadjusted = new ExponentialMovingAverage(PredictionErrorWindowSize);
         public static double predictionErrorUnadjusted => _predictionErrorUnadjusted.Value;
         public static double predictionErrorAdjusted { get; private set; } // for debugging
 
@@ -149,7 +149,7 @@ namespace Mirror
         {
             // send raw predicted time without the offset applied yet.
             // we then apply the offset to it after.
-            var pingMessage = new NetworkPingMessage
+            NetworkPingMessage pingMessage = new NetworkPingMessage
             (
                 localTime,
                 predictedTime
@@ -166,18 +166,18 @@ namespace Mirror
         {
             // calculate the prediction offset that the client needs to apply to unadjusted time to reach server time.
             // this will be sent back to client for corrections.
-            var unadjustedError = localTime - message.localTime;
+            double unadjustedError = localTime - message.localTime;
 
             // to see how well the client's final prediction worked, compare with adjusted time.
             // this is purely for debugging.
             // >0 means: server is ... seconds ahead of client's prediction (good if small)
             // <0 means: server is ... seconds behind client's prediction.
             //           in other words, client is predicting too far ahead (not good)
-            var adjustedError = localTime - message.predictedTimeAdjusted;
+            double adjustedError = localTime - message.predictedTimeAdjusted;
             // Debug.Log($"[Server] unadjustedError:{(unadjustedError*1000):F1}ms adjustedError:{(adjustedError*1000):F1}ms");
 
             // Debug.Log($"OnServerPing conn:{conn}");
-            var pongMessage = new NetworkPongMessage
+            NetworkPongMessage pongMessage = new NetworkPongMessage
             (
                 message.localTime,
                 unadjustedError,
@@ -195,7 +195,7 @@ namespace Mirror
             if (message.localTime > localTime) return;
 
             // how long did this message take to come back
-            var newRtt = localTime - message.localTime;
+            double newRtt = localTime - message.localTime;
             _rtt.Add(newRtt);
 
             // feed unadjusted prediction error into our exponential moving average
@@ -212,7 +212,7 @@ namespace Mirror
         internal static void OnClientPing(NetworkPingMessage message)
         {
             // Debug.Log($"OnClientPing conn:{conn}");
-            var pongMessage = new NetworkPongMessage
+            NetworkPongMessage pongMessage = new NetworkPongMessage
             (
                 message.localTime,
                 0, 0 // server doesn't predict
@@ -229,7 +229,7 @@ namespace Mirror
             if (message.localTime > localTime) return;
 
             // how long did this message take to come back
-            var newRtt = localTime - message.localTime;
+            double newRtt = localTime - message.localTime;
             conn._rtt.Add(newRtt);
         }
 

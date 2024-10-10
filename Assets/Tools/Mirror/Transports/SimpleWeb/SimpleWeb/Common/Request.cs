@@ -9,14 +9,14 @@ namespace Mirror.SimpleWeb
     /// </summary>
     public class Request
     {
-        private static readonly char[] lineSplitChars = new char[] { '\r', '\n' };
-        private static readonly char[] headerSplitChars = new char[] { ':' };
+        static readonly char[] lineSplitChars = new char[] { '\r', '\n' };
+        static readonly char[] headerSplitChars = new char[] { ':' };
         public string RequestLine;
         public Dictionary<string, string> Headers = new Dictionary<string, string>();
 
         public Request(string message)
         {
-            var all = message.Split(lineSplitChars, StringSplitOptions.RemoveEmptyEntries);
+            string[] all = message.Split(lineSplitChars, StringSplitOptions.RemoveEmptyEntries);
             RequestLine = all.First();
             Headers = all.Skip(1)
                          .Select(header => header.Split(headerSplitChars, 2, StringSplitOptions.RemoveEmptyEntries))

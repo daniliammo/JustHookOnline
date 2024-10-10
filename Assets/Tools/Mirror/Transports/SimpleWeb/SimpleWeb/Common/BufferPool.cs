@@ -13,7 +13,7 @@ namespace Mirror.SimpleWeb
 
     public sealed class ArrayBuffer : IDisposable
     {
-        private readonly IBufferOwner owner;
+        readonly IBufferOwner owner;
 
         public readonly byte[] array;
 
@@ -38,7 +38,7 @@ namespace Mirror.SimpleWeb
         /// <remarks>
         /// This value is normally 0, but can be changed to require release to be called multiple times
         /// </remarks>
-        private int releasesRequired;
+        int releasesRequired;
 
         public ArrayBuffer(IBufferOwner owner, int size)
         {
@@ -48,7 +48,7 @@ namespace Mirror.SimpleWeb
 
         public void Release()
         {
-            var newValue = Interlocked.Decrement(ref releasesRequired);
+            int newValue = Interlocked.Decrement(ref releasesRequired);
             if (newValue <= 0)
             {
                 count = 0;
@@ -62,7 +62,7 @@ namespace Mirror.SimpleWeb
 
         public void CopyTo(byte[] target, int offset)
         {
-            if (count > target.Length + offset)
+            if (count > (target.Length + offset))
                 throw new ArgumentException($"{nameof(count)} was greater than {nameof(target)}.length", nameof(target));
 
             Buffer.BlockCopy(array, 0, target, offset, count);
@@ -104,7 +104,7 @@ namespace Mirror.SimpleWeb
     internal class BufferBucket : IBufferOwner
     {
         public readonly int arraySize;
-        private readonly ConcurrentQueue<ArrayBuffer> buffers;
+        readonly ConcurrentQueue<ArrayBuffer> buffers;
 
         /// <summary>
         /// keeps track of how many arrays are taken vs returned
@@ -120,7 +120,7 @@ namespace Mirror.SimpleWeb
         public ArrayBuffer Take()
         {
             IncrementCreated();
-            if (buffers.TryDequeue(out var buffer))
+            if (buffers.TryDequeue(out ArrayBuffer buffer))
                 return buffer;
             else
             {
@@ -137,16 +137,16 @@ namespace Mirror.SimpleWeb
         }
 
         [Conditional("DEBUG")]
-        private void IncrementCreated()
+        void IncrementCreated()
         {
-            var next = Interlocked.Increment(ref _current);
+            int next = Interlocked.Increment(ref _current);
             Log.Flood($"[SWT-BufferBucket]: BufferBucket({arraySize}) count:{next}");
         }
 
         [Conditional("DEBUG")]
-        private void DecrementCreated()
+        void DecrementCreated()
         {
-            var next = Interlocked.Decrement(ref _current);
+            int next = Interlocked.Decrement(ref _current);
             Log.Flood($"[SWT-BufferBucket]: BufferBucket({arraySize}) count:{next}");
         }
     }
@@ -172,9 +172,9 @@ namespace Mirror.SimpleWeb
     public class BufferPool
     {
         internal readonly BufferBucket[] buckets;
-        private readonly int bucketCount;
-        private readonly int smallest;
-        private readonly int largest;
+        readonly int bucketCount;
+        readonly int smallest;
+        readonly int largest;
 
         public BufferPool(int bucketCount, int smallest, int largest)
         {
@@ -187,16 +187,16 @@ namespace Mirror.SimpleWeb
             this.largest = largest;
 
             // split range over log scale (more buckets for smaller sizes)
-            var minLog = Math.Log(this.smallest);
-            var maxLog = Math.Log(this.largest);
-            var range = maxLog - minLog;
-            var each = range / (bucketCount - 1);
+            double minLog = Math.Log(this.smallest);
+            double maxLog = Math.Log(this.largest);
+            double range = maxLog - minLog;
+            double each = range / (bucketCount - 1);
 
             buckets = new BufferBucket[bucketCount];
 
-            for (var i = 0; i < bucketCount; i++)
+            for (int i = 0; i < bucketCount; i++)
             {
-                var size = smallest * Math.Pow(Math.E, each * i);
+                double size = smallest * Math.Pow(Math.E, each * i);
                 buckets[i] = new BufferBucket((int)Math.Ceiling(size));
             }
 
@@ -223,15 +223,15 @@ namespace Mirror.SimpleWeb
         }
 
         [Conditional("UNITY_ASSERTIONS")]
-        private void Validate()
+        void Validate()
         {
             if (buckets[0].arraySize != smallest)
-                Log.Error($"[SWT-BufferPool]: BufferPool Failed to create bucket for smallest. bucket:{buckets[0].arraySize} smallest:{smallest}");
+                Log.Error("[SWT-BufferPool]: BufferPool Failed to create bucket for smallest. bucket:{0} smallest:{1}", buckets[0].arraySize, smallest);
 
-            var largestBucket = buckets[bucketCount - 1].arraySize;
+            int largestBucket = buckets[bucketCount - 1].arraySize;
             // rounded using Ceiling, so allowed to be 1 more that largest
             if (largestBucket != largest && largestBucket != largest + 1)
-                Log.Error($"[SWT-BufferPool]: BufferPool Failed to create bucket for largest. bucket:{largestBucket} smallest:{largest}");
+                Log.Error("[SWT-BufferPool]: BufferPool Failed to create bucket for largest. bucket:{0} smallest:{1}", largestBucket, largest);
         }
 
         public ArrayBuffer Take(int size)
@@ -239,7 +239,7 @@ namespace Mirror.SimpleWeb
             if (size > largest)
                 throw new ArgumentException($"Size ({size}) is greater than largest ({largest})");
 
-            for (var i = 0; i < bucketCount; i++)
+            for (int i = 0; i < bucketCount; i++)
                 if (size <= buckets[i].arraySize)
                     return buckets[i].Take();
 

@@ -6,15 +6,15 @@ namespace Mirror.Weaver
     public static class SyncObjectProcessor
     {
         // ulong = 64 bytes
-        private const int SyncObjectsLimit = 64;
+        const int SyncObjectsLimit = 64;
 
         // Finds SyncObjects fields in a type
         // Type should be a NetworkBehaviour
         public static List<FieldDefinition> FindSyncObjectsFields(Writers writers, Readers readers, Logger Log, TypeDefinition td, ref bool WeavingFailed)
         {
-            var syncObjects = new List<FieldDefinition>();
+            List<FieldDefinition> syncObjects = new List<FieldDefinition>();
 
-            foreach (var fd in td.Fields)
+            foreach (FieldDefinition fd in td.Fields)
             {
                 if (fd.FieldType.IsGenericParameter || fd.ContainsGenericParameter)
                 {
@@ -67,11 +67,11 @@ namespace Mirror.Weaver
         }
 
         // Generates serialization methods for synclists
-        private static void GenerateReadersAndWriters(Writers writers, Readers readers, TypeReference tr, ref bool WeavingFailed)
+        static void GenerateReadersAndWriters(Writers writers, Readers readers, TypeReference tr, ref bool WeavingFailed)
         {
             if (tr is GenericInstanceType genericInstance)
             {
-                foreach (var argument in genericInstance.GenericArguments)
+                foreach (TypeReference argument in genericInstance.GenericArguments)
                 {
                     if (!argument.IsGenericParameter)
                     {

@@ -39,8 +39,7 @@ namespace kcp2k
         [Tooltip("KCP fastresend parameter. Faster resend for the cost of higher bandwidth. 0 in normal mode, 2 in turbo mode.")]
         public int FastResend = 2;
         [Tooltip("KCP congestion window. Restricts window size to reduce congestion. Results in only 2-3 MTU messages per Flush even on loopback. Best to keept his disabled.")]
-        /*public*/
-        private bool CongestionWindow = false; // KCP 'NoCongestionWindow' is false by default. here we negate it for ease of use.
+        /*public*/ bool CongestionWindow = false; // KCP 'NoCongestionWindow' is false by default. here we negate it for ease of use.
         [Tooltip("KCP window size can be modified to support higher loads. This also increases max message size.")]
         public uint ReceiveWindowSize = 4096; //Kcp.WND_RCV; 128 by default. Mirror sends a lot, so we need a lot more.
         [Tooltip("KCP window size can be modified to support higher loads.")]
@@ -63,14 +62,14 @@ namespace kcp2k
         protected KcpConfig config;
 
         // use default MTU for this transport.
-        private const int MTU = Kcp.MTU_DEF;
+        const int MTU = Kcp.MTU_DEF;
 
         // server & client
-        private KcpServer server; // USED IN WORKER THREAD. DON'T TOUCH FROM MAIN THREAD!
-        private KcpClient client; // USED IN WORKER THREAD. DON'T TOUCH FROM MAIN THREAD!
+        KcpServer server; // USED IN WORKER THREAD. DON'T TOUCH FROM MAIN THREAD!
+        KcpClient client; // USED IN WORKER THREAD. DON'T TOUCH FROM MAIN THREAD!
 
         // copy MonoBehaviour.enabled for thread safe access
-        private volatile bool enabledCopy = true;
+        volatile bool enabledCopy = true;
 
         // debugging
         [Header("Debug")]
@@ -133,8 +132,8 @@ namespace kcp2k
         }
 
         // copy MonoBehaviour.enabled for thread safe use
-        private void OnEnable()  => enabledCopy = true;
-        private void OnDisable() => enabledCopy = true;
+        void OnEnable()  => enabledCopy = true;
+        void OnDisable() => enabledCopy = true;
 
         // all except WebGL
         // Do not change this back to using Application.platform
@@ -152,7 +151,7 @@ namespace kcp2k
             if (uri.Scheme != Scheme)
                 throw new ArgumentException($"Invalid url {uri}, use {Scheme}://host:port instead", nameof(uri));
 
-            var serverPort = uri.IsDefaultPort ? Port : uri.Port;
+            int serverPort = uri.IsDefaultPort ? Port : uri.Port;
             client.Connect(uri.Host, (ushort)serverPort);
         }
         protected override void ThreadedClientSend(ArraySegment<byte> segment, int channelId)
@@ -178,7 +177,7 @@ namespace kcp2k
         // server thread overrides
         public override Uri ServerUri()
         {
-            var builder = new UriBuilder();
+            UriBuilder builder = new UriBuilder();
             builder.Scheme = Scheme;
             builder.Host = Dns.GetHostName();
             builder.Port = Port;

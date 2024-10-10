@@ -8,8 +8,8 @@ namespace Mirror
     [AddComponentMenu("Network/Network Transform (Reliable)")]
     public class NetworkTransformReliable : NetworkTransformBase
     {
-        private uint sendIntervalCounter = 0;
-        private double lastSendIntervalTime = double.MinValue;
+        uint sendIntervalCounter = 0;
+        double lastSendIntervalTime = double.MinValue;
 
         [Header("Additional Settings")]
         [Tooltip("If we only sync on change, then we need to correct old snapshots if more time than sendInterval * multiplier has elapsed.\n\nOtherwise the first move will always start interpolating from the last move sequence's time, which will make it stutter when starting every time.")]
@@ -42,10 +42,8 @@ namespace Mirror
         // Used to store last sent snapshots
         protected TransformSnapshot last;
 
-        protected int lastClientCount = 1;
-
         // update //////////////////////////////////////////////////////////////
-        private void Update()
+        void Update()
         {
             // if server then always sync to others.
             if (isServer) UpdateServer();
@@ -54,7 +52,7 @@ namespace Mirror
             else if (isClient) UpdateClient();
         }
 
-        private void LateUpdate()
+        void LateUpdate()
         {
             // set dirty to trigger OnSerialize. either always, or only if changed.
             // It has to be checked in LateUpdate() for onlySyncOnChange to avoid
@@ -91,12 +89,12 @@ namespace Mirror
                     SnapshotInterpolation.StepInterpolation(
                         serverSnapshots,
                         connectionToClient.remoteTimeline,
-                        out var from,
-                        out var to,
-                        out var t);
+                        out TransformSnapshot from,
+                        out TransformSnapshot to,
+                        out double t);
 
                     // interpolate & apply
-                    var computed = TransformSnapshot.Interpolate(from, to, t);
+                    TransformSnapshot computed = TransformSnapshot.Interpolate(from, to, t);
                     Apply(computed, to);
                 }
             }
@@ -115,16 +113,14 @@ namespace Mirror
                     SnapshotInterpolation.StepInterpolation(
                         clientSnapshots,
                         NetworkTime.time, // == NetworkClient.localTimeline from snapshot interpolation
-                        out var from,
-                        out var to,
-                        out var t);
+                        out TransformSnapshot from,
+                        out TransformSnapshot to,
+                        out double t);
 
                     // interpolate & apply
-                    var computed = TransformSnapshot.Interpolate(from, to, t);
+                    TransformSnapshot computed = TransformSnapshot.Interpolate(from, to, t);
                     Apply(computed, to);
                 }
-
-                lastClientCount = clientSnapshots.Count;
             }
         }
 
@@ -157,8 +153,8 @@ namespace Mirror
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool QuantizedChanged(Vector3 u, Vector3 v, float precision)
         {
-            Compression.ScaleToLong(u, precision, out var uQuantized);
-            Compression.ScaleToLong(v, precision, out var vQuantized);
+            Compression.ScaleToLong(u, precision, out Vector3Long uQuantized);
+            Compression.ScaleToLong(v, precision, out Vector3Long vQuantized);
             return uQuantized != vQuantized;
         }
 
@@ -168,7 +164,7 @@ namespace Mirror
         public override void OnSerialize(NetworkWriter writer, bool initialState)
         {
             // get current snapshot for broadcasting.
-            var snapshot = Construct();
+            TransformSnapshot snapshot = Construct();
 
             // ClientToServer optimization:
             // for interpolated client owned identities,
@@ -212,7 +208,7 @@ namespace Mirror
                 if (syncPosition)
                 {
                     // quantize -> delta -> varint
-                    Compression.ScaleToLong(snapshot.position, positionPrecision, out var quantized);
+                    Compression.ScaleToLong(snapshot.position, positionPrecision, out Vector3Long quantized);
                     DeltaCompression.Compress(writer, lastSerializedPosition, quantized);
                 }
                 if (syncRotation)
@@ -226,7 +222,7 @@ namespace Mirror
                 if (syncScale)
                 {
                     // quantize -> delta -> varint
-                    Compression.ScaleToLong(snapshot.scale, scalePrecision, out var quantized);
+                    Compression.ScaleToLong(snapshot.scale, scalePrecision, out Vector3Long quantized);
                     DeltaCompression.Compress(writer, lastSerializedScale, quantized);
                 }
             }
@@ -265,7 +261,7 @@ namespace Mirror
                 // varint -> delta -> quantize
                 if (syncPosition)
                 {
-                    var quantized = DeltaCompression.Decompress(reader, lastDeserializedPosition);
+                    Vector3Long quantized = DeltaCompression.Decompress(reader, lastDeserializedPosition);
                     position = Compression.ScaleToFloat(quantized, positionPrecision);
                 }
                 if (syncRotation)
@@ -278,7 +274,7 @@ namespace Mirror
                 }
                 if (syncScale)
                 {
-                    var quantized = DeltaCompression.Decompress(reader, lastDeserializedScale);
+                    Vector3Long quantized = DeltaCompression.Decompress(reader, lastDeserializedScale);
                     scale = Compression.ScaleToFloat(quantized, scalePrecision);
                 }
             }
@@ -362,7 +358,7 @@ namespace Mirror
         // the fix is quite simple.
 
         // 1. detect if the remaining snapshot is too old from a past move.
-        private static bool NeedsCorrection(
+        static bool NeedsCorrection(
             SortedList<double, TransformSnapshot> snapshots,
             double remoteTimestamp,
             double bufferTime,
@@ -372,7 +368,7 @@ namespace Mirror
 
         // 2. insert a fake snapshot at current position,
         //    exactly one 'sendInterval' behind the newly received one.
-        private static void RewriteHistory(
+        static void RewriteHistory(
             SortedList<double, TransformSnapshot> snapshots,
             // timestamp of packet arrival, not interpolated remote time!
             double remoteTimeStamp,

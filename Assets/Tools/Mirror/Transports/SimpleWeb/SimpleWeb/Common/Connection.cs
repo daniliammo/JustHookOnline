@@ -10,7 +10,7 @@ namespace Mirror.SimpleWeb
 {
     internal sealed class Connection : IDisposable
     {
-        private readonly object disposedLock = new object();
+        readonly object disposedLock = new object();
 
         public const int IdNotSet = -1;
         public TcpClient client;
@@ -35,7 +35,7 @@ namespace Mirror.SimpleWeb
         public ConcurrentQueue<ArrayBuffer> sendQueue = new ConcurrentQueue<ArrayBuffer>();
 
         public Action<Connection> onDispose;
-        private volatile bool hasDisposed;
+        volatile bool hasDisposed;
 
         public Connection(TcpClient client, Action<Connection> onDispose)
         {
@@ -48,12 +48,12 @@ namespace Mirror.SimpleWeb
         /// </summary>
         public void Dispose()
         {
-            Log.Verbose($"[SWT-Connection]: Dispose {ToString()}");
+            Log.Verbose("[SWT-Connection]: Dispose {0}", ToString());
 
             // check hasDisposed first to stop ThreadInterruptedException on lock
             if (hasDisposed) return;
 
-            Log.Verbose($"[SWT-Connection]: Connection Close: {ToString()}");
+            Log.Verbose("[SWT-Connection]: Connection Close: {0}", ToString());
 
             lock (disposedLock)
             {
@@ -82,7 +82,7 @@ namespace Mirror.SimpleWeb
                 sendPending.Dispose();
 
                 // release all buffers in send queue
-                while (sendQueue.TryDequeue(out var buffer))
+                while (sendQueue.TryDequeue(out ArrayBuffer buffer))
                     buffer.Release();
 
                 onDispose.Invoke(this);
@@ -99,7 +99,7 @@ namespace Mirror.SimpleWeb
             else
                 try
                 {
-                    var endpoint = client?.Client?.RemoteEndPoint;
+                    EndPoint endpoint = client?.Client?.RemoteEndPoint;
                     return $"[Conn:{connId}, endPoint:{endpoint}]";
                 }
                 catch (SocketException)
@@ -114,16 +114,16 @@ namespace Mirror.SimpleWeb
         /// </summary>
         internal string CalculateAddress()
         {
-            if (request.Headers.TryGetValue("X-Forwarded-For", out var forwardFor))
+            if (request.Headers.TryGetValue("X-Forwarded-For", out string forwardFor))
             {
-                var actualClientIP = forwardFor.ToString().Split(',').First();
+                string actualClientIP = forwardFor.ToString().Split(',').First();
                 // Remove the port number from the address
                 return actualClientIP.Split(':').First();
             }
             else
             {
-                var ipEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
-                var ipAddress = ipEndPoint.Address;
+                IPEndPoint ipEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
+                IPAddress ipAddress = ipEndPoint.Address;
                 if (ipAddress.IsIPv4MappedToIPv6)
                     ipAddress = ipAddress.MapToIPv4();
 

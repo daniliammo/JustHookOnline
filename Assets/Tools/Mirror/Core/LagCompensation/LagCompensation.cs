@@ -65,9 +65,9 @@ namespace Mirror
             // TODO faster version: guess start index by how many 'intervals' we are behind.
             //      search around that area.
             //      should be O(1) most of the time, unless sampling was off.
-            var prev = new KeyValuePair<double, T>();
-            var prevPrev = new KeyValuePair<double, T>();
-            foreach(var entry in history) {
+            KeyValuePair<double, T> prev = new KeyValuePair<double, T>();
+            KeyValuePair<double, T> prevPrev = new KeyValuePair<double, T>();
+            foreach(KeyValuePair<double, T> entry in history) {
                 // exact match?
                 if (timestamp == entry.Key) {
                     before = entry.Value;
@@ -128,7 +128,7 @@ namespace Mirror
         {
             // packet latency is one trip from client to server, so rtt / 2
             // client view interpolation is the snapshot interpolation buffer time
-            var latency = rtt / 2;
+            double latency = rtt / 2;
             return serverTime - latency - bufferTime;
         }
 
@@ -137,7 +137,7 @@ namespace Mirror
         public static void DrawGizmos<T>(Queue<KeyValuePair<double, T>> history)
             where T : Capture
         {
-            foreach (var entry in history)
+            foreach (KeyValuePair<double, T> entry in history)
                 entry.Value.DrawGizmo();
         }
     }

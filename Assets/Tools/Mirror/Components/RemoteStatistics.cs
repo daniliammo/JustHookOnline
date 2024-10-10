@@ -17,7 +17,7 @@ using UnityEngine;
 namespace Mirror
 {
     // server -> client
-    internal struct Stats
+    struct Stats
     {
         // general
         public int    connections;
@@ -87,13 +87,12 @@ namespace Mirror
         // instead of sending multiple times per second via NB.OnSerialize.
         [Tooltip("Send stats every 'interval' seconds to client.")]
         public float sendInterval = 1;
-
-        private double           lastSendTime;
+        double           lastSendTime;
 
         [Header("GUI")]
         public bool showGui;
         public KeyCode hotKey     = KeyCode.BackQuote;
-        private Rect           windowRect = new Rect(0, 0, 400, 400);
+        Rect           windowRect = new Rect(0, 0, 400, 400);
 
         // password can't be stored in code or in Unity project.
         // it would be available in clients otherwise.
@@ -106,15 +105,15 @@ namespace Mirror
         protected string       clientPassword = "";   // for GUI
 
         // statistics synced to client
-        private Stats stats;
+        Stats stats;
 
-        private void LoadPassword()
+        void LoadPassword()
         {
             // TODO only load once, not for all players?
             // let's avoid static state for now.
 
             // load the password
-            var path = Path.GetFullPath(passwordFile);
+            string path = Path.GetFullPath(passwordFile);
             if (File.Exists(path))
             {
                 // don't spam the server logs for every player's loaded file
@@ -159,7 +158,7 @@ namespace Mirror
         }
 
         [TargetRpc]
-        private void TargetRpcSync(Stats v)
+        void TargetRpcSync(Stats v)
         {
             // store stats and flag as authenticated
             clientAuthenticated = true;
@@ -179,7 +178,7 @@ namespace Mirror
             }
         }
 
-        private void UpdateServer()
+        void UpdateServer()
         {
             // only sync if client has authenticated on the server
             if (!serverAuthenticated) return;
@@ -212,19 +211,19 @@ namespace Mirror
             }
         }
 
-        private void UpdateClient()
+        void UpdateClient()
         {
             if (Input.GetKeyDown(hotKey))
                 showGui = !showGui;
         }
 
-        private void Update()
+        void Update()
         {
             if (isServer)      UpdateServer();
             if (isLocalPlayer) UpdateClient();
         }
 
-        private void OnGUI()
+        void OnGUI()
         {
             if (!isLocalPlayer) return;
             if (!showGui) return;
@@ -234,7 +233,7 @@ namespace Mirror
         }
 
         // Text: value
-        private void GUILayout_TextAndValue(string text, string value)
+        void GUILayout_TextAndValue(string text, string value)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label(text);
@@ -244,7 +243,7 @@ namespace Mirror
         }
 
         // fake a progress bar via horizontal scroll bar with ratio as width
-        private void GUILayout_ProgressBar(double ratio, int width)
+        void GUILayout_ProgressBar(double ratio, int width)
         {
             // clamp ratio, otherwise >1 would make it extremely large
             ratio = Mathd.Clamp01(ratio);
@@ -254,7 +253,7 @@ namespace Mirror
         // need to specify progress bar & caption width,
         // otherwise differently sized captions would always misalign the
         // progress bars.
-        private void GUILayout_TextAndProgressBar(string text, double ratio, int progressbarWidth, string caption, int captionWidth, Color captionColor)
+        void GUILayout_TextAndProgressBar(string text, double ratio, int progressbarWidth, string caption, int captionWidth, Color captionColor)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label(text);
@@ -269,7 +268,7 @@ namespace Mirror
             GUILayout.EndHorizontal();
         }
 
-        private void GUI_Authenticate()
+        void GUI_Authenticate()
         {
             GUILayout.BeginVertical("Box"); // start general
             GUILayout.Label("<b>Authentication</b>");
@@ -298,7 +297,7 @@ namespace Mirror
             GUILayout.EndVertical(); // end general
         }
 
-        private void GUI_General(
+        void GUI_General(
             int connections,
             double uptime,
             int configuredTickRate,
@@ -323,7 +322,7 @@ namespace Mirror
             GUILayout.EndVertical(); // end general
         }
 
-        private void GUI_Traffic(
+        void GUI_Traffic(
             long serverSentBytesPerSecond,
             long serverReceivedBytesPerSecond)
         {
@@ -336,7 +335,7 @@ namespace Mirror
             GUILayout.EndVertical();
         }
 
-        private void GUI_Cpu(
+        void GUI_Cpu(
             float serverTickInterval,
             double fullUpdateAvg,
             double serverEarlyAvg,
@@ -353,7 +352,7 @@ namespace Mirror
             // unity update
             // happens every 'tickInterval'. progress bar shows it in relation.
             // <= 90% load is green, otherwise red
-            var fullRatio = fullUpdateAvg / serverTickInterval;
+            double fullRatio = fullUpdateAvg / serverTickInterval;
             GUILayout_TextAndProgressBar(
                 "World Update Avg:",
                 fullRatio,
@@ -364,7 +363,7 @@ namespace Mirror
             // server update
             // happens every 'tickInterval'. progress bar shows it in relation.
             // <= 90% load is green, otherwise red
-            var serverRatio = (serverEarlyAvg + serverLateAvg) / serverTickInterval;
+            double serverRatio = (serverEarlyAvg + serverLateAvg) / serverTickInterval;
             GUILayout_TextAndProgressBar(
                 "Server Update Avg:",
                 serverRatio,
@@ -388,7 +387,7 @@ namespace Mirror
             GUILayout.EndVertical();
         }
 
-        private void GUI_Notice()
+        void GUI_Notice()
         {
             // for security reasons, let's keep this read-only for now.
 
@@ -403,7 +402,7 @@ namespace Mirror
             // GUILayout.EndVertical();
         }
 
-        private void OnWindow(int windowID)
+        void OnWindow(int windowID)
         {
             if (!clientAuthenticated)
             {

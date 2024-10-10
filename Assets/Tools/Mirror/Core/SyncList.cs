@@ -38,17 +38,13 @@ namespace Mirror
         /// <summary>This is called before the list is cleared so the list can be iterated</summary>
         public Action OnClear;
 
-        // Deprecated 2024-03-23
-        [Obsolete("Use individual Actions, which pass OLD values where appropriate, instead.")]
-        public Action<Operation, int, T, T> Callback;
-
-        private readonly IList<T> objects;
-        private readonly IEqualityComparer<T> comparer;
+        readonly IList<T> objects;
+        readonly IEqualityComparer<T> comparer;
 
         public int Count => objects.Count;
         public bool IsReadOnly => !IsWritable();
 
-        private struct Change
+        struct Change
         {
             internal Operation operation;
             internal int index;
@@ -59,13 +55,13 @@ namespace Mirror
         // -> insert/delete/clear is only ONE change
         // -> changing the same slot 10x caues 10 changes.
         // -> note that this grows until next sync(!)
-        private readonly List<Change> changes = new List<Change>();
+        readonly List<Change> changes = new List<Change>();
 
         // how many changes we need to ignore
         // this is needed because when we initialize the list,
         // we might later receive changes that have already been applied
         // so we need to skip them
-        private int changesAhead;
+        int changesAhead;
 
         public SyncList() : this(EqualityComparer<T>.Default) { }
 
@@ -92,12 +88,12 @@ namespace Mirror
             objects.Clear();
         }
 
-        private void AddOperation(Operation op, int itemIndex, T oldItem, T newItem, bool checkAccess)
+        void AddOperation(Operation op, int itemIndex, T oldItem, T newItem, bool checkAccess)
         {
             if (checkAccess && IsReadOnly)
                 throw new InvalidOperationException("Synclists can only be modified by the owner.");
 
-            var change = new Change
+            Change change = new Change
             {
                 operation = op,
                 index = itemIndex,
@@ -133,10 +129,6 @@ namespace Mirror
                     OnChange?.Invoke(op, itemIndex, default);
                     break;
             }
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            Callback?.Invoke(op, itemIndex, oldItem, newItem);
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public override void OnSerializeAll(NetworkWriter writer)
@@ -144,9 +136,9 @@ namespace Mirror
             // if init,  write the full list content
             writer.WriteUInt((uint)objects.Count);
 
-            for (var i = 0; i < objects.Count; i++)
+            for (int i = 0; i < objects.Count; i++)
             {
-                var obj = objects[i];
+                T obj = objects[i];
                 writer.Write(obj);
             }
 
@@ -162,9 +154,9 @@ namespace Mirror
             // write all the queued up changes
             writer.WriteUInt((uint)changes.Count);
 
-            for (var i = 0; i < changes.Count; i++)
+            for (int i = 0; i < changes.Count; i++)
             {
-                var change = changes[i];
+                Change change = changes[i];
                 writer.WriteByte((byte)change.operation);
 
                 switch (change.operation)
@@ -192,14 +184,14 @@ namespace Mirror
         public override void OnDeserializeAll(NetworkReader reader)
         {
             // if init,  write the full list content
-            var count = (int)reader.ReadUInt();
+            int count = (int)reader.ReadUInt();
 
             objects.Clear();
             changes.Clear();
 
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var obj = reader.Read<T>();
+                T obj = reader.Read<T>();
                 objects.Add(obj);
             }
 
@@ -211,16 +203,16 @@ namespace Mirror
 
         public override void OnDeserializeDelta(NetworkReader reader)
         {
-            var changesCount = (int)reader.ReadUInt();
+            int changesCount = (int)reader.ReadUInt();
 
-            for (var i = 0; i < changesCount; i++)
+            for (int i = 0; i < changesCount; i++)
             {
-                var operation = (Operation)reader.ReadByte();
+                Operation operation = (Operation)reader.ReadByte();
 
                 // apply the operation only if it is a new change
                 // that we have not applied yet
-                var apply = changesAhead == 0;
-                var index = 0;
+                bool apply = changesAhead == 0;
+                int index = 0;
                 T oldItem = default;
                 T newItem = default;
 
@@ -314,7 +306,7 @@ namespace Mirror
 
         public void AddRange(IEnumerable<T> range)
         {
-            foreach (var entry in range)
+            foreach (T entry in range)
                 Add(entry);
         }
 
@@ -332,7 +324,7 @@ namespace Mirror
 
         public int IndexOf(T item)
         {
-            for (var i = 0; i < objects.Count; ++i)
+            for (int i = 0; i < objects.Count; ++i)
                 if (comparer.Equals(item, objects[i]))
                     return i;
             return -1;
@@ -340,7 +332,7 @@ namespace Mirror
 
         public int FindIndex(Predicate<T> match)
         {
-            for (var i = 0; i < objects.Count; ++i)
+            for (int i = 0; i < objects.Count; ++i)
                 if (match(objects[i]))
                     return i;
             return -1;
@@ -348,14 +340,14 @@ namespace Mirror
 
         public T Find(Predicate<T> match)
         {
-            var i = FindIndex(match);
-            return i != -1 ? objects[i] : default;
+            int i = FindIndex(match);
+            return (i != -1) ? objects[i] : default;
         }
 
         public List<T> FindAll(Predicate<T> match)
         {
-            var results = new List<T>();
-            for (var i = 0; i < objects.Count; ++i)
+            List<T> results = new List<T>();
+            for (int i = 0; i < objects.Count; ++i)
                 if (match(objects[i]))
                     results.Add(objects[i]);
             return results;
@@ -369,7 +361,7 @@ namespace Mirror
 
         public void InsertRange(int index, IEnumerable<T> range)
         {
-            foreach (var entry in range)
+            foreach (T entry in range)
             {
                 Insert(index, entry);
                 index++;
@@ -378,8 +370,8 @@ namespace Mirror
 
         public bool Remove(T item)
         {
-            var index = IndexOf(item);
-            var result = index >= 0;
+            int index = IndexOf(item);
+            bool result = index >= 0;
             if (result)
                 RemoveAt(index);
 
@@ -388,19 +380,19 @@ namespace Mirror
 
         public void RemoveAt(int index)
         {
-            var oldItem = objects[index];
+            T oldItem = objects[index];
             objects.RemoveAt(index);
             AddOperation(Operation.OP_REMOVEAT, index, oldItem, default, true);
         }
 
         public int RemoveAll(Predicate<T> match)
         {
-            var toRemove = new List<T>();
-            for (var i = 0; i < objects.Count; ++i)
+            List<T> toRemove = new List<T>();
+            for (int i = 0; i < objects.Count; ++i)
                 if (match(objects[i]))
                     toRemove.Add(objects[i]);
 
-            foreach (var entry in toRemove)
+            foreach (T entry in toRemove)
                 Remove(entry);
 
             return toRemove.Count;
@@ -413,7 +405,7 @@ namespace Mirror
             {
                 if (!comparer.Equals(objects[i], value))
                 {
-                    var oldItem = objects[i];
+                    T oldItem = objects[i];
                     objects[i] = value;
                     AddOperation(Operation.OP_SET, i, oldItem, value, true);
                 }
@@ -438,8 +430,8 @@ namespace Mirror
         // => this is extremely important for MMO scale networking
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly SyncList<T> list;
-            private int index;
+            readonly SyncList<T> list;
+            int index;
 
             public T Current { get; private set; }
 

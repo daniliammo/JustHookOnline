@@ -1,21 +1,21 @@
 using System;
 using System.IO;
-using Org.BouncyCastle.Asn1.Pkcs;
-using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Digests;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.X509;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
+using Mirror.BouncyCastle.Asn1.Pkcs;
+using Mirror.BouncyCastle.Asn1.X509;
+using Mirror.BouncyCastle.Crypto;
+using Mirror.BouncyCastle.Crypto.Digests;
+using Mirror.BouncyCastle.Crypto.Generators;
+using Mirror.BouncyCastle.X509;
+using Mirror.BouncyCastle.Crypto.Parameters;
+using Mirror.BouncyCastle.Pkcs;
+using Mirror.BouncyCastle.Security;
 using UnityEngine;
 
 namespace Mirror.Transports.Encryption
 {
     public class EncryptionCredentials
     {
-        private const int PrivateKeyBits = 256;
+        const int PrivateKeyBits = 256;
         // don't actually need to store this currently
         // but we'll need to for loading/saving from file maybe?
         // public ECPublicKeyParameters PublicKey;
@@ -25,14 +25,14 @@ namespace Mirror.Transports.Encryption
         public ECPrivateKeyParameters PrivateKey;
         public string PublicKeyFingerprint;
 
-        private EncryptionCredentials() {}
+        EncryptionCredentials() {}
 
         // TODO: load from file
         public static EncryptionCredentials Generate()
         {
             var generator = new ECKeyPairGenerator();
             generator.Init(new KeyGenerationParameters(new SecureRandom(), PrivateKeyBits));
-            var keyPair = generator.GenerateKeyPair();
+            AsymmetricCipherKeyPair keyPair = generator.GenerateKeyPair();
             var serialized = SerializePublicKey((ECPublicKeyParameters)keyPair.Public);
             return new EncryptionCredentials
             {
@@ -47,7 +47,7 @@ namespace Mirror.Transports.Encryption
         public static byte[] SerializePublicKey(AsymmetricKeyParameter publicKey)
         {
             // apparently the best way to transmit this public key over the network is to serialize it as a DER
-            var publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(publicKey);
+            SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(publicKey);
             return publicKeyInfo.ToAsn1Object().GetDerEncoded();
         }
 
@@ -62,7 +62,7 @@ namespace Mirror.Transports.Encryption
         public static byte[] SerializePrivateKey(AsymmetricKeyParameter privateKey)
         {
             // Serialize privateKey as a DER
-            var privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(privateKey);
+            PrivateKeyInfo privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(privateKey);
             return privateKeyInfo.ToAsn1Object().GetDerEncoded();
         }
 
@@ -76,8 +76,8 @@ namespace Mirror.Transports.Encryption
 
         public static string PubKeyFingerprint(ArraySegment<byte> publicKeyBytes)
         {
-            var digest = new Sha256Digest();
-            var hash = new byte[digest.GetDigestSize()];
+            Sha256Digest digest = new Sha256Digest();
+            byte[] hash = new byte[digest.GetDigestSize()];
             digest.BlockUpdate(publicKeyBytes.Array, publicKeyBytes.Offset, publicKeyBytes.Count);
             digest.DoFinal(hash, 0);
 
@@ -86,22 +86,22 @@ namespace Mirror.Transports.Encryption
 
         public void SaveToFile(string path)
         {
-            var json = JsonUtility.ToJson(new SerializedPair
+            string json = JsonUtility.ToJson(new SerializedPair
             {
                 PublicKeyFingerprint = PublicKeyFingerprint,
                 PublicKey = Convert.ToBase64String(PublicKeySerialized),
-                PrivateKey= Convert.ToBase64String(SerializePrivateKey(PrivateKey))
+                PrivateKey= Convert.ToBase64String(SerializePrivateKey(PrivateKey)),
             });
             File.WriteAllText(path, json);
         }
 
         public static EncryptionCredentials LoadFromFile(string path)
         {
-            var json = File.ReadAllText(path);
-            var serializedPair = JsonUtility.FromJson<SerializedPair>(json);
+            string json = File.ReadAllText(path);
+            SerializedPair serializedPair = JsonUtility.FromJson<SerializedPair>(json);
 
-            var publicKeyBytes =  Convert.FromBase64String(serializedPair.PublicKey);
-            var privateKeyBytes = Convert.FromBase64String(serializedPair.PrivateKey);
+            byte[] publicKeyBytes =  Convert.FromBase64String(serializedPair.PublicKey);
+            byte[] privateKeyBytes = Convert.FromBase64String(serializedPair.PrivateKey);
 
             if (serializedPair.PublicKeyFingerprint != PubKeyFingerprint(new ArraySegment<byte>(publicKeyBytes)))
             {

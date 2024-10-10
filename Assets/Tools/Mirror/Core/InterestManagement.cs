@@ -11,7 +11,7 @@ namespace Mirror
     public abstract class InterestManagement : InterestManagementBase
     {
         // allocate newObservers helper HashSet
-        private readonly HashSet<NetworkConnectionToClient> newObservers =
+        readonly HashSet<NetworkConnectionToClient> newObservers =
             new HashSet<NetworkConnectionToClient>();
 
         // rebuild observers for the given NetworkIdentity.
@@ -42,7 +42,7 @@ namespace Mirror
         [ServerCallback]
         protected void RebuildAll()
         {
-            foreach (var identity in NetworkServer.spawned.Values)
+            foreach (NetworkIdentity identity in NetworkServer.spawned.Values)
             {
                 NetworkServer.RebuildObservers(identity, false);
             }
@@ -71,10 +71,10 @@ namespace Mirror
                 newObservers.Add(identity.connectionToClient);
             }
 
-            var changed = false;
+            bool changed = false;
 
             // add all newObservers that aren't in .observers yet
-            foreach (var conn in newObservers)
+            foreach (NetworkConnectionToClient conn in newObservers)
             {
                 // only add ready connections.
                 // otherwise the player might not be in the world yet or anymore
@@ -91,7 +91,7 @@ namespace Mirror
             }
 
             // remove all old .observers that aren't in newObservers anymore
-            foreach (var conn in identity.observers.Values)
+            foreach (NetworkConnectionToClient conn in identity.observers.Values)
             {
                 if (!newObservers.Contains(conn))
                 {
@@ -106,7 +106,7 @@ namespace Mirror
             if (changed)
             {
                 identity.observers.Clear();
-                foreach (var conn in newObservers)
+                foreach (NetworkConnectionToClient conn in newObservers)
                 {
                     if (conn != null && conn.isReady)
                         identity.observers.Add(conn.connectionId, conn);

@@ -12,8 +12,8 @@ namespace Mirror.Weaver
 {
     internal class ILPostProcessorReflectionImporter : DefaultReflectionImporter
     {
-        private const string SystemPrivateCoreLib = "System.Private.CoreLib";
-        private readonly AssemblyNameReference fixedCoreLib;
+        const string SystemPrivateCoreLib = "System.Private.CoreLib";
+        readonly AssemblyNameReference fixedCoreLib;
 
         public ILPostProcessorReflectionImporter(ModuleDefinition module) : base(module)
         {

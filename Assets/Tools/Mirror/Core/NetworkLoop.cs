@@ -42,7 +42,7 @@ namespace Mirror
 
         // RuntimeInitializeOnLoadMethod -> fast playmode without domain reload
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void ResetStatics()
+        static void ResetStatics()
         {
             OnEarlyUpdate = null;
             OnLateUpdate = null;
@@ -55,14 +55,14 @@ namespace Mirror
         {
             // did we find the type? e.g. EarlyUpdate/PreLateUpdate/etc.
             if (playerLoop.type == playerLoopSystemType)
-                return Array.FindIndex(playerLoop.subSystemList, elem => elem.updateDelegate == function);
+                return Array.FindIndex(playerLoop.subSystemList, (elem => elem.updateDelegate == function));
 
             // recursively keep looking
             if (playerLoop.subSystemList != null)
             {
-                for (var i = 0; i < playerLoop.subSystemList.Length; ++i)
+                for (int i = 0; i < playerLoop.subSystemList.Length; ++i)
                 {
-                    var index = FindPlayerLoopEntryIndex(function, playerLoop.subSystemList[i], playerLoopSystemType);
+                    int index = FindPlayerLoopEntryIndex(function, playerLoop.subSystemList[i], playerLoopSystemType);
                     if (index != -1) return index;
                 }
             }
@@ -102,14 +102,14 @@ namespace Mirror
                 // make sure the function wasn't added yet.
                 // with domain reload disabled, it would otherwise be added twice:
                 // fixes: https://github.com/MirrorNetworking/Mirror/issues/3392
-                if (Array.FindIndex(playerLoop.subSystemList, s => s.updateDelegate == function) != -1)
+                if (Array.FindIndex(playerLoop.subSystemList, (s => s.updateDelegate == function)) != -1)
                 {
                     // loop contains the function, so return true.
                     return true;
                 }
 
                 // resize & expand subSystemList to fit one more entry
-                var oldListLength = playerLoop.subSystemList != null ? playerLoop.subSystemList.Length : 0;
+                int oldListLength = (playerLoop.subSystemList != null) ? playerLoop.subSystemList.Length : 0;
                 Array.Resize(ref playerLoop.subSystemList, oldListLength + 1);
 
                 // IMPORTANT: always insert a FRESH PlayerLoopSystem!
@@ -117,7 +117,7 @@ namespace Mirror
                 // => PlayerLoopSystem has native IntPtr loop members
                 // => forgetting to clear those would cause undefined behaviour!
                 // see also: https://github.com/vis2k/Mirror/pull/2652
-                var system = new PlayerLoopSystem {
+                PlayerLoopSystem system = new PlayerLoopSystem {
                     type = ownerType,
                     updateDelegate = function
                 };
@@ -147,7 +147,7 @@ namespace Mirror
             // recursively keep looking
             if (playerLoop.subSystemList != null)
             {
-                for (var i = 0; i < playerLoop.subSystemList.Length; ++i)
+                for (int i = 0; i < playerLoop.subSystemList.Length; ++i)
                 {
                     if (AddToPlayerLoop(function, ownerType, ref playerLoop.subSystemList[i], playerLoopSystemType, addMode))
                         return true;
@@ -158,7 +158,7 @@ namespace Mirror
 
         // hook into Unity runtime to actually add our custom functions
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void RuntimeInitializeOnLoad()
+        static void RuntimeInitializeOnLoad()
         {
             //Debug.Log("Mirror: adding Network[Early/Late]Update to Unity...");
 
@@ -166,7 +166,7 @@ namespace Mirror
             // 2019 has GetCURRENTPlayerLoop which is safe to use without
             // breaking other custom system's custom loops.
             // see also: https://github.com/vis2k/Mirror/pull/2627/files
-            var playerLoop = PlayerLoop.GetCurrentPlayerLoop();
+            PlayerLoopSystem playerLoop = PlayerLoop.GetCurrentPlayerLoop();
 
             // add NetworkEarlyUpdate to the end of EarlyUpdate so it runs after
             // any Unity initializations but before the first Update/FixedUpdate
@@ -181,7 +181,7 @@ namespace Mirror
             PlayerLoop.SetPlayerLoop(playerLoop);
         }
 
-        private static void NetworkEarlyUpdate()
+        static void NetworkEarlyUpdate()
         {
             // loop functions run in edit mode and in play mode.
             // however, we only want to call NetworkServer/Client in play mode.
@@ -195,7 +195,7 @@ namespace Mirror
             OnEarlyUpdate?.Invoke();
         }
 
-        private static void NetworkLateUpdate()
+        static void NetworkLateUpdate()
         {
             // loop functions run in edit mode and in play mode.
             // however, we only want to call NetworkServer/Client in play mode.

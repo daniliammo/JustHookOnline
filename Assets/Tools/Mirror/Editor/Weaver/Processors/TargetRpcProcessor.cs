@@ -14,7 +14,7 @@ namespace Mirror.Weaver
                 // we need to allow both NetworkConnection, and inheriting types.
                 // NetworkBehaviour.SendTargetRpc takes a NetworkConnection parameter.
                 // fixes https://github.com/vis2k/Mirror/issues/3290
-                var type = md.Parameters[0].ParameterType;
+                TypeReference type = md.Parameters[0].ParameterType;
                 return type.Is<NetworkConnection>() ||
                        type.IsDerivedFrom<NetworkConnection>();
             }
@@ -23,15 +23,15 @@ namespace Mirror.Weaver
 
         public static MethodDefinition ProcessTargetRpcInvoke(WeaverTypes weaverTypes, Readers readers, Logger Log, TypeDefinition td, MethodDefinition md, MethodDefinition rpcCallFunc, ref bool WeavingFailed)
         {
-            var trgName = Weaver.GenerateMethodName(RemoteCalls.RemoteProcedureCalls.InvokeRpcPrefix, md);
+            string trgName = Weaver.GenerateMethodName(RemoteCalls.RemoteProcedureCalls.InvokeRpcPrefix, md);
 
-            var rpc = new MethodDefinition(trgName, MethodAttributes.Family |
-                                                    MethodAttributes.Static |
-                                                    MethodAttributes.HideBySig,
+            MethodDefinition rpc = new MethodDefinition(trgName, MethodAttributes.Family |
+                    MethodAttributes.Static |
+                    MethodAttributes.HideBySig,
                 weaverTypes.Import(typeof(void)));
 
-            var worker = rpc.Body.GetILProcessor();
-            var label = worker.Create(OpCodes.Nop);
+            ILProcessor worker = rpc.Body.GetILProcessor();
+            Instruction label = worker.Create(OpCodes.Nop);
 
             NetworkBehaviourProcessor.WriteClientActiveCheck(worker, weaverTypes, md.Name, label, "TargetRPC");
 
@@ -111,9 +111,9 @@ namespace Mirror.Weaver
         */
         public static MethodDefinition ProcessTargetRpcCall(WeaverTypes weaverTypes, Writers writers, Logger Log, TypeDefinition td, MethodDefinition md, CustomAttribute targetRpcAttr, ref bool WeavingFailed)
         {
-            var rpc = MethodProcessor.SubstituteMethod(Log, td, md, ref WeavingFailed);
+            MethodDefinition rpc = MethodProcessor.SubstituteMethod(Log, td, md, ref WeavingFailed);
 
-            var worker = md.Body.GetILProcessor();
+            ILProcessor worker = md.Body.GetILProcessor();
 
             NetworkBehaviourProcessor.WriteSetupLocals(worker, weaverTypes);
 

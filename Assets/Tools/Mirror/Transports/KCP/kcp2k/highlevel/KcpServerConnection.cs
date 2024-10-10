@@ -75,12 +75,12 @@ namespace kcp2k
 
             // parse channel
             // byte channel = segment[0]; ArraySegment[i] isn't supported in some older Unity Mono versions
-            var channel = segment.Array[segment.Offset + 0];
+            byte channel = segment.Array[segment.Offset + 0];
 
             // all server->client messages include the server's security cookie.
             // all client->server messages except for the initial 'hello' include it too.
             // parse the cookie and make sure it matches (except for initial hello).
-            Utils.Decode32U(segment.Array, segment.Offset + 1, out var messageCookie);
+            Utils.Decode32U(segment.Array, segment.Offset + 1, out uint messageCookie);
 
             // security: messages after authentication are expected to contain the cookie.
             // this protects against UDP spoofing.
@@ -98,7 +98,7 @@ namespace kcp2k
             }
 
             // parse message
-            var message = new ArraySegment<byte>(segment.Array, segment.Offset + 1+4, segment.Count - 1-4);
+            ArraySegment<byte> message = new ArraySegment<byte>(segment.Array, segment.Offset + 1+4, segment.Count - 1-4);
 
             switch (channel)
             {

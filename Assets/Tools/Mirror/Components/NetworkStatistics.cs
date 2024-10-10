@@ -15,7 +15,7 @@ namespace Mirror
     public class NetworkStatistics : MonoBehaviour
     {
         // update interval
-        private double intervalStartTime;
+        double intervalStartTime;
 
         // ---------------------------------------------------------------------
 
@@ -52,10 +52,10 @@ namespace Mirror
 
         // NetworkManager sets Transport.active in Awake().
         // so let's hook into it in Start().
-        private void Start()
+        void Start()
         {
             // find available transport
-            var transport = Transport.active;
+            Transport transport = Transport.active;
             if (transport != null)
             {
                 transport.OnClientDataReceived += OnClientReceive;
@@ -66,10 +66,10 @@ namespace Mirror
             else Debug.LogError($"NetworkStatistics: no available or active Transport found on this platform: {Application.platform}");
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
             // remove transport hooks
-            var transport = Transport.active;
+            Transport transport = Transport.active;
             if (transport != null)
             {
                 transport.OnClientDataReceived -= OnClientReceive;
@@ -79,31 +79,31 @@ namespace Mirror
             }
         }
 
-        private void OnClientReceive(ArraySegment<byte> data, int channelId)
+        void OnClientReceive(ArraySegment<byte> data, int channelId)
         {
             ++clientIntervalReceivedPackets;
             clientIntervalReceivedBytes += data.Count;
         }
 
-        private void OnClientSend(ArraySegment<byte> data, int channelId)
+        void OnClientSend(ArraySegment<byte> data, int channelId)
         {
             ++clientIntervalSentPackets;
             clientIntervalSentBytes += data.Count;
         }
 
-        private void OnServerReceive(int connectionId, ArraySegment<byte> data, int channelId)
+        void OnServerReceive(int connectionId, ArraySegment<byte> data, int channelId)
         {
             ++serverIntervalReceivedPackets;
             serverIntervalReceivedBytes += data.Count;
         }
 
-        private void OnServerSend(int connectionId, ArraySegment<byte> data, int channelId)
+        void OnServerSend(int connectionId, ArraySegment<byte> data, int channelId)
         {
             ++serverIntervalSentPackets;
             serverIntervalSentBytes += data.Count;
         }
 
-        private void Update()
+        void Update()
         {
             // calculate results every second
             if (NetworkTime.localTime >= intervalStartTime + 1)
@@ -115,7 +115,7 @@ namespace Mirror
             }
         }
 
-        private void UpdateClient()
+        void UpdateClient()
         {
             clientReceivedPacketsPerSecond = clientIntervalReceivedPackets;
             clientReceivedBytesPerSecond = clientIntervalReceivedBytes;
@@ -128,7 +128,7 @@ namespace Mirror
             clientIntervalSentBytes = 0;
         }
 
-        private void UpdateServer()
+        void UpdateServer()
         {
             serverReceivedPacketsPerSecond = serverIntervalReceivedPackets;
             serverReceivedBytesPerSecond = serverIntervalReceivedBytes;
@@ -141,7 +141,7 @@ namespace Mirror
             serverIntervalSentBytes = 0;
         }
 
-        private void OnGUI()
+        void OnGUI()
         {
             // only show if either server or client active
             if (NetworkClient.active || NetworkServer.active)
@@ -159,7 +159,7 @@ namespace Mirror
             }
         }
 
-        private void OnClientGUI()
+        void OnClientGUI()
         {
             // background
             GUILayout.BeginVertical("Box");
@@ -175,7 +175,7 @@ namespace Mirror
             GUILayout.EndVertical();
         }
 
-        private void OnServerGUI()
+        void OnServerGUI()
         {
             // background
             GUILayout.BeginVertical("Box");

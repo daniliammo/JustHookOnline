@@ -45,11 +45,10 @@ namespace Mirror
 
         [Header("Settings")]
         public LagCompensationSettings lagCompensationSettings = new LagCompensationSettings();
-
-        private double lastCaptureTime;
+        double lastCaptureTime;
 
         // lag compensation history of <timestamp, capture>
-        private readonly Queue<KeyValuePair<double, Capture3D>> history = new Queue<KeyValuePair<double, Capture3D>>();
+        readonly Queue<KeyValuePair<double, Capture3D>> history = new Queue<KeyValuePair<double, Capture3D>>();
 
         [Header("Debugging")]
         public Color historyColor = Color.white;
@@ -70,7 +69,7 @@ namespace Mirror
         protected virtual void Capture()
         {
             // capture current state
-            var capture = new Capture3D(
+            Capture3D capture = new Capture3D(
                 NetworkTime.localTime,
                 trackedCollider.bounds.center,
                 trackedCollider.bounds.size
@@ -98,10 +97,10 @@ namespace Mirror
             // https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
             // the estimation is very good. the error is as low as ~6ms for the demo.
             // note that passing 'rtt' is fine: EstimateTime halves it to latency.
-            var estimatedTime = LagCompensation.EstimateTime(NetworkTime.localTime, viewer.rtt, NetworkClient.bufferTime);
+            double estimatedTime = LagCompensation.EstimateTime(NetworkTime.localTime, viewer.rtt, NetworkClient.bufferTime);
 
             // sample the history to get the nearest snapshots around 'timestamp'
-            if (LagCompensation.Sample(history, estimatedTime, lagCompensationSettings.captureInterval, out var resultBefore, out var resultAfter, out var t))
+            if (LagCompensation.Sample(history, estimatedTime, lagCompensationSettings.captureInterval, out Capture3D resultBefore, out Capture3D resultAfter, out double t))
             {
                 // interpolate to get a decent estimation at exactly 'timestamp'
                 sample = Capture3D.Interpolate(resultBefore, resultAfter, t);
@@ -134,13 +133,13 @@ namespace Mirror
             out Vector3 nearest)
         {
             // first, sample the history at -rtt of the viewer.
-            if (Sample(viewer, out var capture))
+            if (Sample(viewer, out Capture3D capture))
             {
                 // now that we know where the other player was at that time,
                 // we can see if the hit point was within tolerance of it.
                 // TODO consider rotations???
                 // TODO consider original collider shape??
-                var bounds = new Bounds(capture.position, capture.size);
+                Bounds bounds = new Bounds(capture.position, capture.size);
                 nearest = bounds.ClosestPoint(hitPoint);
                 distance = Vector3.Distance(nearest, hitPoint);
                 return distance <= toleranceDistance;
@@ -171,20 +170,20 @@ namespace Mirror
             out RaycastHit hit)
         {
             // first, sample the history at -rtt of the viewer.
-            if (Sample(viewer, out var capture))
+            if (Sample(viewer, out Capture3D capture))
             {
                 // instantiate a real physics collider on demand.
                 // TODO rotation??
                 // TODO different collier types??
-                var temp = new GameObject("LagCompensatorTest");
+                GameObject temp = new GameObject("LagCompensatorTest");
                 temp.transform.position = capture.position;
-                var tempCollider = temp.AddComponent<BoxCollider>();
+                BoxCollider tempCollider = temp.AddComponent<BoxCollider>();
                 tempCollider.size = capture.size * (1 + tolerancePercent);
 
                 // raycast
-                var direction = hitPoint - originPoint;
-                var maxDistance = direction.magnitude * 2;
-                var result = Physics.Raycast(originPoint, direction, out hit, maxDistance, layerMask);
+                Vector3 direction = hitPoint - originPoint;
+                float maxDistance = direction.magnitude * 2;
+                bool result = Physics.Raycast(originPoint, direction, out hit, maxDistance, layerMask);
 
                 // cleanup
                 Destroy(temp);

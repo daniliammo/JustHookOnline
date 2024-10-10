@@ -37,8 +37,7 @@ namespace kcp2k
         [Tooltip("KCP fastresend parameter. Faster resend for the cost of higher bandwidth. 0 in normal mode, 2 in turbo mode.")]
         public int FastResend = 2;
         [Tooltip("KCP congestion window. Restricts window size to reduce congestion. Results in only 2-3 MTU messages per Flush even on loopback. Best to keept his disabled.")]
-        /*public*/
-        private bool CongestionWindow = false; // KCP 'NoCongestionWindow' is false by default. here we negate it for ease of use.
+        /*public*/ bool CongestionWindow = false; // KCP 'NoCongestionWindow' is false by default. here we negate it for ease of use.
         [Tooltip("KCP window size can be modified to support higher loads. This also increases max message size.")]
         public uint ReceiveWindowSize = 4096; //Kcp.WND_RCV; 128 by default. Mirror sends a lot, so we need a lot more.
         [Tooltip("KCP window size can be modified to support higher loads.")]
@@ -61,7 +60,7 @@ namespace kcp2k
         protected KcpConfig config;
 
         // use default MTU for this transport.
-        private const int MTU = Kcp.MTU_DEF;
+        const int MTU = Kcp.MTU_DEF;
 
         // server & client
         protected KcpServer server;
@@ -123,7 +122,7 @@ namespace kcp2k
 
             // server
             server = new KcpServer(
-                (connectionId) => OnServerConnected.Invoke(connectionId),
+                (connectionId, endPoint) => OnServerConnectedWithAddress.Invoke(connectionId, endPoint.PrettyAddress()),
                 (connectionId, message, channel) => OnServerDataReceived.Invoke(connectionId, message, FromKcpChannel(channel)),
                 (connectionId) => OnServerDisconnected.Invoke(connectionId),
                 (connectionId, error, reason) => OnServerError.Invoke(connectionId, ToTransportError(error), reason),
@@ -165,7 +164,7 @@ namespace kcp2k
             if (uri.Scheme != Scheme)
                 throw new ArgumentException($"Invalid url {uri}, use {Scheme}://host:port instead", nameof(uri));
 
-            var serverPort = uri.IsDefaultPort ? Port : uri.Port;
+            int serverPort = uri.IsDefaultPort ? Port : uri.Port;
             client.Connect(uri.Host, (ushort)serverPort);
         }
         public override void ClientSend(ArraySegment<byte> segment, int channelId)
@@ -190,7 +189,7 @@ namespace kcp2k
         // server
         public override Uri ServerUri()
         {
-            var builder = new UriBuilder();
+            UriBuilder builder = new UriBuilder();
             builder.Scheme = Scheme;
             builder.Host = Dns.GetHostName();
             builder.Port = Port;
@@ -208,7 +207,7 @@ namespace kcp2k
         public override void ServerDisconnect(int connectionId) =>  server.Disconnect(connectionId);
         public override string ServerGetClientAddress(int connectionId)
         {
-            var endPoint = server.GetClientEndPoint(connectionId);
+            IPEndPoint endPoint = server.GetClientEndPoint(connectionId);
             return endPoint.PrettyAddress();
         }
         public override void ServerStop() => server.Stop();
@@ -262,17 +261,13 @@ namespace kcp2k
             server.connections.Count > 0
                 ? server.connections.Values.Sum(conn => conn.MaxReceiveRate) / server.connections.Count
                 : 0;
-
-        private long GetTotalSendQueue() =>
+        long GetTotalSendQueue() =>
             server.connections.Values.Sum(conn => conn.SendQueueCount);
-
-        private long GetTotalReceiveQueue() =>
+        long GetTotalReceiveQueue() =>
             server.connections.Values.Sum(conn => conn.ReceiveQueueCount);
-
-        private long GetTotalSendBuffer() =>
+        long GetTotalSendBuffer() =>
             server.connections.Values.Sum(conn => conn.SendBufferCount);
-
-        private long GetTotalReceiveBuffer() =>
+        long GetTotalReceiveBuffer() =>
             server.connections.Values.Sum(conn => conn.ReceiveBufferCount);
 
         // PrettyBytes function from DOTSNET
@@ -286,12 +281,12 @@ namespace kcp2k
                 return $"{bytes} B";
             // kilobytes
             else if (bytes < 1024L * 1024L)
-                return $"{bytes / 1024f:F2} KB";
+                return $"{(bytes / 1024f):F2} KB";
             // megabytes
             else if (bytes < 1024 * 1024L * 1024L)
-                return $"{bytes / (1024f * 1024f):F2} MB";
+                return $"{(bytes / (1024f * 1024f)):F2} MB";
             // gigabytes
-            return $"{bytes / (1024f * 1024f * 1024f):F2} GB";
+            return $"{(bytes / (1024f * 1024f * 1024f)):F2} GB";
         }
 
         protected virtual void OnGUIStatistics()
@@ -340,7 +335,7 @@ namespace kcp2k
         {
             if (ServerActive())
             {
-                var log = "kcp SERVER @ time: " + NetworkTime.localTime + "\n";
+                string log = "kcp SERVER @ time: " + NetworkTime.localTime + "\n";
                 log += $"  connections: {server.connections.Count}\n";
                 log += $"  MaxSendRate (avg): {PrettyBytes(GetAverageMaxSendRate())}/s\n";
                 log += $"  MaxRecvRate (avg): {PrettyBytes(GetAverageMaxReceiveRate())}/s\n";
@@ -353,7 +348,7 @@ namespace kcp2k
 
             if (ClientConnected())
             {
-                var log = "kcp CLIENT @ time: " + NetworkTime.localTime + "\n";
+                string log = "kcp CLIENT @ time: " + NetworkTime.localTime + "\n";
                 log += $"  MaxSendRate: {PrettyBytes(client.MaxSendRate)}/s\n";
                 log += $"  MaxRecvRate: {PrettyBytes(client.MaxReceiveRate)}/s\n";
                 log += $"  SendQueue: {client.SendQueueCount}\n";

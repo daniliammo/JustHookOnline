@@ -9,14 +9,14 @@ namespace Mirror
     [CanEditMultipleObjects]
     public class NetworkBehaviourInspector : Editor
     {
-        private bool syncsAnything;
-        private SyncObjectCollectionsDrawer syncObjectCollectionsDrawer;
+        bool syncsAnything;
+        SyncObjectCollectionsDrawer syncObjectCollectionsDrawer;
 
         // does this type sync anything? otherwise we don't need to show syncInterval
-        private bool SyncsAnything(Type scriptClass)
+        bool SyncsAnything(Type scriptClass)
         {
             // check for all SyncVar fields, they don't have to be visible
-            foreach (var field in InspectorHelper.GetAllFields(scriptClass, typeof(NetworkBehaviour)))
+            foreach (FieldInfo field in InspectorHelper.GetAllFields(scriptClass, typeof(NetworkBehaviour)))
             {
                 if (field.IsSyncVar())
                 {
@@ -27,7 +27,7 @@ namespace Mirror
             // has OnSerialize that is not in NetworkBehaviour?
             // then it either has a syncvar or custom OnSerialize. either way
             // this means we have something to sync.
-            var method = scriptClass.GetMethod("OnSerialize");
+            MethodInfo method = scriptClass.GetMethod("OnSerialize");
             if (method != null && method.DeclaringType != typeof(NetworkBehaviour))
             {
                 return true;
@@ -41,7 +41,7 @@ namespace Mirror
             return ((NetworkBehaviour)serializedObject.targetObject).HasSyncObjects();
         }
 
-        private void OnEnable()
+        void OnEnable()
         {
             // sometimes target is null. just return early.
             if (target == null) return;
@@ -50,7 +50,7 @@ namespace Mirror
             // then Unity temporarily keep using this Inspector causing things to break
             if (!(target is NetworkBehaviour)) { return; }
 
-            var scriptClass = target.GetType();
+            Type scriptClass = target.GetType();
 
             syncObjectCollectionsDrawer = new SyncObjectCollectionsDrawer(serializedObject.targetObject);
 
@@ -87,7 +87,7 @@ namespace Mirror
             EditorGUILayout.LabelField("Sync Settings", EditorStyles.boldLabel);
 
             // sync direction
-            var syncDirection = serializedObject.FindProperty("syncDirection");
+            SerializedProperty syncDirection = serializedObject.FindProperty("syncDirection");
             EditorGUILayout.PropertyField(syncDirection);
 
             // sync mdoe: only show for ServerToClient components

@@ -38,7 +38,7 @@ namespace kcp2k
         // in other words, Encode only ever writes up to the above amount of bytes.
         internal int Encode(byte[] ptr, int offset)
         {
-            var previousPosition = offset;
+            int previousPosition = offset;
 
             offset += Utils.Encode32U(ptr, offset, conv);
             offset += Utils.Encode8u(ptr, offset, (byte)cmd);
@@ -52,7 +52,7 @@ namespace kcp2k
             offset += Utils.Encode32U(ptr, offset, una);
             offset += Utils.Encode32U(ptr, offset, (uint)data.Position);
 
-            var written = offset - previousPosition;
+            int written = offset - previousPosition;
             return written;
         }
 

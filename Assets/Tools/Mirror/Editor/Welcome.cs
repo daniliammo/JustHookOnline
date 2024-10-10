@@ -5,17 +5,17 @@ using UnityEngine;
 
 namespace Mirror
 {
-    internal static class Welcome
+    static class Welcome
     {
         [InitializeOnLoadMethod]
-        private static void OnInitializeOnLoad()
+        static void OnInitializeOnLoad()
         {
             // InitializeOnLoad is called on start and after each rebuild,
             // but we only want to show this once per editor session.
             if (!SessionState.GetBool("MIRROR_WELCOME", false))
             {
                 SessionState.SetBool("MIRROR_WELCOME", true);
-                Debug.Log("Mirror | mirror-networking.com | discord.gg/N9QVxbM");
+                Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null, "Mirror | mirror-networking.com | discord.gg/N9QVxbM");
             }
         }
     }

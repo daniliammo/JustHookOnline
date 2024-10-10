@@ -64,8 +64,7 @@ namespace Mirror
         /// </summary>
         [Tooltip("Diagnostic flag indicating all players are ready to play")]
         [FormerlySerializedAs("allPlayersReady")]
-        [ReadOnly, SerializeField]
-        private bool _allPlayersReady;
+        [ReadOnly, SerializeField] bool _allPlayersReady;
 
         /// <summary>
         /// These slots track players that enter the room.
@@ -79,8 +78,8 @@ namespace Mirror
             get => _allPlayersReady;
             set
             {
-                var wasReady = _allPlayersReady;
-                var nowReady = value;
+                bool wasReady = _allPlayersReady;
+                bool nowReady = value;
 
                 if (wasReady != nowReady)
                 {
@@ -110,7 +109,7 @@ namespace Mirror
 
             if (roomPlayerPrefab != null)
             {
-                var identity = roomPlayerPrefab.GetComponent<NetworkIdentity>();
+                NetworkIdentity identity = roomPlayerPrefab.GetComponent<NetworkIdentity>();
                 if (identity == null)
                 {
                     roomPlayerPrefab = null;
@@ -119,7 +118,7 @@ namespace Mirror
             }
         }
 
-        private void SceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer)
+        void SceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer)
         {
             //Debug.Log($"NetworkRoom SceneLoadedForPlayer scene: {SceneManager.GetActiveScene().path} {conn}");
 
@@ -133,11 +132,11 @@ namespace Mirror
                 return;
             }
 
-            var gamePlayer = OnRoomServerCreateGamePlayer(conn, roomPlayer);
+            GameObject gamePlayer = OnRoomServerCreateGamePlayer(conn, roomPlayer);
             if (gamePlayer == null)
             {
                 // get start position from base class
-                var startPos = GetStartPosition();
+                Transform startPos = GetStartPosition();
                 gamePlayer = startPos != null
                     ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                     : Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
@@ -147,13 +146,13 @@ namespace Mirror
                 return;
 
             // replace room player with game player
-            NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, true);
+            NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, ReplacePlayerOptions.KeepAuthority);
         }
 
         internal void CallOnClientEnterRoom()
         {
             OnRoomClientEnter();
-            foreach (var player in roomSlots)
+            foreach (NetworkRoomPlayer player in roomSlots)
                 if (player != null)
                 {
                     player.OnClientEnterRoom();
@@ -163,7 +162,7 @@ namespace Mirror
         internal void CallOnClientExitRoom()
         {
             OnRoomClientExit();
-            foreach (var player in roomSlots)
+            foreach (NetworkRoomPlayer player in roomSlots)
                 if (player != null)
                 {
                     player.OnClientExitRoom();
@@ -179,13 +178,13 @@ namespace Mirror
             if (!Utils.IsSceneActive(RoomScene))
                 return;
 
-            var numberOfReadyPlayers = NetworkServer.connections.Count(conn =>
+            int numberOfReadyPlayers = NetworkServer.connections.Count(conn =>
                 conn.Value != null &&
                 conn.Value.identity != null &&
                 conn.Value.identity.TryGetComponent(out NetworkRoomPlayer nrp) &&
                 nrp.readyToBegin);
 
-            var enoughReadyPlayers = minPlayers <= 0 || numberOfReadyPlayers >= minPlayers;
+            bool enoughReadyPlayers = minPlayers <= 0 || numberOfReadyPlayers >= minPlayers;
             if (enoughReadyPlayers)
             {
                 pendingPlayers.Clear();
@@ -225,12 +224,12 @@ namespace Mirror
         {
             if (conn.identity != null)
             {
-                var roomPlayer = conn.identity.GetComponent<NetworkRoomPlayer>();
+                NetworkRoomPlayer roomPlayer = conn.identity.GetComponent<NetworkRoomPlayer>();
 
                 if (roomPlayer != null)
                     roomSlots.Remove(roomPlayer);
 
-                foreach (var clientOwnedObject in conn.owned)
+                foreach (NetworkIdentity clientOwnedObject in conn.owned)
                 {
                     roomPlayer = clientOwnedObject.GetComponent<NetworkRoomPlayer>();
                     if (roomPlayer != null)
@@ -240,7 +239,7 @@ namespace Mirror
 
             allPlayersReady = false;
 
-            foreach (var player in roomSlots)
+            foreach (NetworkRoomPlayer player in roomSlots)
             {
                 if (player != null)
                     player.GetComponent<NetworkRoomPlayer>().readyToBegin = false;
@@ -273,7 +272,7 @@ namespace Mirror
 
             if (conn != null && conn.identity != null)
             {
-                var roomPlayer = conn.identity.gameObject;
+                GameObject roomPlayer = conn.identity.gameObject;
 
                 // if null or not a room player, don't replace it
                 if (roomPlayer != null && roomPlayer.GetComponent<NetworkRoomPlayer>() != null)
@@ -297,7 +296,7 @@ namespace Mirror
 
                 //Debug.Log("NetworkRoomManager.OnServerAddPlayer playerPrefab: {roomPlayerPrefab.name}");
 
-                var newRoomGameObject = OnRoomServerCreateRoomPlayer(conn);
+                GameObject newRoomGameObject = OnRoomServerCreateRoomPlayer(conn);
                 if (newRoomGameObject == null)
                     newRoomGameObject = Instantiate(roomPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
 
@@ -316,8 +315,8 @@ namespace Mirror
         {
             if (roomSlots.Count > 0)
             {
-                var i = 0;
-                foreach (var player in roomSlots)
+                int i = 0;
+                foreach (NetworkRoomPlayer player in roomSlots)
                     player.index = i++;
             }
         }
@@ -331,19 +330,19 @@ namespace Mirror
         {
             if (newSceneName == RoomScene)
             {
-                foreach (var roomPlayer in roomSlots)
+                foreach (NetworkRoomPlayer roomPlayer in roomSlots)
                 {
                     if (roomPlayer == null)
                         continue;
 
                     // find the game-player object for this connection, and destroy it
-                    var identity = roomPlayer.GetComponent<NetworkIdentity>();
+                    NetworkIdentity identity = roomPlayer.GetComponent<NetworkIdentity>();
 
                     if (NetworkServer.active)
                     {
                         // re-add the room object
                         roomPlayer.GetComponent<NetworkRoomPlayer>().readyToBegin = false;
-                        NetworkServer.ReplacePlayerForConnection(identity.connectionToClient, roomPlayer.gameObject);
+                        NetworkServer.ReplacePlayerForConnection(identity.connectionToClient, roomPlayer.gameObject, ReplacePlayerOptions.KeepAuthority);
                     }
                 }
 
@@ -362,7 +361,7 @@ namespace Mirror
             if (sceneName != RoomScene)
             {
                 // call SceneLoadedForPlayer on any players that become ready while we were loading the scene.
-                foreach (var pending in pendingPlayers)
+                foreach (PendingPlayer pending in pendingPlayers)
                     SceneLoadedForPlayer(pending.conn, pending.roomPlayer);
 
                 pendingPlayers.Clear();
@@ -581,10 +580,10 @@ namespace Mirror
         /// </summary>
         public virtual void ReadyStatusChanged()
         {
-            var CurrentPlayers = 0;
-            var ReadyPlayers = 0;
+            int CurrentPlayers = 0;
+            int ReadyPlayers = 0;
 
-            foreach (var item in roomSlots)
+            foreach (NetworkRoomPlayer item in roomSlots)
             {
                 if (item != null)
                 {

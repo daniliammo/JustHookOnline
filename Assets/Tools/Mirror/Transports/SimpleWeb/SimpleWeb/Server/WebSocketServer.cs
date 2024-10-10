@@ -10,18 +10,18 @@ namespace Mirror.SimpleWeb
     {
         public readonly ConcurrentQueue<Message> receiveQueue = new ConcurrentQueue<Message>();
 
-        private readonly TcpConfig tcpConfig;
-        private readonly int maxMessageSize;
+        readonly TcpConfig tcpConfig;
+        readonly int maxMessageSize;
 
-        private TcpListener listener;
-        private Thread acceptThread;
-        private bool serverStopped;
-        private readonly ServerHandshake handShake;
-        private readonly ServerSslHelper sslHelper;
-        private readonly BufferPool bufferPool;
-        private readonly ConcurrentDictionary<int, Connection> connections = new ConcurrentDictionary<int, Connection>();
+        TcpListener listener;
+        Thread acceptThread;
+        bool serverStopped;
+        readonly ServerHandshake handShake;
+        readonly ServerSslHelper sslHelper;
+        readonly BufferPool bufferPool;
+        readonly ConcurrentDictionary<int, Connection> connections = new ConcurrentDictionary<int, Connection>();
 
-        private int _idCounter = 0;
+        int _idCounter = 0;
 
         public WebSocketServer(TcpConfig tcpConfig, int maxMessageSize, int handshakeMaxSize, SslConfig sslConfig, BufferPool bufferPool)
         {
@@ -37,7 +37,7 @@ namespace Mirror.SimpleWeb
             listener = TcpListener.Create(port);
             listener.Start();
 
-            Log.Verbose($"[SWT-WebSocketServer]: Server Started on {port}");
+            Log.Verbose("[SWT-WebSocketServer]: Server Started on {0}", port);
 
             acceptThread = new Thread(acceptLoop);
             acceptThread.IsBackground = true;
@@ -53,17 +53,17 @@ namespace Mirror.SimpleWeb
             listener?.Stop();
             acceptThread = null;
 
-            Log.Verbose($"[SWT-WebSocketServer]: Server stopped...closing all connections.");
+            Log.Verbose("[SWT-WebSocketServer]: Server stopped...closing all connections.");
 
             // make copy so that foreach doesn't break if values are removed
-            var connectionsCopy = connections.Values.ToArray();
-            foreach (var conn in connectionsCopy)
+            Connection[] connectionsCopy = connections.Values.ToArray();
+            foreach (Connection conn in connectionsCopy)
                 conn.Dispose();
 
             connections.Clear();
         }
 
-        private void acceptLoop()
+        void acceptLoop()
         {
             try
             {
@@ -71,17 +71,17 @@ namespace Mirror.SimpleWeb
                 {
                     while (true)
                     {
-                        var client = listener.AcceptTcpClient();
+                        TcpClient client = listener.AcceptTcpClient();
                         tcpConfig.ApplyTo(client);
 
                         // TODO keep track of connections before they are in connections dictionary
                         //      this might not be a problem as HandshakeAndReceiveLoop checks for stop
                         //      and returns/disposes before sending message to queue
-                        var conn = new Connection(client, AfterConnectionDisposed);
-                        Log.Verbose($"[SWT-WebSocketServer]: A client connected from {conn}");
+                        Connection conn = new Connection(client, AfterConnectionDisposed);
+                        Log.Verbose("[SWT-WebSocketServer]: A client connected from {0}", conn);
 
                         // handshake needs its own thread as it needs to wait for message from client
-                        var receiveThread = new Thread(() => HandshakeAndReceiveLoop(conn));
+                        Thread receiveThread = new Thread(() => HandshakeAndReceiveLoop(conn));
 
                         conn.receiveThread = receiveThread;
 
@@ -97,18 +97,18 @@ namespace Mirror.SimpleWeb
                 }
             }
             catch (ThreadInterruptedException e) { Log.InfoException(e); }
-            catch (ThreadAbortException e) { Log.InfoException(e); }
+            catch (ThreadAbortException) { Log.Error("[SWT-WebSocketServer]: Thread Abort Exception"); }
             catch (Exception e) { Log.Exception(e); }
         }
 
-        private void HandshakeAndReceiveLoop(Connection conn)
+        void HandshakeAndReceiveLoop(Connection conn)
         {
             try
             {
-                var success = sslHelper.TryCreateStream(conn);
+                bool success = sslHelper.TryCreateStream(conn);
                 if (!success)
                 {
-                    Log.Warn($"[SWT-WebSocketServer]: Failed to create SSL Stream {conn}");
+                    Log.Warn("[SWT-WebSocketServer]: Failed to create SSL Stream {0}", conn);
                     conn.Dispose();
                     return;
                 }
@@ -116,10 +116,10 @@ namespace Mirror.SimpleWeb
                 success = handShake.TryHandshake(conn);
 
                 if (success)
-                    Log.Verbose($"[SWT-WebSocketServer]: Sent Handshake {conn}, false");
+                    Log.Verbose("[SWT-WebSocketServer]: Sent Handshake {0}, false", conn);
                 else
                 {
-                    Log.Warn($"[SWT-WebSocketServer]: Handshake Failed {conn}");
+                    Log.Warn("[SWT-WebSocketServer]: Handshake Failed {0}", conn);
                     conn.Dispose();
                     return;
                 }
@@ -136,9 +136,9 @@ namespace Mirror.SimpleWeb
 
                 receiveQueue.Enqueue(new Message(conn.connId, EventType.Connected));
 
-                var sendThread = new Thread(() =>
+                Thread sendThread = new Thread(() =>
                 {
-                    var sendConfig = new SendLoop.Config(
+                    SendLoop.Config sendConfig = new SendLoop.Config(
                         conn,
                         bufferSize: Constants.HeaderSize + maxMessageSize,
                         setMask: false);
@@ -151,7 +151,7 @@ namespace Mirror.SimpleWeb
                 sendThread.Name = $"SendThread {conn.connId}";
                 sendThread.Start();
 
-                var receiveConfig = new ReceiveLoop.Config(
+                ReceiveLoop.Config receiveConfig = new ReceiveLoop.Config(
                     conn,
                     maxMessageSize,
                     expectMask: true,
@@ -160,18 +160,9 @@ namespace Mirror.SimpleWeb
 
                 ReceiveLoop.Loop(receiveConfig);
             }
-            catch (ThreadInterruptedException e)
-            {
-                Log.Error($"[SWT-WebSocketServer]: Handshake ThreadInterruptedException {e.Message}");
-            }
-            catch (ThreadAbortException e)
-            {
-                Log.Error($"[SWT-WebSocketServer]: Handshake ThreadAbortException {e.Message}");
-            }
-            catch (Exception e)
-            {
-                Log.Error($"[SWT-WebSocketServer]: Handshake Exception {e.Message}");
-            }
+            catch (ThreadInterruptedException e) { Log.InfoException(e); }
+            catch (ThreadAbortException) { Log.Error("[SWT-WebSocketServer]: Thread Abort Exception"); }
+            catch (Exception e) { Log.Exception(e); }
             finally
             {
                 // close here in case connect fails
@@ -179,46 +170,46 @@ namespace Mirror.SimpleWeb
             }
         }
 
-        private void AfterConnectionDisposed(Connection conn)
+        void AfterConnectionDisposed(Connection conn)
         {
             if (conn.connId != Connection.IdNotSet)
             {
                 receiveQueue.Enqueue(new Message(conn.connId, EventType.Disconnected));
-                connections.TryRemove(conn.connId, out var _);
+                connections.TryRemove(conn.connId, out Connection _);
             }
         }
 
         public void Send(int id, ArrayBuffer buffer)
         {
-            if (connections.TryGetValue(id, out var conn))
+            if (connections.TryGetValue(id, out Connection conn))
             {
                 conn.sendQueue.Enqueue(buffer);
                 conn.sendPending.Set();
             }
             else
-                Log.Warn($"[SWT-WebSocketServer]: Cannot send message to {id} because connection was not found in dictionary. Maybe it disconnected.");
+                Log.Warn("[SWT-WebSocketServer]: Cannot send message to {0} because connection was not found in dictionary. Maybe it disconnected.", id);
         }
 
         public bool CloseConnection(int id)
         {
-            if (connections.TryGetValue(id, out var conn))
+            if (connections.TryGetValue(id, out Connection conn))
             {
-                Log.Info($"[SWT-WebSocketServer]: Disconnecting connection {id}");
+                Log.Info($"[SWT-WebSocketServer]: Disconnecting connection {0}", id);
                 conn.Dispose();
                 return true;
             }
             else
             {
-                Log.Warn($"[SWT-WebSocketServer]: Failed to kick {id} because id not found.");
+                Log.Warn("[SWT-WebSocketServer]: Failed to kick {0} because id not found.", id);
                 return false;
             }
         }
 
         public string GetClientAddress(int id)
         {
-            if (!connections.TryGetValue(id, out var conn))
+            if (!connections.TryGetValue(id, out Connection conn))
             {
-                Log.Warn($"[SWT-WebSocketServer]: Cannot get address of connection {id} because connection was not found in dictionary.");
+                Log.Warn("[SWT-WebSocketServer]: Cannot get address of connection {0} because connection was not found in dictionary.", id);
                 return null;
             }
 
@@ -227,9 +218,9 @@ namespace Mirror.SimpleWeb
 
         public Request GetClientRequest(int id)
         {
-            if (!connections.TryGetValue(id, out var conn))
+            if (!connections.TryGetValue(id, out Connection conn))
             {
-                Log.Warn($"[SWT-WebSocketServer]: Cannot get request of connection {id} because connection was not found in dictionary.");
+                Log.Warn("[SWT-WebSocketServer]: Cannot get request of connection {0} because connection was not found in dictionary.", id);
                 return null;
             }
 

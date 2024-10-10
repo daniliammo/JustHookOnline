@@ -7,11 +7,11 @@ namespace Telepathy
     public class Pool<T>
     {
         // objects
-        private readonly Stack<T> objects = new Stack<T>();
+        readonly Stack<T> objects = new Stack<T>();
 
         // some types might need additional parameters in their constructor, so
         // we use a Func<T> generator
-        private readonly Func<T> objectGenerator;
+        readonly Func<T> objectGenerator;
 
         // constructor
         public Pool(Func<T> objectGenerator)

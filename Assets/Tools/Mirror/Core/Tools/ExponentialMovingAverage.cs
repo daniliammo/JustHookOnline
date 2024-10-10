@@ -7,8 +7,8 @@ namespace Mirror
 {
     public struct ExponentialMovingAverage
     {
-        private readonly double alpha;
-        private bool initialized;
+        readonly double alpha;
+        bool initialized;
 
         public double Value;
         public double Variance;
@@ -30,7 +30,7 @@ namespace Mirror
             // https://en.wikipedia.org/wiki/Moving_average#Exponentially_weighted_moving_variance_and_standard_deviation
             if (initialized)
             {
-                var delta = newValue - Value;
+                double delta = newValue - Value;
                 Value += alpha * delta;
                 Variance = (1 - alpha) * (Variance + alpha * delta * delta);
                 StandardDeviation = Math.Sqrt(Variance);

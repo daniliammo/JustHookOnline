@@ -29,9 +29,9 @@ namespace Mirror
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3Long Decompress(NetworkReader reader, Vector3Long last)
         {
-            var x = Decompress(reader, last.x);
-            var y = Decompress(reader, last.y);
-            var z = Decompress(reader, last.z);
+            long x = Decompress(reader, last.x);
+            long y = Decompress(reader, last.y);
+            long z = Decompress(reader, last.z);
             return new Vector3Long(x, y, z);
         }
     }

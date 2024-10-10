@@ -79,7 +79,7 @@ namespace Mirror.Discovery
             // the provided host
             // However we know the real ip address of the server because we just
             // received a packet from it,  so use that as host.
-            var realUri = new UriBuilder(response.uri)
+            UriBuilder realUri = new UriBuilder(response.uri)
             {
                 Host = response.EndPoint.Address.ToString()
             };

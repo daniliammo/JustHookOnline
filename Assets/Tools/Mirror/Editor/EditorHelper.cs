@@ -9,9 +9,9 @@ namespace Mirror
     {
         public static string FindPath<T>()
         {
-            var typeName = typeof(T).Name;
+            string typeName = typeof(T).Name;
 
-            var guidsFound = AssetDatabase.FindAssets($"t:Script {typeName}");
+            string[] guidsFound = AssetDatabase.FindAssets($"t:Script {typeName}");
             if (guidsFound.Length >= 1 && !string.IsNullOrWhiteSpace(guidsFound[0]))
             {
                 if (guidsFound.Length > 1)
@@ -19,7 +19,7 @@ namespace Mirror
                     Debug.LogWarning($"Found more than one{typeName}");
                 }
 
-                var path = AssetDatabase.GUIDToAssetPath(guidsFound[0]);
+                string path = AssetDatabase.GUIDToAssetPath(guidsFound[0]);
                 return Path.GetDirectoryName(path);
             }
             else
@@ -32,7 +32,7 @@ namespace Mirror
 
         public static IEnumerable<string> IterateOverProject(string filter)
         {
-            foreach (var guid in AssetDatabase.FindAssets(filter))
+            foreach (string guid in AssetDatabase.FindAssets(filter))
             {
                 yield return AssetDatabase.GUIDToAssetPath(guid);
             }

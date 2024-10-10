@@ -13,24 +13,24 @@ namespace Mirror.Weaver
         // generated code class
         public const string GeneratedCodeNamespace = "Mirror";
         public const string GeneratedCodeClassName = "GeneratedNetworkCode";
-        private TypeDefinition GeneratedCodeClass;
+        TypeDefinition GeneratedCodeClass;
 
         // for resolving Mirror.dll in ReaderWriterProcessor, we need to know
         // Mirror.dll name
         public const string MirrorAssemblyName = "Mirror";
 
-        private WeaverTypes weaverTypes;
-        private SyncVarAccessLists syncVarAccessLists;
-        private AssemblyDefinition CurrentAssembly;
-        private Writers writers;
-        private Readers readers;
+        WeaverTypes weaverTypes;
+        SyncVarAccessLists syncVarAccessLists;
+        AssemblyDefinition CurrentAssembly;
+        Writers writers;
+        Readers readers;
 
         // in case of weaver errors, we don't stop immediately.
         // we log all errors and then eventually return false if
         // weaving has failed.
         // this way the user can fix multiple errors at once, instead of having
         // to fix -> recompile -> fix -> recompile for one error at a time.
-        private bool WeavingFailed;
+        bool WeavingFailed;
 
         // logger functions can be set from the outside.
         // for example, Debug.Log or ILPostProcessor Diagnostics log for
@@ -50,7 +50,7 @@ namespace Mirror.Weaver
         {
             initialPrefix += md.Name;
 
-            for (var i = 0; i < md.Parameters.Count; ++i)
+            for (int i = 0; i < md.Parameters.Count; ++i)
             {
                 // with __ so it's more obvious that this is the parameter suffix.
                 // otherwise RpcTest(int) => RpcTestInt(int) which is not obvious.
@@ -66,7 +66,7 @@ namespace Mirror.Weaver
         }
 
         // returns 'true' if modified (=if we did anything)
-        private bool WeaveNetworkBehavior(TypeDefinition td)
+        bool WeaveNetworkBehavior(TypeDefinition td)
         {
             if (!td.IsClass)
                 return false;
@@ -80,9 +80,9 @@ namespace Mirror.Weaver
 
             // process this and base classes from parent to child order
 
-            var behaviourClasses = new List<TypeDefinition>();
+            List<TypeDefinition> behaviourClasses = new List<TypeDefinition>();
 
-            var parent = td;
+            TypeDefinition parent = td;
             while (parent != null)
             {
                 if (parent.Is<NetworkBehaviour>())
@@ -103,19 +103,19 @@ namespace Mirror.Weaver
                 }
             }
 
-            var modified = false;
-            foreach (var behaviour in behaviourClasses)
+            bool modified = false;
+            foreach (TypeDefinition behaviour in behaviourClasses)
             {
                 modified |= new NetworkBehaviourProcessor(CurrentAssembly, weaverTypes, syncVarAccessLists, writers, readers, Log, behaviour).Process(ref WeavingFailed);
             }
             return modified;
         }
 
-        private bool WeaveModule(ModuleDefinition moduleDefinition)
+        bool WeaveModule(ModuleDefinition moduleDefinition)
         {
-            var modified = false;
+            bool modified = false;
 
-            var watch = Stopwatch.StartNew();
+            Stopwatch watch = Stopwatch.StartNew();
             watch.Start();
 
             // ModuleDefinition.Types only finds top level types.
@@ -128,7 +128,7 @@ namespace Mirror.Weaver
             //     }
             // note this is not about inheritance, only about type definitions.
             // see test: NetworkBehaviourTests.DeeplyNested()
-            foreach (var td in moduleDefinition.GetAllTypes())
+            foreach (TypeDefinition td in moduleDefinition.GetAllTypes())
             {
                 if (td.IsClass && td.BaseType.CanBeResolved())
                 {
@@ -143,7 +143,7 @@ namespace Mirror.Weaver
             return modified;
         }
 
-        private void CreateGeneratedCodeClass()
+        void CreateGeneratedCodeClass()
         {
             // create "Mirror.GeneratedNetworkCode" class which holds all
             // Readers<T> and Writers<T>
@@ -152,13 +152,13 @@ namespace Mirror.Weaver
                 weaverTypes.Import<object>());
         }
 
-        private void ToggleWeaverFuse()
+        void ToggleWeaverFuse()
         {
             // // find Weaved() function
-            var func = weaverTypes.weaverFuseMethod.Resolve();
+            MethodDefinition func = weaverTypes.weaverFuseMethod.Resolve();
             // // change return 0 to return 1
 
-            var worker = func.Body.GetILProcessor();
+            ILProcessor worker = func.Body.GetILProcessor();
             func.Body.Instructions[0] = worker.Create(OpCodes.Ldc_I4_1);
         }
 
@@ -216,13 +216,13 @@ namespace Mirror.Weaver
                 writers = new Writers(CurrentAssembly, weaverTypes, GeneratedCodeClass, Log);
                 readers = new Readers(CurrentAssembly, weaverTypes, GeneratedCodeClass, Log);
 
-                var rwstopwatch = Stopwatch.StartNew();
+                Stopwatch rwstopwatch = Stopwatch.StartNew();
                 // Need to track modified from ReaderWriterProcessor too because it could find custom read/write functions or create functions for NetworkMessages
                 modified = ReaderWriterProcessor.Process(CurrentAssembly, resolver, Log, writers, readers, ref WeavingFailed);
                 rwstopwatch.Stop();
                 Console.WriteLine($"Find all reader and writers took {rwstopwatch.ElapsedMilliseconds} milliseconds");
 
-                var moduleDefinition = CurrentAssembly.MainModule;
+                ModuleDefinition moduleDefinition = CurrentAssembly.MainModule;
                 Console.WriteLine($"Script Module: {moduleDefinition.Name}");
 
                 modified |= WeaveModule(moduleDefinition);

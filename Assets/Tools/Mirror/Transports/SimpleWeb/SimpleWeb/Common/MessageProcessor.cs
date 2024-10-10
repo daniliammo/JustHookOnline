@@ -7,19 +7,19 @@ namespace Mirror.SimpleWeb
     public static class MessageProcessor
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static byte FirstLengthByte(byte[] buffer) => (byte)(buffer[1] & 0b0111_1111);
+        static byte FirstLengthByte(byte[] buffer) => (byte)(buffer[1] & 0b0111_1111);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool NeedToReadShortLength(byte[] buffer)
         {
-            var lenByte = FirstLengthByte(buffer);
+            byte lenByte = FirstLengthByte(buffer);
             return lenByte == Constants.UshortPayloadLength;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool NeedToReadLongLength(byte[] buffer)
         {
-            var lenByte = FirstLengthByte(buffer);
+            byte lenByte = FirstLengthByte(buffer);
             return lenByte == Constants.UlongPayloadLength;
         }
 
@@ -39,16 +39,16 @@ namespace Mirror.SimpleWeb
 
         public static void ValidateHeader(byte[] buffer, int maxLength, bool expectMask, bool opCodeContinuation = false)
         {
-            var finished = Finished(buffer);
-            var hasMask = (buffer[1] & 0b1000_0000) != 0; // true from clients, false from server, "All messages from the client to the server have this bit set"
+            bool finished = Finished(buffer);
+            bool hasMask = (buffer[1] & 0b1000_0000) != 0; // true from clients, false from server, "All messages from the client to the server have this bit set"
 
-            var opcode = buffer[0] & 0b0000_1111; // expecting 1 - text message
-            var lenByte = FirstLengthByte(buffer);
+            int opcode = buffer[0] & 0b0000_1111; // expecting 1 - text message
+            byte lenByte = FirstLengthByte(buffer);
 
             ThrowIfMaskNotExpected(hasMask, expectMask);
             ThrowIfBadOpCode(opcode, finished, opCodeContinuation);
 
-            var msglen = GetMessageLength(buffer, 0, lenByte);
+            int msglen = GetMessageLength(buffer, 0, lenByte);
 
             ThrowIfLengthZero(msglen);
             ThrowIfMsgLengthTooLong(msglen, maxLength);
@@ -70,15 +70,15 @@ namespace Mirror.SimpleWeb
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ToggleMask(byte[] src, int srcOffset, byte[] dst, int dstOffset, int messageLength, byte[] maskBuffer, int maskOffset)
         {
-            for (var i = 0; i < messageLength; i++)
+            for (int i = 0; i < messageLength; i++)
             {
-                var maskByte = maskBuffer[maskOffset + i % Constants.MaskSize];
+                byte maskByte = maskBuffer[maskOffset + i % Constants.MaskSize];
                 dst[dstOffset + i] = (byte)(src[srcOffset + i] ^ maskByte);
             }
         }
 
         /// <exception cref="InvalidDataException"></exception>
-        private static int GetMessageLength(byte[] buffer, int offset, byte lenByte)
+        static int GetMessageLength(byte[] buffer, int offset, byte lenByte)
         {
             if (lenByte == Constants.UshortPayloadLength)
             {
@@ -93,14 +93,14 @@ namespace Mirror.SimpleWeb
             {
                 // header is 8 bytes 
                 ulong value = 0;
-                value |= (ulong)buffer[offset + 2] << 56;
-                value |= (ulong)buffer[offset + 3] << 48;
-                value |= (ulong)buffer[offset + 4] << 40;
-                value |= (ulong)buffer[offset + 5] << 32;
-                value |= (ulong)buffer[offset + 6] << 24;
-                value |= (ulong)buffer[offset + 7] << 16;
-                value |= (ulong)buffer[offset + 8] << 8;
-                value |= (ulong)buffer[offset + 9] << 0;
+                value |= ((ulong)buffer[offset + 2] << 56);
+                value |= ((ulong)buffer[offset + 3] << 48);
+                value |= ((ulong)buffer[offset + 4] << 40);
+                value |= ((ulong)buffer[offset + 5] << 32);
+                value |= ((ulong)buffer[offset + 6] << 24);
+                value |= ((ulong)buffer[offset + 7] << 16);
+                value |= ((ulong)buffer[offset + 8] << 8);
+                value |= ((ulong)buffer[offset + 9] << 0);
 
                 if (value > int.MaxValue)
                     throw new NotSupportedException($"Can't receive payloads larger that int.max: {int.MaxValue}");
@@ -115,14 +115,14 @@ namespace Mirror.SimpleWeb
         }
 
         /// <exception cref="InvalidDataException"></exception>
-        private static void ThrowIfMaskNotExpected(bool hasMask, bool expectMask)
+        static void ThrowIfMaskNotExpected(bool hasMask, bool expectMask)
         {
             if (hasMask != expectMask)
                 throw new InvalidDataException($"Message expected mask to be {expectMask} but was {hasMask}");
         }
 
         /// <exception cref="InvalidDataException"></exception>
-        private static void ThrowIfBadOpCode(int opcode, bool finished, bool opCodeContinuation)
+        static void ThrowIfBadOpCode(int opcode, bool finished, bool opCodeContinuation)
         {
             // 0 = continuation
             // 2 = binary
@@ -157,7 +157,7 @@ namespace Mirror.SimpleWeb
         }
 
         /// <exception cref="InvalidDataException"></exception>
-        private static void ThrowIfLengthZero(int msglen)
+        static void ThrowIfLengthZero(int msglen)
         {
             if (msglen == 0)
                 throw new InvalidDataException("Message length was zero");

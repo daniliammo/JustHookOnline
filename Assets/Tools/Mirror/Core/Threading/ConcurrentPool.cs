@@ -14,11 +14,11 @@ namespace Mirror
         // Mirror is single threaded, no need for concurrent collections
         // concurrent bag is for items who's order doesn't matter.
         // just about right for our use case here.
-        private readonly ConcurrentBag<T> objects = new ConcurrentBag<T>();
+        readonly ConcurrentBag<T> objects = new ConcurrentBag<T>();
 
         // some types might need additional parameters in their constructor, so
         // we use a Func<T> generator
-        private readonly Func<T> objectGenerator;
+        readonly Func<T> objectGenerator;
 
         public ConcurrentPool(Func<T> objectGenerator, int initialCapacity)
         {
@@ -26,13 +26,13 @@ namespace Mirror
 
             // allocate an initial pool so we have fewer (if any)
             // allocations in the first few frames (or seconds).
-            for (var i = 0; i < initialCapacity; ++i)
+            for (int i = 0; i < initialCapacity; ++i)
                 objects.Add(objectGenerator());
         }
 
         // take an element from the pool, or create a new one if empty
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Get() => objects.TryTake(out var obj) ? obj : objectGenerator();
+        public T Get() => objects.TryTake(out T obj) ? obj : objectGenerator();
 
         // return an element to the pool
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

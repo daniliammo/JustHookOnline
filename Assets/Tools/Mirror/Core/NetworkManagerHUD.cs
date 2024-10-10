@@ -9,20 +9,20 @@ namespace Mirror
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-manager-hud")]
     public class NetworkManagerHUD : MonoBehaviour
     {
-        private NetworkManager manager;
+        NetworkManager manager;
 
         public int offsetX;
         public int offsetY;
 
-        private void Awake()
+        void Awake()
         {
             manager = GetComponent<NetworkManager>();
         }
 
-        private void OnGUI()
+        void OnGUI()
         {
             // If this width is changed, also change offsetX in GUIConsole::OnGUI
-            var width = 300;
+            int width = 300;
 
             GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, width, 9999));
 
@@ -47,7 +47,7 @@ namespace Mirror
             GUILayout.EndArea();
         }
 
-        private void StartButtons()
+        void StartButtons()
         {
             if (!NetworkClient.active)
             {
@@ -79,7 +79,7 @@ namespace Mirror
                 if (Transport.active is PortTransport portTransport)
                 {
                     // use TryParse in case someone tries to enter non-numeric characters
-                    if (ushort.TryParse(GUILayout.TextField(portTransport.Port.ToString()), out var port))
+                    if (ushort.TryParse(GUILayout.TextField(portTransport.Port.ToString()), out ushort port))
                         portTransport.Port = port;
                 }
 
@@ -103,7 +103,7 @@ namespace Mirror
             }
         }
 
-        private void StatusLabels()
+        void StatusLabels()
         {
             // host mode
             // display separately because this always confused people:
@@ -126,7 +126,7 @@ namespace Mirror
             }
         }
 
-        private void StopButtons()
+        void StopButtons()
         {
             if (NetworkServer.active && NetworkClient.isConnected)
             {

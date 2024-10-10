@@ -16,7 +16,7 @@ namespace Mirror
         // position before reusing.
         // this is also more consistent with NetworkReaderPool where we need to
         // assign the internal buffer before reusing.
-        private static readonly ConcurrentPool<ConcurrentNetworkWriterPooled> pool =
+        static readonly ConcurrentPool<ConcurrentNetworkWriterPooled> pool =
             new ConcurrentPool<ConcurrentNetworkWriterPooled>(
                 // new object function
                 () => new ConcurrentNetworkWriterPooled(),
@@ -31,7 +31,7 @@ namespace Mirror
         public static ConcurrentNetworkWriterPooled Get()
         {
             // grab from pool & reset position
-            var writer = pool.Get();
+            ConcurrentNetworkWriterPooled writer = pool.Get();
             writer.Position = 0;
             return writer;
         }

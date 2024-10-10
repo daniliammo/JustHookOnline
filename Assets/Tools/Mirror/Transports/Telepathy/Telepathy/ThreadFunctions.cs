@@ -76,7 +76,7 @@ namespace Telepathy
         public static void ReceiveLoop(int connectionId, TcpClient client, int MaxMessageSize, MagnificentReceivePipe receivePipe, int QueueLimit)
         {
             // get NetworkStream from client
-            var stream = client.GetStream();
+            NetworkStream stream = client.GetStream();
 
             // every receive loop needs it's own receive buffer of
             // HeaderSize + MaxMessageSize
@@ -84,13 +84,13 @@ namespace Telepathy
             //
             // IMPORTANT: DO NOT make this a member, otherwise every connection
             //            on the server would use the same buffer simulatenously
-            var receiveBuffer = new byte[4 + MaxMessageSize];
+            byte[] receiveBuffer = new byte[4 + MaxMessageSize];
 
             // avoid header[4] allocations
             //
             // IMPORTANT: DO NOT make this a member, otherwise every connection
             //            on the server would use the same buffer simulatenously
-            var headerBuffer = new byte[4];
+            byte[] headerBuffer = new byte[4];
 
             // absolutely must wrap with try/catch, otherwise thread exceptions
             // are silent
@@ -118,12 +118,12 @@ namespace Telepathy
                 while (true)
                 {
                     // read the next message (blocking) or stop if stream closed
-                    if (!ReadMessageBlocking(stream, MaxMessageSize, headerBuffer, receiveBuffer, out var size))
+                    if (!ReadMessageBlocking(stream, MaxMessageSize, headerBuffer, receiveBuffer, out int size))
                         // break instead of return so stream close still happens!
                         break;
 
                     // create arraysegment for the read message
-                    var message = new ArraySegment<byte>(receiveBuffer, 0, size);
+                    ArraySegment<byte> message = new ArraySegment<byte>(receiveBuffer, 0, size);
 
                     // send to main thread via pipe
                     // -> it'll copy the message internally so we can reuse the
@@ -177,7 +177,7 @@ namespace Telepathy
         public static void SendLoop(int connectionId, TcpClient client, MagnificentSendPipe sendPipe, ManualResetEvent sendPending)
         {
             // get NetworkStream from client
-            var stream = client.GetStream();
+            NetworkStream stream = client.GetStream();
 
             // avoid payload[packetSize] allocations. size increases dynamically as
             // needed for batching.
@@ -201,7 +201,7 @@ namespace Telepathy
                     // dequeue & serialize all
                     // a locked{} TryDequeueAll is twice as fast as
                     // ConcurrentQueue, see SafeQueue.cs!
-                    if (sendPipe.DequeueAndSerializeAll(ref payload, out var packetSize))
+                    if (sendPipe.DequeueAndSerializeAll(ref payload, out int packetSize))
                     {
                         // send messages (blocking) or stop if stream is closed
                         if (!SendMessagesBlocking(stream, payload, packetSize))

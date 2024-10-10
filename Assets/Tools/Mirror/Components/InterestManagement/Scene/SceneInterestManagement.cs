@@ -9,21 +9,21 @@ namespace Mirror
     {
         // Use Scene instead of string scene.name because when additively
         // loading multiples of a subscene the name won't be unique
-        private readonly Dictionary<Scene, HashSet<NetworkIdentity>> sceneObjects =
+        readonly Dictionary<Scene, HashSet<NetworkIdentity>> sceneObjects =
             new Dictionary<Scene, HashSet<NetworkIdentity>>();
 
-        private readonly Dictionary<NetworkIdentity, Scene> lastObjectScene =
+        readonly Dictionary<NetworkIdentity, Scene> lastObjectScene =
             new Dictionary<NetworkIdentity, Scene>();
 
-        private HashSet<Scene> dirtyScenes = new HashSet<Scene>();
+        HashSet<Scene> dirtyScenes = new HashSet<Scene>();
 
         [ServerCallback]
         public override void OnSpawned(NetworkIdentity identity)
         {
-            var currentScene = identity.gameObject.scene;
+            Scene currentScene = identity.gameObject.scene;
             lastObjectScene[identity] = currentScene;
             // Debug.Log($"SceneInterestManagement.OnSpawned({identity.name}) currentScene: {currentScene}");
-            if (!sceneObjects.TryGetValue(currentScene, out var objects))
+            if (!sceneObjects.TryGetValue(currentScene, out HashSet<NetworkIdentity> objects))
             {
                 objects = new HashSet<NetworkIdentity>();
                 sceneObjects.Add(currentScene, objects);
@@ -39,10 +39,10 @@ namespace Mirror
             // Multiple objects could be destroyed in same frame and we don't
             // want to rebuild for each one...let Update do it once.
             // We must add the current scene to dirtyScenes for Update to rebuild it.
-            if (lastObjectScene.TryGetValue(identity, out var currentScene))
+            if (lastObjectScene.TryGetValue(identity, out Scene currentScene))
             {
                 lastObjectScene.Remove(identity);
-                if (sceneObjects.TryGetValue(currentScene, out var objects) && objects.Remove(identity))
+                if (sceneObjects.TryGetValue(currentScene, out HashSet<NetworkIdentity> objects) && objects.Remove(identity))
                     dirtyScenes.Add(currentScene);
             }
         }
@@ -55,12 +55,12 @@ namespace Mirror
             //   if scene changed:
             //     add previous to dirty
             //     add new to dirty
-            foreach (var identity in NetworkServer.spawned.Values)
+            foreach (NetworkIdentity identity in NetworkServer.spawned.Values)
             {
-                if (!lastObjectScene.TryGetValue(identity, out var currentScene))
+                if (!lastObjectScene.TryGetValue(identity, out Scene currentScene))
                     continue;
 
-                var newScene = identity.gameObject.scene;
+                Scene newScene = identity.gameObject.scene;
                 if (newScene == currentScene)
                     continue;
 
@@ -86,15 +86,15 @@ namespace Mirror
             }
 
             // rebuild all dirty scenes
-            foreach (var dirtyScene in dirtyScenes)
+            foreach (Scene dirtyScene in dirtyScenes)
                 RebuildSceneObservers(dirtyScene);
 
             dirtyScenes.Clear();
         }
 
-        private void RebuildSceneObservers(Scene scene)
+        void RebuildSceneObservers(Scene scene)
         {
-            foreach (var netIdentity in sceneObjects[scene])
+            foreach (NetworkIdentity netIdentity in sceneObjects[scene])
                 if (netIdentity != null)
                     NetworkServer.RebuildObservers(netIdentity, false);
         }
@@ -106,11 +106,11 @@ namespace Mirror
 
         public override void OnRebuildObservers(NetworkIdentity identity, HashSet<NetworkConnectionToClient> newObservers)
         {
-            if (!sceneObjects.TryGetValue(identity.gameObject.scene, out var objects))
+            if (!sceneObjects.TryGetValue(identity.gameObject.scene, out HashSet<NetworkIdentity> objects))
                 return;
 
             // Add everything in the hashset for this object's current scene
-            foreach (var networkIdentity in objects)
+            foreach (NetworkIdentity networkIdentity in objects)
                 if (networkIdentity != null && networkIdentity.connectionToClient != null)
                     newObservers.Add(networkIdentity.connectionToClient);
         }

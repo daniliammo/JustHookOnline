@@ -20,7 +20,7 @@ namespace Mirror
         {
             // remove the first element 'amount' times.
             // handles -1 and > count safely.
-            for (var i = 0; i < amount && i < list.Count; ++i)
+            for (int i = 0; i < amount && i < list.Count; ++i)
                 list.RemoveAt(0);
         }
     }
@@ -72,14 +72,14 @@ namespace Mirror
             //   .Average would be dampened by the constant sendInterval
             //   .StandardDeviation is the changes in 'jitter' that we want
             // so add it to send interval again.
-            var intervalWithJitter = sendInterval + jitterStandardDeviation;
+            double intervalWithJitter = sendInterval + jitterStandardDeviation;
 
             // how many multiples of sendInterval is that?
             // we want to convert to bufferTimeMultiplier later.
-            var multiples = intervalWithJitter / sendInterval;
+            double multiples = intervalWithJitter / sendInterval;
 
             // add the tolerance
-            var safezone = multiples + dynamicAdjustmentTolerance;
+            double safezone = multiples + dynamicAdjustmentTolerance;
             // UnityEngine.Debug.Log($"sendInterval={sendInterval:F3} jitter std={jitterStandardDeviation:F3} => that is ~{multiples:F1} x sendInterval + {dynamicAdjustmentTolerance} => dynamic bufferTimeMultiplier={safezone}");
             return safezone;
         }
@@ -107,7 +107,7 @@ namespace Mirror
             //if (buffer.ContainsKey(snapshot.remoteTime)) return false; // too expensive
             // buffer.Add(snapshot.remoteTime, snapshot);                // throws if key exists
 
-            var before = buffer.Count;
+            int before = buffer.Count;
             buffer[snapshot.remoteTime] = snapshot; // overwrites if key exists
             return buffer.Count > before;
         }
@@ -128,13 +128,13 @@ namespace Mirror
             double latestRemoteTime)
         {
             // we want local timeline to always be 'bufferTime' behind remote.
-            var targetTime = latestRemoteTime - bufferTime;
+            double targetTime = latestRemoteTime - bufferTime;
 
             // we define a boundary of 'bufferTime' around the target time.
             // this is where catchup / slowdown will happen.
             // outside of the area, we clamp.
-            var lowerBound = targetTime - bufferTime; // how far behind we can get
-            var upperBound = targetTime + bufferTime; // how far ahead we can get
+            double lowerBound = targetTime - bufferTime; // how far behind we can get
+            double upperBound = targetTime + bufferTime; // how far ahead we can get
             return Mathd.Clamp(localTimeline, lowerBound, upperBound);
         }
 
@@ -190,11 +190,11 @@ namespace Mirror
                     //    as it would have to be C-B
                     //
                     // in practice, scramble is rare and won't make much difference
-                    var previousLocalTime = buffer.Values[buffer.Count - 2].localTime;
-                    var lastestLocalTime = buffer.Values[buffer.Count - 1].localTime;
+                    double previousLocalTime = buffer.Values[buffer.Count - 2].localTime;
+                    double lastestLocalTime = buffer.Values[buffer.Count - 1].localTime;
 
                     // this is the delivery time since last snapshot
-                    var localDeliveryTime = lastestLocalTime - previousLocalTime;
+                    double localDeliveryTime = lastestLocalTime - previousLocalTime;
 
                     // feed the local delivery time to the EMA.
                     // this is what the original stream did too.
@@ -210,13 +210,13 @@ namespace Mirror
                 // for that, we need the delivery time EMA.
                 // snapshots may arrive out of order, we can not use last-timeline.
                 // we need to use the inserted snapshot's time - timeline.
-                var latestRemoteTime = snapshot.remoteTime;
+                double latestRemoteTime = snapshot.remoteTime;
 
                 // ensure timeline stays within a reasonable bound behind/ahead.
                 localTimeline = TimelineClamp(localTimeline, bufferTime, latestRemoteTime);
 
                 // calculate timediff after localTimeline override changes
-                var timeDiff = latestRemoteTime - localTimeline;
+                double timeDiff = latestRemoteTime - localTimeline;
 
                 // next, calculate average of a few seconds worth of timediffs.
                 // this gives smoother results.
@@ -240,7 +240,7 @@ namespace Mirror
                 // saves CPU cycles in Update.
 
                 // next up, calculate how far we are currently away from bufferTime
-                var drift = driftEma.Value - bufferTime;
+                double drift = driftEma.Value - bufferTime;
 
                 // convert relative thresholds to absolute values based on sendInterval
                 double absoluteNegativeThreshold = sendInterval * catchupNegativeThreshold;
@@ -264,7 +264,7 @@ namespace Mirror
         // make sure to only call this is we have > 0 snapshots.
         public static void Sample<T>(
             SortedList<double, T> buffer, // snapshot buffer
-            double localTimeline,         // local interpolation time based on server time
+            double localTimeline,         // local interpolation time based on server time. this is basically remoteTime-bufferTime.
             out int from,                 // the snapshot <= time
             out int to,                   // the snapshot >= time
             out double t)                 // interpolation factor
@@ -275,11 +275,11 @@ namespace Mirror
             t = 0;
 
             // sample from [0,count-1] so we always have two at 'i' and 'i+1'.
-            for (var i = 0; i < buffer.Count - 1; ++i)
+            for (int i = 0; i < buffer.Count - 1; ++i)
             {
                 // is local time between these two?
-                var first = buffer.Values[i];
-                var second = buffer.Values[i + 1];
+                T first = buffer.Values[i];
+                T second = buffer.Values[i + 1];
                 if (localTimeline >= first.remoteTime &&
                     localTimeline <= second.remoteTime)
                 {
@@ -336,7 +336,7 @@ namespace Mirror
         //   besides, passing "Func Interpolate" would allocate anyway.
         public static void StepInterpolation<T>(
             SortedList<double, T> buffer, // snapshot buffer
-            double localTimeline,         // local interpolation time based on server time
+            double localTimeline,         // local interpolation time based on server time. this is basically remoteTime-bufferTime.
             out T fromSnapshot,           // we interpolate 'from' this snapshot
             out T toSnapshot,             // 'to' this snapshot
             out double t)                 // at ratio 't' [0,1]
@@ -347,7 +347,7 @@ namespace Mirror
             // if (buffer.Count == 0) return false;
 
             // sample snapshot buffer at local interpolation time
-            Sample(buffer, localTimeline, out var from, out var to, out t);
+            Sample(buffer, localTimeline, out int from, out int to, out t);
 
             // save from/to
             fromSnapshot = buffer.Values[from];

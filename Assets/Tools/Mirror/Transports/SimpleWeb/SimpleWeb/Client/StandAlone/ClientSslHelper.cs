@@ -10,8 +10,8 @@ namespace Mirror.SimpleWeb
     {
         internal bool TryCreateStream(Connection conn, Uri uri)
         {
-            var stream = conn.client.GetStream();
-            if (uri.Scheme != "wss")
+            NetworkStream stream = conn.client.GetStream();
+            if (uri.Scheme != "wss" && uri.Scheme != "https")
             {
                 conn.stream = stream;
                 return true;
@@ -24,19 +24,19 @@ namespace Mirror.SimpleWeb
             }
             catch (Exception e)
             {
-                Log.Error($"[SWT-ClientSslHelper]: Create SSLStream Failed: {e.Message}\n{e.StackTrace}\n\n");
+                Log.Error("[SWT-ClientSslHelper]: Create SSLStream Failed: {0}\n{1}\n\n", e.Message, e.StackTrace);
                 return false;
             }
         }
 
-        private Stream CreateStream(NetworkStream stream, Uri uri)
+        Stream CreateStream(NetworkStream stream, Uri uri)
         {
-            var sslStream = new SslStream(stream, true, ValidateServerCertificate);
+            SslStream sslStream = new SslStream(stream, true, ValidateServerCertificate);
             sslStream.AuthenticateAsClient(uri.Host);
             return sslStream;
         }
 
-        private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             // Do not allow this client to communicate with unauthenticated servers.
 

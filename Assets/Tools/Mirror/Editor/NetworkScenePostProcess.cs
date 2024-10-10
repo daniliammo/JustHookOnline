@@ -22,13 +22,13 @@ namespace Mirror
             //    for some reason
             // => OfTypeAll so disabled objects are included too
             // => Unity 2019 returns prefabs here too, so filter them out.
-            var identities = Resources.FindObjectsOfTypeAll<NetworkIdentity>()
+            IEnumerable<NetworkIdentity> identities = Resources.FindObjectsOfTypeAll<NetworkIdentity>()
                 .Where(identity => identity.gameObject.hideFlags != HideFlags.NotEditable &&
                                    identity.gameObject.hideFlags != HideFlags.HideAndDontSave &&
                                    identity.gameObject.scene.name != "DontDestroyOnLoad" &&
                                    !Utils.IsPrefab(identity.gameObject));
 
-            foreach (var identity in identities)
+            foreach (NetworkIdentity identity in identities)
             {
                 // if we had a [ConflictComponent] attribute that would be better than this check.
                 // also there is no context about which scene this is in.
@@ -59,7 +59,7 @@ namespace Mirror
                         // * if an unopened scene needs resaving
                         // show a proper error message in both cases so the user
                         // knows what to do.
-                        var path = identity.gameObject.scene.path;
+                        string path = identity.gameObject.scene.path;
                         if (string.IsNullOrWhiteSpace(path))
                             Debug.LogError($"{identity.name} is currently open in Prefab Edit Mode. Please open the actual scene before launching Mirror.");
                         else
@@ -73,7 +73,7 @@ namespace Mirror
             }
         }
 
-        private static void PrepareSceneObject(NetworkIdentity identity)
+        static void PrepareSceneObject(NetworkIdentity identity)
         {
             // set scene hash
             identity.SetSceneIdSceneHashPartInternal();
@@ -86,10 +86,10 @@ namespace Mirror
             identity.gameObject.SetActive(false);
 
             // safety check for prefabs with more than one NetworkIdentity
-            var prefabGO = PrefabUtility.GetCorrespondingObjectFromSource(identity.gameObject);
+            GameObject prefabGO = PrefabUtility.GetCorrespondingObjectFromSource(identity.gameObject);
             if (prefabGO)
             {
-                var prefabRootGO = prefabGO.transform.root.gameObject;
+                GameObject prefabRootGO = prefabGO.transform.root.gameObject;
                 if (prefabRootGO != null && prefabRootGO.GetComponentsInChildren<NetworkIdentity>().Length > 1)
                     Debug.LogWarning($"Prefab {prefabRootGO.name} has several NetworkIdentity components attached to itself or its children, this is not supported.");
             }

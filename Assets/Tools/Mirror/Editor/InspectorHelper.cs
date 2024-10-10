@@ -15,8 +15,8 @@ namespace Mirror
             const BindingFlags privateFields = BindingFlags.NonPublic | BindingFlags.Instance;
 
             // get public fields (includes fields from base type)
-            var allPublicFields = type.GetFields(publicFields);
-            foreach (var field in allPublicFields)
+            FieldInfo[] allPublicFields = type.GetFields(publicFields);
+            foreach (FieldInfo field in allPublicFields)
             {
                 yield return field;
             }
@@ -24,8 +24,8 @@ namespace Mirror
             // get private fields in current type, then move to base type
             while (type != null)
             {
-                var allPrivateFields = type.GetFields(privateFields);
-                foreach (var field in allPrivateFields)
+                FieldInfo[] allPrivateFields = type.GetFields(privateFields);
+                foreach (FieldInfo field in allPrivateFields)
                 {
                     yield return field;
                 }
@@ -42,13 +42,13 @@ namespace Mirror
 
         public static bool IsSyncVar(this FieldInfo field)
         {
-            var fieldMarkers = field.GetCustomAttributes(typeof(SyncVarAttribute), true);
+            object[] fieldMarkers = field.GetCustomAttributes(typeof(SyncVarAttribute), true);
             return fieldMarkers.Length > 0;
         }
 
         public static bool IsSerializeField(this FieldInfo field)
         {
-            var fieldMarkers = field.GetCustomAttributes(typeof(SerializeField), true);
+            object[] fieldMarkers = field.GetCustomAttributes(typeof(SerializeField), true);
             return fieldMarkers.Length > 0;
         }
 
@@ -64,7 +64,7 @@ namespace Mirror
 
         public static bool HasShowInInspector(this FieldInfo field)
         {
-            var fieldMarkers = field.GetCustomAttributes(typeof(ShowInInspectorAttribute), true);
+            object[] fieldMarkers = field.GetCustomAttributes(typeof(ShowInInspectorAttribute), true);
             return fieldMarkers.Length > 0;
         }
 

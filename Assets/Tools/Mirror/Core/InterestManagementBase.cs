@@ -44,7 +44,7 @@ namespace Mirror
         [ServerCallback]
         public virtual void SetHostVisibility(NetworkIdentity identity, bool visible)
         {
-            foreach (var rend in identity.GetComponentsInChildren<Renderer>())
+            foreach (Renderer rend in identity.GetComponentsInChildren<Renderer>())
                 rend.enabled = visible;
         }
 

@@ -30,8 +30,8 @@ namespace kcp2k
         {
             // log initial size for comparison.
             // remember initial size for log comparison
-            var initialReceive = socket.ReceiveBufferSize;
-            var initialSend    = socket.SendBufferSize;
+            int initialReceive = socket.ReceiveBufferSize;
+            int initialSend    = socket.SendBufferSize;
 
             // set to configured size
             try
@@ -64,8 +64,8 @@ namespace kcp2k
         // cookies need to be generated with a secure random generator.
         // we don't want them to be deterministic / predictable.
         // RNG is cached to avoid runtime allocations.
-        private static readonly RNGCryptoServiceProvider cryptoRandom = new RNGCryptoServiceProvider();
-        private static readonly byte[] cryptoRandomBuffer = new byte[4];
+        static readonly RNGCryptoServiceProvider cryptoRandom = new RNGCryptoServiceProvider();
+        static readonly byte[] cryptoRandomBuffer = new byte[4];
         public static uint GenerateCookie()
         {
             cryptoRandom.GetBytes(cryptoRandomBuffer);

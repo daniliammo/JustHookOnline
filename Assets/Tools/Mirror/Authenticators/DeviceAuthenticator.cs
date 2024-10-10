@@ -55,7 +55,7 @@ namespace Mirror.Authenticators
             // do nothing, wait for client to send his id
         }
 
-        private void OnAuthRequestMessage(NetworkConnectionToClient conn, AuthRequestMessage msg)
+        void OnAuthRequestMessage(NetworkConnectionToClient conn, AuthRequestMessage msg)
         {
             Debug.Log($"connection {conn.connectionId} authenticated with id {msg.clientDeviceID}");
 
@@ -98,7 +98,7 @@ namespace Mirror.Authenticators
         /// </summary>
         public override void OnClientAuthenticate()
         {
-            var deviceUniqueIdentifier = SystemInfo.deviceUniqueIdentifier;
+            string deviceUniqueIdentifier = SystemInfo.deviceUniqueIdentifier;
 
             // Not all platforms support this, so we use a GUID instead
             if (deviceUniqueIdentifier == SystemInfo.unsupportedIdentifier)

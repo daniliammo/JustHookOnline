@@ -32,9 +32,9 @@ namespace Mirror.Weaver
         */
         public static MethodDefinition ProcessCommandCall(WeaverTypes weaverTypes, Writers writers, Logger Log, TypeDefinition td, MethodDefinition md, CustomAttribute commandAttr, ref bool WeavingFailed)
         {
-            var cmd = MethodProcessor.SubstituteMethod(Log, td, md, ref WeavingFailed);
+            MethodDefinition cmd = MethodProcessor.SubstituteMethod(Log, td, md, ref WeavingFailed);
 
-            var worker = md.Body.GetILProcessor();
+            ILProcessor worker = md.Body.GetILProcessor();
 
             NetworkBehaviourProcessor.WriteSetupLocals(worker, weaverTypes);
 
@@ -45,8 +45,8 @@ namespace Mirror.Weaver
             if (!NetworkBehaviourProcessor.WriteArguments(worker, writers, Log, md, RemoteCallType.Command, ref WeavingFailed))
                 return null;
 
-            var channel = commandAttr.GetField("channel", 0);
-            var requiresAuthority = commandAttr.GetField("requiresAuthority", true);
+            int channel = commandAttr.GetField("channel", 0);
+            bool requiresAuthority = commandAttr.GetField("requiresAuthority", true);
 
             // invoke internal send and return
             // load 'base.' to call the SendCommand function with
@@ -84,14 +84,14 @@ namespace Mirror.Weaver
         */
         public static MethodDefinition ProcessCommandInvoke(WeaverTypes weaverTypes, Readers readers, Logger Log, TypeDefinition td, MethodDefinition method, MethodDefinition cmdCallFunc, ref bool WeavingFailed)
         {
-            var cmdName = Weaver.GenerateMethodName(RemoteCalls.RemoteProcedureCalls.InvokeRpcPrefix, method);
+            string cmdName = Weaver.GenerateMethodName(RemoteCalls.RemoteProcedureCalls.InvokeRpcPrefix, method);
 
-            var cmd = new MethodDefinition(cmdName,
+            MethodDefinition cmd = new MethodDefinition(cmdName,
                 MethodAttributes.Family | MethodAttributes.Static | MethodAttributes.HideBySig,
                 weaverTypes.Import(typeof(void)));
 
-            var worker = cmd.Body.GetILProcessor();
-            var label = worker.Create(OpCodes.Nop);
+            ILProcessor worker = cmd.Body.GetILProcessor();
+            Instruction label = worker.Create(OpCodes.Nop);
 
             NetworkBehaviourProcessor.WriteServerActiveCheck(worker, weaverTypes, method.Name, label, "Command");
 
@@ -114,9 +114,9 @@ namespace Mirror.Weaver
             return cmd;
         }
 
-        private static void AddSenderConnection(MethodDefinition method, ILProcessor worker)
+        static void AddSenderConnection(MethodDefinition method, ILProcessor worker)
         {
-            foreach (var param in method.Parameters)
+            foreach (ParameterDefinition param in method.Parameters)
             {
                 if (NetworkBehaviourProcessor.IsSenderConnection(param, RemoteCallType.Command))
                 {
