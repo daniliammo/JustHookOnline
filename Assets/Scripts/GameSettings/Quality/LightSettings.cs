@@ -21,7 +21,7 @@ namespace GameSettings.Quality
             dynamicLightToggle.isOn = PlayerPrefsBoolean.GetBool("LightSettings:IsDynamicLightAllowed");
         }
         
-        public void SaveLightSettings()
+        public void SaveSettings()
         {
             WritePlayerPrefsKeys(new Dictionary<string, bool> { {"LightSettings:IsDynamicLightAllowed", dynamicLightToggle.isOn} });
         }

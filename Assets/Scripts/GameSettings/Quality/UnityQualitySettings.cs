@@ -5,7 +5,7 @@ using Utils;
 
 namespace GameSettings.Quality
 {
-    public class UnityQualitySettings : GameSettingsClass
+    public class UnityQualitySettings : GameSettingsClass, IGameSettings
     {
 
         public Slider qualityLevelSlider;
@@ -23,9 +23,9 @@ namespace GameSettings.Quality
         public Dropdown shadowsDropdown;
         public Dropdown shadowResolutionDropdown;
         public Dropdown shadowProjectionDropdown;
-        
-        
-        private void Awake()
+
+
+        public void Awake()
         {
             CheckPlayerPrefsKeys(new Dictionary<string, int>
             {
@@ -53,18 +53,18 @@ namespace GameSettings.Quality
                 { "QualitySettings:Shadows:ShadowProjection", "Stable Fit" }
             });
             
-            SetSliderValuesFromPlayerPrefs();
-            SetQualitySettingsFromPlayerPrefs();
+            SetUIValuesFromPlayerPrefs();
+            LoadSettingsFromPlayerPrefs();
         }
 
-        private void SetSliderValuesFromPlayerPrefs()
+        public void SetUIValuesFromPlayerPrefs()
         {
             qualityLevelSlider.value = PlayerPrefs.GetInt("QualitySettings:QualityLevel");
             
             realtimeGICPUUsageSlider.value = PlayerPrefs.GetInt("QualitySettings:RealtimeGICPUUsage");
         }
         
-        private static void SetQualitySettingsFromPlayerPrefs()
+        public static void LoadSettingsFromPlayerPrefs()
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("QualitySettings:QualityLevel"));
             
@@ -84,8 +84,13 @@ namespace GameSettings.Quality
 
             QualitySettings.enableLODCrossFade = PlayerPrefsBoolean.GetBool("QualitySettings:LOD:LODCrossFade");
         }
+
+        public void LoadSettingsFromUI()
+        {
+            // TODO: реализовать
+        }
         
-        public void SaveQualitySettings()
+        public void SaveSettings()
         {
             WritePlayerPrefsKeys(new Dictionary<string, string>
             {
@@ -117,7 +122,7 @@ namespace GameSettings.Quality
                 { "QualitySettings:LOD:LODCrossFade", lodCrossfadeToggle.isOn }
             });
             
-            SetQualitySettingsFromPlayerPrefs();
+            LoadSettingsFromPlayerPrefs();
         }
         
     }

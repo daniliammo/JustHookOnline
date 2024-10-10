@@ -11,7 +11,6 @@ namespace Player
     {
         
         // Для управление камерой с тачскрина
-    
         private Vector3 _firstPoint;
         private Vector3 _secondPoint;
         private float _xAngle;
@@ -45,8 +44,7 @@ namespace Player
         public override void OnStartLocalPlayer()
         {
             _camera = Camera.main;
-            // ReSharper disable once PossibleNullReferenceException
-            _camera.transform.SetParent(transform, false);
+            _camera!.transform.SetParent(transform, false);
             _camera.transform.SetLocalPositionAndRotation(Vector3.zero, new Quaternion());
         }
 
@@ -105,7 +103,7 @@ namespace Player
             if (!isOwned) return;
             if(_ui.menu.isPaused) return;
             
-            // Если есть тачскрин то вызывается метод TouchInput(); и функция дальше не выполняется
+            // Если есть тачскрин, то вызывается метод TouchInput(); и функция дальше не выполняется
             if (RealInput.IsTouchSupported)
             {
                 TouchInput();
@@ -118,8 +116,8 @@ namespace Player
             // Get smooth velocity.
             var mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
             var rawFrameVelocity = Vector2.Scale(mouseDelta, Vector2.one * _sensitivity);
-            _frameVelocity = Vector2.Lerp(_frameVelocity, rawFrameVelocity, 1 / Smoothing);
-            _velocity += _frameVelocity;
+            // _frameVelocity = Vector2.Lerp(_frameVelocity, rawFrameVelocity, 1 / Smoothing);
+            _velocity += rawFrameVelocity;
             _velocity.y = Mathf.Clamp(_velocity.y, -90, 90);
             
             // Rotate camera up-down and controller left-right from velocity.

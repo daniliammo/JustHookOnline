@@ -5,27 +5,27 @@ using UnityEngine.UI;
 
 namespace GameSettings.Control
 {
-    public class ControlSettings : GameSettingsClass
+    public class ControlSettings : GameSettingsClass, IGameSettings
     {
         
         public delegate void SensitivityChanged(float sensitivity);
         public event SensitivityChanged OnSensitivityChanged;
         
         public Slider sensitivitySlider;
-        
-        
-        private void Start()
+
+
+        public void Awake()
         {
             CheckPlayerPrefsKeys(new Dictionary<string, float>{{"ControlSettings:Sensitivity", 2}});
-            SetSliderValuesFromPlayerPrefs();
+            SetUIValuesFromPlayerPrefs();
         }
 
-        private void SetSliderValuesFromPlayerPrefs()
+        public void SetUIValuesFromPlayerPrefs()
         {
             sensitivitySlider.value = PlayerPrefs.GetFloat("ControlSettings:Sensitivity");
         }
         
-        public void SaveControlSettings()
+        public void SaveSettings()
         {
             var sensitivity = sensitivitySlider.value;
             PlayerPrefs.SetFloat("ControlSettings:Sensitivity", sensitivity);

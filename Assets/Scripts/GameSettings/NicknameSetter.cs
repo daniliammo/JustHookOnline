@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameSettings
 {
-    public class NicknameSetter : GameSettingsClass
+    public class NicknameSetter : GameSettingsClass, IGameSettings
     {
         
         public delegate void NicknameChanged(string nickname);
@@ -76,7 +76,7 @@ namespace GameSettings
             OnNicknameChanged?.Invoke(nickname);
             PlayerPrefs.SetString("Nickname", nickname);
         }
-
+        
         private void SetNicknameTextFromPlayerPrefs()
         {
             var nickname = PlayerPrefs.GetString("Nickname");

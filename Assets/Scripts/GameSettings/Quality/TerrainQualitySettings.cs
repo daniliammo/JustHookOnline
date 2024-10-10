@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace GameSettings.Quality
 {
-	public class TerrainQualitySettings : GameSettingsClass
+	public class TerrainQualitySettings : GameSettingsClass, IGameSettings
 	{
 
 		public Slider pixelErrorSlider;
@@ -15,9 +15,9 @@ namespace GameSettings.Quality
 		public Slider billboardStartSlider;
 		public Slider fadeLengthSlider;
 		public Slider maxMeshTreesSlider;
-		
-		
-		private void Awake()
+
+
+		public void Awake()
 		{
 			CheckPlayerPrefsKeys(new Dictionary<string, float>
 			{
@@ -29,10 +29,10 @@ namespace GameSettings.Quality
 				{ "QualitySettings:FadeLength", 1 },
 				{ "QualitySettings:MaxMeshTrees", 250 }
 			});
-			SetSliderValuesFromPlayerPrefs();
+			SetUIValuesFromPlayerPrefs();
 		}
 
-		private void SetSliderValuesFromPlayerPrefs()
+		public void SetUIValuesFromPlayerPrefs()
 		{
 			pixelErrorSlider.value = PlayerPrefs.GetFloat("QualitySettings:TerrainPixelError");
 			
@@ -76,6 +76,11 @@ namespace GameSettings.Quality
 			
 			PlayerPrefs.SetFloat("QualitySettings:MaxMeshTrees", maxMeshTreesSlider.value);
 			QualitySettings.terrainPixelError = maxMeshTreesSlider.value;
+		}
+
+		public void LoadSettingsFromPlayerPrefs()
+		{
+			
 		}
 		
 	}
