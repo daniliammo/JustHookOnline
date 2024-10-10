@@ -15,9 +15,9 @@ namespace Utils
 			}
 			
 			// Проходим по всем родителям, пока не дойдем до корня сцены
-			while (currentParent! != null)
+			while (currentParent!)
 			{
-				if(currentParent != null && currentParent.CompareTag(targetTag))
+				if(currentParent.CompareTag(targetTag))
 				{
 					parent = currentParent.gameObject;
 					return true;

@@ -137,10 +137,14 @@ namespace Player
 			
 			_isFire = true;
 			
-			CmdSpawnMuzzleFlashPrefab();
+			if (!gunShot[0].isPlaying)
+				gunShot[0].Play();
+			else if (!gunShot[1].isPlaying)
+				gunShot[1].Play();
+			else if (!gunShot[2].isPlaying)
+				gunShot[2].Play();
 			
-			// Звук
-			PlayAudioSources(gunShot);
+			CmdSpawnMuzzleFlashPrefab(muzzleFlashPosition.position, muzzleFlashPosition.rotation);
 			
 			// Луч
 			CmdCastRayCast(_camera.position, _camera.forward);
@@ -156,6 +160,7 @@ namespace Player
 			Invoke(nameof(StopFire), _fireRate);
 		}
 
+		[Server]
 		private void BreakingThrough(Vector3 direction, byte damageModifier)
 		{
 			Vector3 forwardMultiplier;
@@ -165,12 +170,12 @@ namespace Player
 			else
 				forwardMultiplier = _camera.forward / 10;
 			
-			var adjustedPoint = _hit.point + forwardMultiplier; // Отодвигаем точку на 1 вперед по направлению рэйкаста
+			var adjustedPoint = _hit.point + forwardMultiplier;
 			_damage -= damageModifier;
 			CastRayCast(adjustedPoint, direction);
 		}
-		
-		[Command]
+
+		[Command (requiresAuthority = false)]
 		private void CmdCastRayCast(Vector3 origin, Vector3 direction)
 		{
 			CastRayCast(origin, direction);
@@ -186,7 +191,8 @@ namespace Player
 			
 			if (FindGameObject.Find(_hit.transform, "Glass", out var glass))
 			{
-				glass.GetComponent<BreakableWindow>().CmdBreakWindow();
+				print(glass.name);
+				glass.GetComponent<BreakableWindow>().RpcBreakWindow();
 				BreakingThrough(direction, 1);
 				return;
 			}
@@ -202,7 +208,7 @@ namespace Player
 				// BreakingThrough(direction, 2);
 				return;
 			}
-
+			
 			if (FindGameObject.Find(_hit.transform, "Player") &&
 			    !FindGameObject.Find(_hit.transform,
 				    "PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
@@ -265,6 +271,7 @@ namespace Player
 				{
 					// Луч
 					var old_hit_point = _hit.point;
+
 					CastRayCast(_hit.point, Vector3.Reflect(direction, _hit.normal));
 
 					CmdSpawnBulletHolePrefab(_hit.point, Quaternion.Euler(Vector3.Angle(_hit.normal, Vector3.up), 0, 0));
@@ -275,6 +282,7 @@ namespace Player
 			}
 		}
         
+		[Server]
 		public void DamagePlayer(RaycastHit hit, byte damage)
 		{
 			var shootedPlayer = hit.collider.GetComponent<Player>();
@@ -299,18 +307,6 @@ namespace Player
 			PlayerPrefs.SetInt("Kills", PlayerPrefs.GetInt("Kills") + 1);
 			print("Kills:" + PlayerPrefs.GetInt("Kills"));
 		}
-		
-		private static void PlayAudioSources(AudioSource[] sounds)
-		{
-			foreach (var sound in sounds)
-			{
-				if (!sound.isPlaying)
-				{
-					sound.Play();
-					return;
-				}
-			}
-		}
 
 		#region Network Methods
 		[Command (requiresAuthority = false)]
@@ -320,7 +316,7 @@ namespace Player
 			rigidbody.GetComponent<Rigidbody>().velocity = velocity;
 		}
 
-		[Command(requiresAuthority = false)]
+		[Command (requiresAuthority = false)]
 		private void CmdSpawnBulletParticlePrefab(Vector3 position, Vector3 look)
 		{
 			var prefab = Instantiate(bulletParticlePrefab, position, muzzleFlashPosition.rotation);
@@ -331,9 +327,9 @@ namespace Player
 		}
 		
 		[Command (requiresAuthority = false)]
-		private void CmdSpawnMuzzleFlashPrefab()
+		private void CmdSpawnMuzzleFlashPrefab(Vector3 position, Quaternion rotation)
 		{
-			var prefab = Instantiate(muzzleFlashPrefab, muzzleFlashPosition.position, muzzleFlashPosition.rotation);
+			var prefab = Instantiate(muzzleFlashPrefab, position, rotation);
 			prefab.transform.SetParent(transform);
 			NetworkServer.Spawn(prefab);
 		}
@@ -363,7 +359,6 @@ namespace Player
 			if(_ammo == 0)
 				Reload();
 		}
-		
 		
 		public void Reload()
 		{

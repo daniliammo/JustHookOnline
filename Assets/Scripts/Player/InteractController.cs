@@ -162,10 +162,8 @@ namespace Player
             {
                 case > 0:
                 {
-                    var stringBuilder = new StringBuilder();
-                
                     foreach (var b in password)
-                        _passwordString = stringBuilder.Append(b).ToString();
+                        _passwordString += b.ToString();
                     break;
                 }
                 case 0:

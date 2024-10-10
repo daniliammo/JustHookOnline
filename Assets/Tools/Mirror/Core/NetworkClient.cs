@@ -1414,7 +1414,10 @@ namespace Mirror
                 using (NetworkReaderPooled reader = NetworkReaderPool.Get(message.payload))
                     identity.DeserializeClient(reader, false);
             }
-            else Debug.LogWarning($"Did not find target for sync message for {message.netId}. Were all prefabs added to the NetworkManager's spawnable list?\nNote: this can be completely normal because UDP messages may arrive out of order, so this message might have arrived after a Destroy message.");
+            else
+            {
+                Debug.LogWarning($"Did not find target for sync message for {message.netId}. Were all prefabs added to the NetworkManager's spawnable list?\nNote: this can be completely normal because UDP messages may arrive out of order, so this message might have arrived after a Destroy message.");
+            }
         }
 
         static void OnRPCMessage(RpcMessage message)

@@ -4913,6 +4913,7 @@ GameObject:
   - component: {fileID: 198175801688348628}
   - component: {fileID: 199922078765427110}
   - component: {fileID: 505866359349408140}
+  - component: {fileID: -5029478311611396775}
   m_Layer: 0
   m_Name: TinyExplosion
   m_TagString: Untagged
@@ -9937,6 +9938,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-5029478311611396775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337198075554910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3457543789
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &1793989332680384
 GameObject:
   m_ObjectHideFlags: 0

@@ -93,7 +93,7 @@ namespace UI
         
         public void OnJoinButtonClicked()
         {
-            var ip = ipAddressText.text.Length == 0 ? "localhost" : ipAddressText.text;
+            var ip = ipAddressText.text.Length == 0 ? "127.0.0.1" : ipAddressText.text;
             
             _networkController.StartClient(ip);
             

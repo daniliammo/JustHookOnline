@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4235566955999968}
   - component: {fileID: 198714429152696258}
   - component: {fileID: 199604171885040012}
+  - component: {fileID: -1334884020449362095}
   m_Layer: 0
   m_Name: TinyFlames
   m_TagString: Untagged
@@ -4843,3 +4844,20 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-1334884020449362095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972207730512856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 904402759
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

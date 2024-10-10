@@ -41,7 +41,7 @@ namespace Utils
             foreach (var discoveredServersValue in DiscoveredServers.Values)
             {
                 print(discoveredServersValue.EndPoint.Address);
-                ipAddress += discoveredServersValue.EndPoint.Address;
+                ipAddress += $"{discoveredServersValue.EndPoint.Address}\n";
             }
             
             // fastConnectButtonText.text = $"{ipAddress} - Подключиться";

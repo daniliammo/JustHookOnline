@@ -134,7 +134,7 @@ namespace Player
 			UpdateHpText();
 		}
 
-		[ClientRpc]
+		[ClientRpc] // Никогда не вызывайте этот метод без CmdChangeHp так как измененное здоровье не будет отображаться в UI.
 		private void RpcChangeHp(byte amount, Transform damager, string damagerName)
 		{
 			hp -= amount;

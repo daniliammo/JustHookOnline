@@ -18,6 +18,9 @@ namespace UI
 
         public void OnSliderValueChanged(float value)
         {
+            if (_text == null)
+                _text = GetComponent<TMP_Text>();
+            
             _text.text = Math.Round(value, 2).ToString(CultureInfo.InvariantCulture);
         }
         

@@ -15,13 +15,13 @@ namespace GameSettings.Quality
 		public Slider billboardStartSlider;
 		public Slider fadeLengthSlider;
 		public Slider maxMeshTreesSlider;
-
-
-		public void Awake()
+		
+		
+		private void Start()
 		{
 			CheckPlayerPrefsKeys(new Dictionary<string, float>
 			{
-				{ "QualitySettings:TerrainPixelError", 5 },
+				{ "QualitySettings:TerrainPixelError", 10 },
 				{ "QualitySettings:BaseMapDistance", 1000 },
 				{ "QualitySettings:DetailDensityScale", 1 },
 				{ "QualitySettings:TreeDistance", 150 },
@@ -30,6 +30,7 @@ namespace GameSettings.Quality
 				{ "QualitySettings:MaxMeshTrees", 250 }
 			});
 			SetUIValuesFromPlayerPrefs();
+			LoadSettingsFromUI();
 		}
 
 		public void SetUIValuesFromPlayerPrefs()
@@ -42,7 +43,7 @@ namespace GameSettings.Quality
 			
 			detailDistanceSlider.value = PlayerPrefs.GetFloat("QualitySettings:DetailDistance");
 			
-			treeDistanceSlider.value =PlayerPrefs.GetFloat("QualitySettings:TreeDistance");
+			treeDistanceSlider.value = PlayerPrefs.GetFloat("QualitySettings:TreeDistance");
 
 			billboardStartSlider.value = PlayerPrefs.GetFloat("QualitySettings:BillboardStart");
 			
@@ -50,37 +51,29 @@ namespace GameSettings.Quality
 			
 			maxMeshTreesSlider.value = PlayerPrefs.GetFloat("QualitySettings:MaxMeshTrees");
 		}
+
+		public void LoadSettingsFromUI()
+		{
+			QualitySettings.terrainPixelError = pixelErrorSlider.value;
+			QualitySettings.terrainBasemapDistance = baseMapDistanceSlider.value;
+			QualitySettings.terrainDetailDensityScale = detailDensityScaleSlider.value;
+			QualitySettings.terrainDetailDistance = detailDistanceSlider.value;
+			QualitySettings.terrainTreeDistance = treeDistanceSlider.value;
+			QualitySettings.terrainBillboardStart = billboardStartSlider.value;
+			QualitySettings.terrainFadeLength = fadeLengthSlider.value;
+			QualitySettings.terrainMaxTrees = maxMeshTreesSlider.value;
+		}
 		
-		public void SetQualitySettingsFromSlidersAndSaveToPlayerPrefs()
+		public void SaveSettings()
 		{
 			PlayerPrefs.SetFloat("QualitySettings:TerrainPixelError", pixelErrorSlider.value);
-			QualitySettings.terrainPixelError = pixelErrorSlider.value;
-			
 			PlayerPrefs.SetFloat("QualitySettings:BaseMapDistance", baseMapDistanceSlider.value);
-			QualitySettings.terrainPixelError = baseMapDistanceSlider.value;
-			
 			PlayerPrefs.SetFloat("QualitySettings:DetailDensityScale", detailDensityScaleSlider.value);
-			QualitySettings.terrainPixelError = detailDensityScaleSlider.value;
-			
 			PlayerPrefs.SetFloat("QualitySettings:DetailDistance", detailDistanceSlider.value);
-			QualitySettings.terrainPixelError = detailDistanceSlider.value;
-			
 			PlayerPrefs.SetFloat("QualitySettings:TreeDistance", treeDistanceSlider.value);
-			QualitySettings.terrainPixelError = treeDistanceSlider.value;
-			
 			PlayerPrefs.SetFloat("QualitySettings:BillboardStart", billboardStartSlider.value);
-			QualitySettings.terrainPixelError = billboardStartSlider.value;
-			
 			PlayerPrefs.SetFloat("QualitySettings:FadeLength", fadeLengthSlider.value);
-			QualitySettings.terrainPixelError = fadeLengthSlider.value;
-			
 			PlayerPrefs.SetFloat("QualitySettings:MaxMeshTrees", maxMeshTreesSlider.value);
-			QualitySettings.terrainPixelError = maxMeshTreesSlider.value;
-		}
-
-		public void LoadSettingsFromPlayerPrefs()
-		{
-			
 		}
 		
 	}

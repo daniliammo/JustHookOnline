@@ -9733,6 +9733,7 @@ GameObject:
   - component: {fileID: 198656289721292014}
   - component: {fileID: 199514137936353666}
   - component: {fileID: 8797104380700617310}
+  - component: {fileID: -4729776513458127582}
   m_Layer: 0
   m_Name: SmallExplosion
   m_TagString: Untagged
@@ -14749,6 +14750,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-4729776513458127582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828176872806910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3068234758
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &1834016579923706
 GameObject:
   m_ObjectHideFlags: 0

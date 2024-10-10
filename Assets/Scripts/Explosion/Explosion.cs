@@ -51,9 +51,12 @@ namespace Explosion
 	        foreach (var t in colliders)
 	        {
 		        if (t.CompareTag("Glass"))
+		        {
 			        t.GetComponent<BreakableWindow>().RpcBreakWindow();
-		        
-	            if (t.CompareTag("Player") || t.CompareTag("Vehicle"))
+			        continue;
+		        }
+
+		        if (t.CompareTag("Player") || t.CompareTag("Vehicle"))
 	            {
 	                // Пуляем райкаст, для того чтобы проверить игрок за стеной или нет. Чтобы не получилось так что взрыв убивает игрока через стенку
 	                if (Physics.Raycast(transform.position, t.transform.position + t.transform.up / 2 - transform.position,
@@ -63,14 +66,15 @@ namespace Explosion
 		                if(hit.collider.CompareTag("Player"))
 		                {
 			                var player = t.GetComponent<Player.Player>();
-			                var damage = CalcDamage(DamageType.Player, player.gameObject);
+			                var damage = CalcDamage(DamageType.Player, player.transform);
 			                player.CmdChangeHp(damage, transform, "Взрыв");
+			                continue;
 		                }
 
 		                if (hit.collider.CompareTag("Vehicle"))
 		                {
 			                var vehicle = t.GetComponent<Vehicle>();
-			                var damage = CalcDamage(DamageType.Vehicle, vehicle.gameObject);
+			                var damage = CalcDamage(DamageType.Vehicle, vehicle.transform);
 			                // TODO: Реализация урона по машинам
 		                }
 	                }
@@ -100,9 +104,9 @@ namespace Explosion
         }
 
         [Server]
-        private byte CalcDamage(DamageType damageType, GameObject target)
+        private byte CalcDamage(DamageType damageType, Transform target)
         {
-	        var normalizedDistance = Mathf.Clamp01(Vector3.Distance(target.transform.position, transform.position) / radius);
+	        var normalizedDistance = Mathf.Clamp01(Vector3.Distance(target.position, transform.position) / radius);
 
 	        var damage = damageType switch
 	        {

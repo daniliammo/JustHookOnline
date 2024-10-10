@@ -224,8 +224,8 @@ public class BreakableWindow : NetworkBehaviour
                 _splinterParent.SetActive(true);
                 if (addTorques)
                 {
-                    foreach (var t in splinters)
-                        t.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.value > 0.5f ? Random.value * 50 : -Random.value * 50, Random.value > 0.5f ? Random.value * 50 : -Random.value * 50, Random.value > 0.5f ? Random.value * 50 : -Random.value * 50));
+                    foreach (var splinter in splinters)
+                        splinter.GetComponent<Rigidbody>().AddTorque(new Vector3(Random.value > 0.5f ? Random.value * 50 : -Random.value * 50, Random.value > 0.5f ? Random.value * 50 : -Random.value * 50, Random.value > 0.5f ? Random.value * 50 : -Random.value * 50));
                 }
             }
             else
@@ -249,7 +249,7 @@ public class BreakableWindow : NetworkBehaviour
             Debug.LogError($"breakingSound не задан на объекте: {name}. Звук не будет проигран");
         audioSource.clip = breakingSound;
         audioSource.spatialBlend = 1;
-        audioSource.maxDistance = 150;
+        audioSource.maxDistance = 52;
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.Play();
 
