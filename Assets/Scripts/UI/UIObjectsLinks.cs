@@ -36,7 +36,9 @@ namespace UI
 		public TMP_Text passwordEntry;
 		public TMP_Text passwordEntryNameText;
 		
+        [HideInInspector]
 		public Player.Player localPlayer;
+        [HideInInspector]
 		public Player.InteractController localInteractController;
 		
 

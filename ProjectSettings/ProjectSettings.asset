@@ -170,8 +170,8 @@ PlayerSettings:
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 1
-  AndroidMinSdkVersion: 26
-  AndroidTargetSdkVersion: 31
+  AndroidMinSdkVersion: 31
+  AndroidTargetSdkVersion: 34
   AndroidPreferredInstallLocation: 0
   aotOptions: 
   stripEngineCode: 1
@@ -424,7 +424,7 @@ PlayerSettings:
     m_EncodingQuality: 0
   m_BuildTargetGroupLightmapSettings:
   - m_BuildTarget: Android
-    m_TextureStreamingEnabled: 0
+    m_TextureStreamingEnabled: 1
     m_TextureStreamingPriority: 0
   m_BuildTargetGroupLoadStoreDebugModeSettings: []
   m_BuildTargetNormalMapEncoding: []
@@ -687,7 +687,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: UNITY_POST_PROCESSING_STACK_V2;MIRROR;MIRROR_79_OR_NEWER;MIRROR_81_OR_NEWER;MIRROR_82_OR_NEWER;MIRROR_83_OR_NEWER;MIRROR_84_OR_NEWER;MIRROR_85_OR_NEWER;MIRROR_86_OR_NEWER;MIRROR_89_OR_NEWER;ENVIRO_HD;ENVIRO_LW
+    Android: UNITY_POST_PROCESSING_STACK_V2;MIRROR;MIRROR_79_OR_NEWER;MIRROR_81_OR_NEWER;MIRROR_82_OR_NEWER;MIRROR_83_OR_NEWER;MIRROR_84_OR_NEWER;MIRROR_85_OR_NEWER;MIRROR_86_OR_NEWER;MIRROR_89_OR_NEWER;ENVIRO_HD;ENVIRO_LW;MIRROR_90_OR_NEWER;MIRROR_93_OR_NEWER
     EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2;ENVIRO_HD;ENVIRO_LW
     GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2;ENVIRO_HD;ENVIRO_LW
     Nintendo Switch: UNITY_POST_PROCESSING_STACK_V2;ENVIRO_HD;ENVIRO_LW
@@ -702,8 +702,10 @@ PlayerSettings:
     tvOS: UNITY_POST_PROCESSING_STACK_V2;ENVIRO_HD;ENVIRO_LW
   additionalCompilerArguments: {}
   platformArchitecture: {}
-  scriptingBackend: {}
-  il2cppCompilerConfiguration: {}
+  scriptingBackend:
+    Android: 0
+  il2cppCompilerConfiguration:
+    Android: 2
   il2cppCodeGeneration: {}
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
