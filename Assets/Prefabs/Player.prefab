@@ -227,7 +227,6 @@ MonoBehaviour:
   interpolateRotation: 1
   interpolateScale: 0
   coordinateSpace: 1
-  sendIntervalMultiplier: 1
   timelineOffset: 0
   showGizmos: 0
   showOverlay: 0
@@ -955,7 +954,6 @@ MonoBehaviour:
   interpolateRotation: 1
   interpolateScale: 0
   coordinateSpace: 1
-  sendIntervalMultiplier: 1
   timelineOffset: 0
   showGizmos: 0
   showOverlay: 0
