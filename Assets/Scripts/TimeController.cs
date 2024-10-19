@@ -10,7 +10,7 @@ public class TimeController : NetworkBehaviour
 
 	private void Start()
 	{
-		_azureTimeController = FindObjectOfType<AzureTimeController>();
+		_azureTimeController = FindFirstObjectByType<AzureTimeController>();
 	}
 	
 	[Command (requiresAuthority = false)]

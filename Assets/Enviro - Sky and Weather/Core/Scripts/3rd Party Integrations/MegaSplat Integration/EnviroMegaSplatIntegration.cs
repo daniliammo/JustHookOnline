@@ -25,7 +25,7 @@ public class EnviroMegaSplatIntegration : MonoBehaviour {
 	{
 
         if (MegaSplatTerrianMgr == null)
-            MegaSplatTerrianMgr = GameObject.FindObjectOfType<MegaSplatTerrainManager>();
+            MegaSplatTerrianMgr = GameObject.FindFirstObjectByType<MegaSplatTerrainManager>();
 
         if (MegaSplatTerrianMgr != null)
             MegaSplatMaterial = MegaSplatTerrianMgr.templateMaterial;

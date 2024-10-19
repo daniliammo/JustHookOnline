@@ -1,3 +1,4 @@
+using System.Linq;
 using Cars;
 using GameSettings;
 using Mirror;
@@ -64,7 +65,7 @@ namespace Player
 				CmdSendName(PlayerPrefs.GetString("Nickname"));
 				_nicknameSetter.OnNicknameChanged += CmdSendName;
 				_playerJoinMessages.CmdSendPlayerJoinMessage(PlayerPrefs.GetString("Nickname"));
-				FindObjectOfType<TimeController>().CmdSyncTime();
+				FindFirstObjectByType<TimeController>().CmdSyncTime();
 				_ui.localPlayer = this;
 			}
 
@@ -80,14 +81,14 @@ namespace Player
 
 		private void GetComponents()
 		{
-			_playerJoinMessages = FindObjectOfType<PlayerJoinMessages>();
-			_nicknameSetter = FindObjectOfType<NicknameSetter>();
-			_ui = FindObjectOfType<UIObjectsLinks>();
-			_spawnPoints = FindObjectsOfType<NetworkStartPosition>();
+			_playerJoinMessages = FindFirstObjectByType<PlayerJoinMessages>();
+			_nicknameSetter = FindFirstObjectByType<NicknameSetter>();
+			_ui = FindFirstObjectByType<UIObjectsLinks>();
+			_spawnPoints = FindObjectsByType<NetworkStartPosition>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 			_animator = GetComponent<Animator>();
 			_hook = GetComponent<Hook>();
 			_weaponController = GetComponent<WeaponController>();
-			_killMessages = FindObjectOfType<KillMessages>();
+			_killMessages = FindFirstObjectByType<KillMessages>();
 		}
 		
 		[Command (requiresAuthority = false)]

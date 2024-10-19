@@ -55,7 +55,7 @@ namespace Gaia.GX.HendrikHaupt
 
             if (cam == null)
             {
-                cam = FindObjectOfType<Camera>();
+                cam = FindFirstObjectByType<Camera>();
             }
 
             if (cam == null)
@@ -111,7 +111,7 @@ namespace Gaia.GX.HendrikHaupt
 
             if (cam == null)
             {
-                cam = FindObjectOfType<Camera>();
+                cam = FindFirstObjectByType<Camera>();
             }
 
             if (cam == null)

@@ -15,7 +15,7 @@ public class EnviroSkyMgr : MonoBehaviour {
             //If _instance hasn't been set yet, we grab it from the scene!
             //This will only happen the first time this reference is used.
             if (_instance == null)
-                _instance = GameObject.FindObjectOfType<EnviroSkyMgr>();
+                _instance = GameObject.FindFirstObjectByType<EnviroSkyMgr>();
 
             return _instance;
         }

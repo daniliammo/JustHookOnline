@@ -26,7 +26,7 @@ namespace UI
         
         private void Start()
         {
-            _networkController = FindObjectOfType<NetworkController>();
+            _networkController = FindFirstObjectByType<NetworkController>();
             
             CheckPlayerPrefsKeys(new Dictionary<string, bool>{{"NetworkSettings:CloseGameOnDisconnect", false}});
             

@@ -18,7 +18,7 @@ public class EnviroCTSIntegration : MonoBehaviour {
 	void Start () 
 	{
 		if (ctsWeatherManager == null) {
-			ctsWeatherManager = GameObject.FindObjectOfType<CTSWeatherManager> ();
+			ctsWeatherManager = GameObject.FindFirstObjectByType<CTSWeatherManager> ();
 		}
 
 		if(ctsWeatherManager == null) {

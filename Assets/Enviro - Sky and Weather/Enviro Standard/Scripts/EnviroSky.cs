@@ -45,7 +45,7 @@ public class EnviroSky : EnviroCore
             //If _instance hasn't been set yet, we grab it from the scene!
             //This will only happen the first time this reference is used.
             if (_instance == null)
-                _instance = GameObject.FindObjectOfType<EnviroSky>();
+                _instance = GameObject.FindFirstObjectByType<EnviroSky>();
             return _instance;
         }
     }

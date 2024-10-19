@@ -20,7 +20,7 @@ public class Lamp : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        _azureTimeController = FindObjectOfType<AzureTimeController>();
+        _azureTimeController = FindFirstObjectByType<AzureTimeController>();
         _azureTimeController.m_onMinuteChange.AddListener(OnMinuteChange);
     }
 

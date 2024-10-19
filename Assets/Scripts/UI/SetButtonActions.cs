@@ -60,7 +60,7 @@ namespace UI
 		
 		private void GetComponents()
 		{
-			_ui = FindObjectOfType<UIObjectsLinks>();
+			_ui = FindFirstObjectByType<UIObjectsLinks>();
 			_weaponController = GetComponent<WeaponController>();
 			_interactController = GetComponent<InteractController>();
 			_jump = GetComponent<Jump>();

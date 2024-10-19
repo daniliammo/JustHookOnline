@@ -28,7 +28,7 @@ namespace Player
         [Client]
         private void Start()
         {
-            _ui = FindObjectOfType<UIObjectsLinks>();
+            _ui = FindFirstObjectByType<UIObjectsLinks>();
             _player = GetComponent<Player>();
             
             _ui.localInteractController = this;

@@ -32,7 +32,7 @@ namespace UI
 
 			_toggles = Resources.FindObjectsOfTypeAll<Toggle>();
 
-			_buttonSounds = FindObjectOfType<ButtonSounds>();
+			_buttonSounds = FindFirstObjectByType<ButtonSounds>();
 		}
 		
 		private void SetUp()

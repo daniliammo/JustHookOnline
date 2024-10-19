@@ -35,8 +35,8 @@ namespace Player
             _hookController = GetComponent<Hook>();
             _groundCheck = GetComponent<GroundCheck>();
             
-            _ui = FindObjectOfType<UIObjectsLinks>();
-            _joystick = FindObjectOfType<Joystick>();
+            _ui = FindFirstObjectByType<UIObjectsLinks>();
+            _joystick = FindFirstObjectByType<Joystick>();
         }
     
         private void OnTriggerEnter(Collider other)

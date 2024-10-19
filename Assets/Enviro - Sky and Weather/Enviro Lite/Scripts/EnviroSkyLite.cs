@@ -20,7 +20,7 @@ public class EnviroSkyLite : EnviroCore
             //If _instance hasn't been set yet, we grab it from the scene!
             //This will only happen the first time this reference is used.
             if (_instance == null)
-                _instance = GameObject.FindObjectOfType<EnviroSkyLite>();
+                _instance = GameObject.FindFirstObjectByType<EnviroSkyLite>();
             return _instance;
         }
     }

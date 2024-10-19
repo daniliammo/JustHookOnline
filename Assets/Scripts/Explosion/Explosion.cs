@@ -39,7 +39,7 @@ namespace Explosion
         [Server]
         private void Start()
         {
-	        _eL = FindObjectOfType<ExplosionLinks>();
+	        _eL = FindFirstObjectByType<ExplosionLinks>();
         }
 
         [Command (requiresAuthority = false)]

@@ -20,7 +20,7 @@ public class EnviroUBERIntegration : MonoBehaviour
 		} 
         else 
 		{
-            UBER_Global_Parameters = FindObjectOfType<UBER_GlobalParams>();
+            UBER_Global_Parameters = FindFirstObjectByType<UBER_GlobalParams>();
 
             if (UBER_Global_Parameters != null)
             {

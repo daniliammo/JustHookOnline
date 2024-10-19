@@ -21,8 +21,8 @@ namespace Utils
         
         private void Start()
         {
-            _networkManager = FindObjectOfType<NetworkManager>();
-            _networkDiscovery = FindObjectOfType<NetworkDiscovery>();
+            _networkManager = FindFirstObjectByType<NetworkManager>();
+            _networkDiscovery = FindFirstObjectByType<NetworkDiscovery>();
             
             _networkDiscovery.StartDiscovery();
             InvokeRepeating(nameof(FindServers), 0, 1);

@@ -75,7 +75,7 @@ namespace Player
 
 			_playerFX = GetComponent<AudioSource>();
 			
-			_ui = FindObjectOfType<UIObjectsLinks>();
+			_ui = FindFirstObjectByType<UIObjectsLinks>();
 			
 			_camera = GameObject.FindGameObjectWithTag("MainCamera").transform;
 

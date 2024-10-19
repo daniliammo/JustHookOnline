@@ -26,7 +26,7 @@ namespace Pegasus
 
             if (m_trigger.m_enviroSky == null)
             {
-                m_trigger.m_enviroSky = GameObject.FindObjectOfType<EnviroSkyMgr>();
+                m_trigger.m_enviroSky = GameObject.FindFirstObjectByType<EnviroSkyMgr>();
             }
 
             if (m_trigger.m_enviroSky != null)

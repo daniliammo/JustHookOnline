@@ -59,8 +59,8 @@ namespace Player
             
             _sensitivity = PlayerPrefs.GetFloat("ControlSettings:Sensitivity");
             
-            _controlSettings = FindObjectOfType<ControlSettings>();
-            _ui = FindObjectOfType<UIObjectsLinks>();
+            _controlSettings = FindFirstObjectByType<ControlSettings>();
+            _ui = FindFirstObjectByType<UIObjectsLinks>();
 
             _player = GetComponentInParent<Player>();
             

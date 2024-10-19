@@ -11,7 +11,7 @@ namespace Player
 
         private void Start()
         {
-            _ui = FindObjectOfType<UIObjectsLinks>();
+            _ui = FindFirstObjectByType<UIObjectsLinks>();
         }
 
         public void SetPlayerKilledText(string killedPlayerName)

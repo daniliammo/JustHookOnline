@@ -21,7 +21,7 @@ public class EnviroLUXIntegration : MonoBehaviour
 		else 
 		{
 
-            LuxDynamicWeatherScript = FindObjectOfType<LuxDynamicWeather>();
+            LuxDynamicWeatherScript = FindFirstObjectByType<LuxDynamicWeather>();
 
             if (LuxDynamicWeatherScript != null)
             {

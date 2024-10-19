@@ -65,7 +65,7 @@ namespace Player
             _rb = GetComponent<Rigidbody>();
             _weaponController = GetComponent<WeaponController>();
             
-            _ui = FindObjectOfType<UIObjectsLinks>();
+            _ui = FindFirstObjectByType<UIObjectsLinks>();
             // ReSharper disable once PossibleNullReferenceException
             _camera = Camera.main.transform;
 
