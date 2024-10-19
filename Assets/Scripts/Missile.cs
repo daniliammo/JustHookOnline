@@ -45,7 +45,7 @@ public class Missile : Explosion.Explosion
             {
                 var time = Vector3.Distance(target.transform.position, transform.position) / speed;
                 
-                _predictTargetPosition = target.rigidbody.position + target.rigidbody.velocity * time;
+                _predictTargetPosition = target.rigidbody.position + target.rigidbody.linearVelocity * time;
                 
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(Vector3.forward, _predictTargetPosition - transform.position), maneuverability);
                 break;

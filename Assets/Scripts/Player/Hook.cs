@@ -266,7 +266,7 @@ namespace Player
                 StopGrapple();
             
             var toGrapplePoint = _hookGameObject.transform.position - transform.position;
-            _rb.velocity = toGrapplePoint.normalized * HookPoolSpeed;
+            _rb.linearVelocity = toGrapplePoint.normalized * HookPoolSpeed;
             
             var direction = _hookGameObject.transform.position  - transform.position;
             var distanceToGrapplePoint = direction.magnitude;
@@ -278,7 +278,7 @@ namespace Player
             
             _playHookPool = false;
             // Установление скорости воспроизведения звука стягивания
-            CmdSetPitchHookPoolSound(_rb.velocity.magnitude / HookPoolSpeed);
+            CmdSetPitchHookPoolSound(_rb.linearVelocity.magnitude / HookPoolSpeed);
             CmdPlayOrStopHookPoolSound(true);
         }
 

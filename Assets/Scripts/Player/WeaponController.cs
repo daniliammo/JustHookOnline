@@ -234,7 +234,7 @@ namespace Player
 
 			if (_hit.collider.CompareTag("ExplosiveBarrelFragments"))
 			{
-				_hit.rigidbody.velocity = _camera.forward * 20;
+				_hit.rigidbody.linearVelocity = _camera.forward * 20;
 				
 				BreakingThrough(direction, 3);
 				return;
@@ -242,7 +242,7 @@ namespace Player
 
 			if(_hit.collider.CompareTag("PhysicalBody"))
 			{
-				_hit.rigidbody.velocity = _camera.forward * 20;
+				_hit.rigidbody.linearVelocity = _camera.forward * 20;
 				
 				BreakingThrough(direction, 5);
 				return;
@@ -313,7 +313,7 @@ namespace Player
 		// ReSharper disable once MemberCanBeMadeStatic.Local
 		private void CmdSetVelocity(Rigidbody rigidbody, Vector3 velocity)
 		{
-			rigidbody.GetComponent<Rigidbody>().velocity = velocity;
+			rigidbody.GetComponent<Rigidbody>().linearVelocity = velocity;
 		}
 
 		[Command (requiresAuthority = false)]

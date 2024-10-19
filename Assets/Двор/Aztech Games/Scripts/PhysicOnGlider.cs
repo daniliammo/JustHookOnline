@@ -41,7 +41,7 @@ namespace AztechGames
         /// <returns>True airspeed in meters per second.</returns>
         public float TrueAirSpeed()
         {
-            IAS = _rb.velocity.magnitude;
+            IAS = _rb.linearVelocity.magnitude;
             altitude = transform.position.y;
             float tas = IAS / (Mathf.Pow(1f + altitude / 44330f, 5.255f) * Mathf.Sqrt((temperature + 273.15f) / 288.15f));
             return tas;
@@ -53,7 +53,7 @@ namespace AztechGames
         /// <returns>Airspeed in meters per second.</returns>
         public float AirSpeed()
         {
-            Vector3 relativeWind  = windVelocity - _rb.velocity;
+            Vector3 relativeWind  = windVelocity - _rb.linearVelocity;
             Quaternion rotation = Quaternion.Inverse(transform.rotation);
             Vector3 relativeWindLocal = rotation * relativeWind;
             float airSpeed = Mathf.Sqrt(Mathf.Pow(TrueAirSpeed(), 2) + Mathf.Pow(relativeWindLocal.magnitude, 2));
@@ -92,7 +92,7 @@ namespace AztechGames
             float liftForce = CalculateLift();
             float dragForce = CalculateDrag();
             
-            Vector3 dragDirection = -_rb.velocity.normalized;
+            Vector3 dragDirection = -_rb.linearVelocity.normalized;
             Vector3 drag = dragDirection * dragForce;
             _rb.AddForce(drag);
             

@@ -104,7 +104,7 @@ public class lb_Bird : MonoBehaviour {
 		if(!dead){
 			originalAnimSpeed = anim.speed;
 			anim.speed = 0;
-			if(!GetComponent<Rigidbody>().isKinematic){originalVelocity = GetComponent<Rigidbody>().velocity;}
+			if(!GetComponent<Rigidbody>().isKinematic){originalVelocity = GetComponent<Rigidbody>().linearVelocity;}
 			GetComponent<Rigidbody>().isKinematic = true;
 			GetComponent<AudioSource>().Stop ();
 			paused = true;
@@ -115,7 +115,7 @@ public class lb_Bird : MonoBehaviour {
 		if(!dead){
 			anim.speed = originalAnimSpeed;
 			GetComponent<Rigidbody>().isKinematic = false;
-			GetComponent<Rigidbody>().velocity = originalVelocity;
+			GetComponent<Rigidbody>().linearVelocity = originalVelocity;
 			paused = false;
 		}
 	}
@@ -130,8 +130,8 @@ public class lb_Bird : MonoBehaviour {
 		landing = false;
 		onGround = false;
 		GetComponent<Rigidbody>().isKinematic = false;
-		GetComponent<Rigidbody>().velocity = Vector3.zero;
-		GetComponent<Rigidbody>().drag = 0.5f;
+		GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+		GetComponent<Rigidbody>().linearDamping = 0.5f;
 		anim.applyRootMotion = false;
 		anim.SetBool (flyingBoolHash,true);
 		anim.SetBool(landingBoolHash, false);
@@ -181,16 +181,16 @@ public class lb_Bird : MonoBehaviour {
 
 				vectorDirectionToTarget = (target-transform.position).normalized;//reset the variable to reflect the actual target and not the temptarget
 
-				if (Physics.Raycast(transform.position,-Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().velocity.y < 0){
+				if (Physics.Raycast(transform.position,-Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().linearVelocity.y < 0){
 					//if the bird is going to collide with the ground zero out vertical velocity
 					if(!hit.collider.isTrigger){
-						GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0.0f,GetComponent<Rigidbody>().velocity.z);
+						GetComponent<Rigidbody>().linearVelocity = new Vector3(GetComponent<Rigidbody>().linearVelocity.x, 0.0f,GetComponent<Rigidbody>().linearVelocity.z);
 					}
 				}
-				if (Physics.Raycast(transform.position,Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().velocity.y > 0){
+				if (Physics.Raycast(transform.position,Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().linearVelocity.y > 0){
 					//if the bird is going to collide with something overhead zero out vertical velocity
 					if(!hit.collider.isTrigger){
-						GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0.0f,GetComponent<Rigidbody>().velocity.z);
+						GetComponent<Rigidbody>().linearVelocity = new Vector3(GetComponent<Rigidbody>().linearVelocity.x, 0.0f,GetComponent<Rigidbody>().linearVelocity.z);
 					}
 				}
 				//check for collisions with non trigger colliders and abort flight if necessary
@@ -225,16 +225,16 @@ public class lb_Bird : MonoBehaviour {
 				anim.SetFloat (flyingDirectionHash,FindBankingAngle(transform.forward,vectorDirectionToTarget));
 				t += Time.deltaTime*0.5f;
 				GetComponent<Rigidbody>().AddForce(transform.forward * 70.0f*controller.birdScale * Time.deltaTime);
-				if (Physics.Raycast(transform.position,-Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().velocity.y < 0){
+				if (Physics.Raycast(transform.position,-Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().linearVelocity.y < 0){
 					//if the bird is going to collide with the ground zero out vertical velocity
 					if(!hit.collider.isTrigger){
-						GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0.0f,GetComponent<Rigidbody>().velocity.z);
+						GetComponent<Rigidbody>().linearVelocity = new Vector3(GetComponent<Rigidbody>().linearVelocity.x, 0.0f,GetComponent<Rigidbody>().linearVelocity.z);
 					}
 				}
-				if (Physics.Raycast(transform.position,Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().velocity.y > 0){
+				if (Physics.Raycast(transform.position,Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().linearVelocity.y > 0){
 					//if the bird is going to collide with something overhead zero out vertical velocity
 					if(!hit.collider.isTrigger){
-						GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0.0f,GetComponent<Rigidbody>().velocity.z);
+						GetComponent<Rigidbody>().linearVelocity = new Vector3(GetComponent<Rigidbody>().linearVelocity.x, 0.0f,GetComponent<Rigidbody>().linearVelocity.z);
 					}
 				}
 
@@ -258,13 +258,13 @@ public class lb_Bird : MonoBehaviour {
 		while(true){
 			if(!paused){
 				//do a raycast to see if the bird is going to hit the ground
-				if (Physics.Raycast(transform.position,-Vector3.up,0.15f*controller.birdScale) && GetComponent<Rigidbody>().velocity.y < 0){
-					GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0.0f,GetComponent<Rigidbody>().velocity.z);
+				if (Physics.Raycast(transform.position,-Vector3.up,0.15f*controller.birdScale) && GetComponent<Rigidbody>().linearVelocity.y < 0){
+					GetComponent<Rigidbody>().linearVelocity = new Vector3(GetComponent<Rigidbody>().linearVelocity.x, 0.0f,GetComponent<Rigidbody>().linearVelocity.z);
 				}
-				if (Physics.Raycast(transform.position,Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().velocity.y > 0){
+				if (Physics.Raycast(transform.position,Vector3.up,out hit,0.15f*controller.birdScale) && GetComponent<Rigidbody>().linearVelocity.y > 0){
 					//if the bird is going to collide with something overhead zero out vertical velocity
 					if(!hit.collider.isTrigger){
-						GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0.0f,GetComponent<Rigidbody>().velocity.z);
+						GetComponent<Rigidbody>().linearVelocity = new Vector3(GetComponent<Rigidbody>().linearVelocity.x, 0.0f,GetComponent<Rigidbody>().linearVelocity.z);
 					}
 				}
 
@@ -291,11 +291,11 @@ public class lb_Bird : MonoBehaviour {
 					if(distanceToTarget < 0.5f*controller.birdScale){
 						break;	
 					}else{
-						GetComponent<Rigidbody>().drag = 2.0f;
+						GetComponent<Rigidbody>().linearDamping = 2.0f;
 						flyingForce = 50.0f*controller.birdScale;
 					}
 				}else if (distanceToTarget <= 5.0f*controller.birdScale){
-					GetComponent<Rigidbody>().drag = 1.0f;
+					GetComponent<Rigidbody>().linearDamping = 1.0f;
 					flyingForce = 50.0f*controller.birdScale;
 				}
 			}
@@ -311,7 +311,7 @@ public class lb_Bird : MonoBehaviour {
 		anim.SetBool(landingBoolHash, true);
 		anim.SetBool (flyingBoolHash,false);
 		t = 0.0f;
-		GetComponent<Rigidbody>().velocity = Vector3.zero;
+		GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 
 		//tell any birds that are in the way to move their butts
 		var hitColliders = Physics.OverlapSphere(target,0.05f*controller.birdScale);
@@ -338,8 +338,8 @@ public class lb_Bird : MonoBehaviour {
 			}
 			yield return 0;
 		}
-		GetComponent<Rigidbody>().drag = .5f;
-		GetComponent<Rigidbody>().velocity = Vector3.zero;
+		GetComponent<Rigidbody>().linearDamping = .5f;
+		GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 		anim.SetBool(landingBoolHash, false);
 		landing = false;
 		transform.localEulerAngles = new Vector3(0.0f,transform.localEulerAngles.y,0.0f);

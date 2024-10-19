@@ -60,7 +60,7 @@ namespace AztechGames
         {
             Airspeed.text = FormatText(glider.AirSpeed()) + " m/s";
             Tas.text = FormatText(glider.TrueAirSpeed()) + " m/s";
-            Ias.text = FormatText(glider._rb.velocity.magnitude) + " m/s";
+            Ias.text = FormatText(glider._rb.linearVelocity.magnitude) + " m/s";
             Roll.text = FormatText(GliderSurface_Controller.Instance.AileronAmount) + " °";
             Pitch.text = FormatText(GliderSurface_Controller.Instance.ElevatorAmount) + " °";
             Slope.text = FormatText(GliderSurface_Controller.Instance.SlatAmount * 100f) + " °";

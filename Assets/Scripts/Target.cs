@@ -13,7 +13,7 @@ public class Target : MonoBehaviour
     {
         var dir = new Vector3(Mathf.Cos(Time.time * _speed) * _size, Mathf.Sin(Time.time * _speed) * _size);
 
-        _rb.velocity = dir;
+        _rb.linearVelocity = dir;
     }
 
     public void Explode() => Destroy(gameObject);

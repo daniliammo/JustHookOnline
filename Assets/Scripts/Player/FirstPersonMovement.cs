@@ -44,7 +44,7 @@ namespace Player
             if (!other.CompareTag("Ladder")) return;
             
             _isOnLadder = true;
-            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.linearVelocity = Vector3.zero;
             _rigidbody.useGravity = false;
         }
     
@@ -53,7 +53,7 @@ namespace Player
             if (!other.CompareTag("Ladder")) return;
             
             _isOnLadder = false;
-            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.linearVelocity = Vector3.zero;
             _rigidbody.useGravity = true;
         }
             
@@ -74,7 +74,7 @@ namespace Player
                     false => new Vector2(Input.GetAxis("Horizontal") * Speed, Input.GetAxis("Vertical") * Speed)
                 };
     
-                _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, _targetVelocity.y, _rigidbody.velocity.z);
+                _rigidbody.linearVelocity = new Vector3(_rigidbody.linearVelocity.x, _targetVelocity.y, _rigidbody.linearVelocity.z);
                 return;
             }
 
@@ -85,7 +85,7 @@ namespace Player
                 false => new Vector2(Input.GetAxis("Horizontal") * Speed, Input.GetAxis("Vertical") * Speed)
             };
             
-            _rigidbody.velocity = transform.rotation * new Vector3(_targetVelocity.x, _rigidbody.velocity.y, _targetVelocity.y);
+            _rigidbody.linearVelocity = transform.rotation * new Vector3(_targetVelocity.x, _rigidbody.linearVelocity.y, _targetVelocity.y);
         }
         
     }
