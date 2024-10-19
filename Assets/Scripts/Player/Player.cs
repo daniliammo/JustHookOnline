@@ -1,4 +1,3 @@
-using System.Linq;
 using Cars;
 using GameSettings;
 using Mirror;
