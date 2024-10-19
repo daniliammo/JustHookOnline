@@ -5045,6 +5045,10 @@ PrefabInstance:
       propertyPath: m_VersionIndex
       value: 1138
       objectReference: {fileID: 0}
+    - target: {fileID: 4631641151115829367, guid: c9618d2a62ea46b7592a900b6d40026b, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e0699f1ab4cba2d2c80a3f85c353f09d, type: 2}
     - target: {fileID: 7633723708543090683, guid: c9618d2a62ea46b7592a900b6d40026b, type: 3}
       propertyPath: _assetId
       value: 2282310691
