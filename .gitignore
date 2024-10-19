@@ -4,9 +4,10 @@
 *Temp/
 *obj/
 *bin/
-*TextMeshPro/
 *UserSettings/
 *MemoryCaptures/
+
+*TextMesh Pro/
 
 # Project
 *.sln
