@@ -16,6 +16,7 @@
 *.vscode/
 *.vs/
 *.DotSettings.user
+*.DotSettings
 
 # Mono crash files
 *.blob
