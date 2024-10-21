@@ -6,9 +6,9 @@ public class FPSController : MonoBehaviour
     
     private void Start()
     {
-        #if !UNITY_ANDROID
-        QualitySettings.vSyncCount = 1;
-        #endif
+        // #if !UNITY_ANDROID
+        // QualitySettings.vSyncCount = 1;
+        // #endif
         
         SetFPS();
     }
