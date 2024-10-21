@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Interactable;
 using JetBrains.Annotations;
 using Mirror;
@@ -116,12 +115,10 @@ namespace Player
             if (currentInteractable!.interactType == InteractType.VehicleInteract)
                 currentInteractable!.Interact(_player);
 
-            if (currentInteractable!.interactType == InteractType.PasswordEntry)
-            {
-                _ui.passwordEntryGameObject.SetActive(true);
+            if (currentInteractable!.interactType != InteractType.PasswordEntry) return;
+            _ui.passwordEntryGameObject.SetActive(true);
                 
-                _isWritingPassword = true;
-            }
+            _isWritingPassword = true;
         }
 
         private void KeyboardInputPassword()
