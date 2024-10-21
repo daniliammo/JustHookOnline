@@ -1,76 +1,78 @@
-using Door;
 using Mirror;
 using UnityEngine;
 
 
 // [RequireComponent(typeof(NetworkAnimator), typeof(Animator), typeof(NetworkIdentity))]
-public class DoorController : NetworkBehaviour
+namespace Door
 {
-
-    private Animator _animator;
-    public DoorStatus doorStatus;
-
-    public bool requirePassword;
-    
-    [SyncVar]
-    public int hp;
-    
-    public GameObject[] physicComponents;
-    
-    
-    [Server]
-    private void Start()
+    public class DoorController : LifeEntity
     {
-        _animator = GetComponent<Animator>();
-    }
-    
-    [Command (requiresAuthority = false)]
-    public void CmdShooted(int damage)
-    {
-        hp -= damage;
-        if(hp <= 0)
-            RpcDestroyed();
-    }
 
-    [ClientRpc]
-    private void RpcDestroyed()
-    {
-        gameObject.tag = "Untagged";
-        
-        foreach (var physicComponent in physicComponents)
+        private Animator _animator;
+        public DoorStatus doorStatus;
+
+        public bool requirePassword;
+    
+        [SyncVar]
+        public int hp;
+    
+        public GameObject[] physicComponents;
+    
+    
+        [Server]
+        private void Start()
         {
-            physicComponent.transform.parent = null;
-            physicComponent.AddComponent<Rigidbody>();
-            physicComponent.tag = "PhysicalBody";
+            _animator = GetComponent<Animator>();
         }
-        
-        Destroy(GetComponent<Interactable.Interactable>());
-        Destroy(GetComponent<NetworkAnimator>());
-        Destroy(GetComponent<Animator>());
-        Destroy(GetComponent<BoxCollider>());
-        Destroy(GetComponent<NetworkIdentity>());
-        Destroy(this);
-    }
     
-    [Command (requiresAuthority = false)]
-    public void CmdOpenDoor()
-    {
-        if(doorStatus == DoorStatus.Opened) return;
+        [Command (requiresAuthority = false)]
+        public void CmdShooted(int damage)
+        {
+            hp -= damage;
+            if(hp <= 0)
+                RpcDestroyed();
+        }
+
+        [ClientRpc]
+        private void RpcDestroyed()
+        {
+            gameObject.tag = "Untagged";
         
-        _animator.Play("Open");
-        doorStatus = DoorStatus.Opened;
+            foreach (var physicComponent in physicComponents)
+            {
+                physicComponent.transform.parent = null;
+                physicComponent.AddComponent<Rigidbody>();
+                physicComponent.tag = "PhysicalBody";
+            }
         
-        if(requirePassword)
-            Invoke(nameof(CmdCloseDoor), 15);
-    }
+            Destroy(GetComponent<Interactable.Interactable>());
+            Destroy(GetComponent<NetworkAnimator>());
+            Destroy(GetComponent<Animator>());
+            Destroy(GetComponent<BoxCollider>());
+            Destroy(GetComponent<NetworkIdentity>());
+            Destroy(this);
+        }
     
-    [Command (requiresAuthority = false)]
-    public void CmdCloseDoor()
-    {
-        if(doorStatus == DoorStatus.Closed) return;
+        [Command (requiresAuthority = false)]
+        public void CmdOpenDoor()
+        {
+            if(doorStatus == DoorStatus.Opened) return;
         
-        doorStatus = DoorStatus.Closed;
-        _animator.Play("Close");
-    }
+            _animator.Play("Open");
+            doorStatus = DoorStatus.Opened;
+        
+            if(requirePassword)
+                Invoke(nameof(CmdCloseDoor), 15);
+        }
     
+        [Command (requiresAuthority = false)]
+        public void CmdCloseDoor()
+        {
+            if(doorStatus == DoorStatus.Closed) return;
+        
+            doorStatus = DoorStatus.Closed;
+            _animator.Play("Close");
+        }
+    
+    }
 }
