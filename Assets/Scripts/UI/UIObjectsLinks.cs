@@ -52,68 +52,70 @@ namespace UI
 		#region Password
 		public void Add0ToPassword()
 		{
-			localInteractController.password.Add(0);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '0';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add1ToPassword()
 		{
-			localInteractController.password.Add(1);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '1';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add2ToPassword()
 		{
-			localInteractController.password.Add(2);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '2';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add3ToPassword()
 		{
-			localInteractController.password.Add(3);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '3';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add4ToPassword()
 		{
-			localInteractController.password.Add(4);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '4';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add5ToPassword()
 		{
-			localInteractController.password.Add(5);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '5';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add6ToPassword()
 		{
-			localInteractController.password.Add(6);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '6';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add7ToPassword()
 		{
-			localInteractController.password.Add(7);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '7';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add8ToPassword()
 		{
-			localInteractController.password.Add(8);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '8';
+			localInteractController.OnPasswordUpdated();
 		}
 		
 		public void Add9ToPassword()
 		{
-			localInteractController.password.Add(9);
-			localInteractController.ProcessPassword();
+			localInteractController.passwordString += '9';
+			localInteractController.OnPasswordUpdated();
 		}
 
 		public void RemoveLastSymbolInThePassword()
 		{
-			if(localInteractController.password.Count > 0)
-				localInteractController.password.RemoveAt(localInteractController.password.Count - 1);
+			if (localInteractController.passwordString.Length <= 0) return;
+			
+			localInteractController.passwordString.Remove(localInteractController.passwordString.Length - 1);
+			localInteractController.OnPasswordUpdated();
 		}
 		#endregion
 		

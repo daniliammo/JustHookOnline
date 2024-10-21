@@ -1,3 +1,4 @@
+using System.Linq;
 using Mirror;
 using UnityEngine;
 
@@ -18,9 +19,18 @@ namespace Interactable
 
         private void Awake()
         {
+            if(!password.All(char.IsDigit))
+                Debug.LogWarning($"Пароль {password} невозможно ввести так как интерфейс разрешает вводить только цифры." +
+                                 "\nДверь никогда не откроют.");
+            
             var interactable = GetComponent<Interactable>();
             interactable.interactType = InteractType.PasswordEntry;
             interactable.intercom = this;
+        }
+
+        private void CheckPassword()
+        {
+            
         }
         
         [Server]

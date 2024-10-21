@@ -13,10 +13,8 @@ namespace Player
 
         private UIObjectsLinks _ui;
         private Player _player;
-
         
-        public List<byte> password;
-        private string _passwordString = "";
+        public string passwordString = string.Empty;
 
         private bool _isWritingPassword;
         
@@ -105,7 +103,9 @@ namespace Player
             if (Input.GetKeyDown(KeyCode.E))
                 Interact();
 
-            ProcessPassword();
+            #if !UNITY_IOS || !UNITY_ANDROID
+            KeyboardInputPassword();
+            #endif
         }
 
         public void Interact()
@@ -124,60 +124,77 @@ namespace Player
             }
         }
 
-        public void ProcessPassword()
+        private void KeyboardInputPassword()
         {
             if (!_isWritingPassword) return;
             
-            #if !UNITY_IOS || !UNITY_ANDROID
             if(Input.GetKeyDown(KeyCode.Alpha0))
-                password.Add(0);
+            {
+                passwordString += '0';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha1))
-                password.Add(1);
+            {
+                passwordString += '1';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha2))
-                password.Add(2);
+            {
+                passwordString += '2';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha3))
-                password.Add(3);
+            {
+                passwordString += '3';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha4))
-                password.Add(4);
+            {
+                passwordString += '4';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha5))
-                password.Add(5);
+            {
+                passwordString += '5';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha6))
-                password.Add(6);
+            {
+                passwordString += '6';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha7))
-                password.Add(7);
+            {
+                passwordString += '7';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha8))
-                password.Add(8);
+            {
+                passwordString += '8';
+                OnPasswordUpdated();
+            }
             if(Input.GetKeyDown(KeyCode.Alpha9))
-                password.Add(9);
+            {
+                passwordString += '9';
+                OnPasswordUpdated();
+            }
+
+            if (!Input.GetKeyDown(KeyCode.Backspace)) return;
+            if (passwordString.Length <= 0) return;
+            passwordString.Remove(passwordString.Length - 1);
+            OnPasswordUpdated();
+        }
+
+        public void OnPasswordUpdated()
+        {
+            _ui.passwordEntry.text = passwordString; // Отображает пароль в интерфейсе.
             
-            if (Input.GetKeyDown(KeyCode.Backspace))
-            {
-                if(password.Count > 0)
-                    password.RemoveAt(password.Count - 1);
-            }
-            #endif
-
-            switch (password.Count)
-            {
-                case > 0:
-                {
-                    foreach (var b in password)
-                        _passwordString += b.ToString();
-                    break;
-                }
-                case 0:
-                    _passwordString = "";
-                    break;
-            }
-
-
-            _ui.passwordEntry.text = _passwordString;
             var passwd = currentInteractable!.intercom.password;
             
-            if(_passwordString.Length == passwd.Length)
+            if(passwordString.Length == passwd.Length)
             {
-                currentInteractable!.intercom.CheckPassword(_passwordString);
-                if(_passwordString != passwd)
+                currentInteractable!.intercom.CheckPassword(passwordString);
+                if(passwordString != passwd)
                 {
                     _ui.passwordEntry.color = Color.red;
                     _isWritingPassword = false;
@@ -185,18 +202,15 @@ namespace Player
                 }
             }
 
-            if(_passwordString == passwd)
-            {
-                _ui.passwordEntry.color = Color.green;
-                _isWritingPassword = false;
-                Invoke(nameof(OnPasswordCorrect), 1.5f);
-            }
+            if (passwordString != passwd) return;
+            _ui.passwordEntry.color = Color.green;
+            _isWritingPassword = false;
+            Invoke(nameof(OnPasswordCorrect), 1.5f);
         }
-
+        
         private void OnPasswordCorrect()
         {
             ResetPassword();
-            _ui.passwordEntry.color = Color.white;
             _ui.passwordEntryGameObject.SetActive(false);
             _isWritingPassword = true;
         }
@@ -205,13 +219,13 @@ namespace Player
         {
             ResetPassword();
             _isWritingPassword = true;
-            _ui.passwordEntry.color = Color.white;
         }
 
         private void ResetPassword()
         {
-            password = new List<byte>();
-            _passwordString = "";
+            _ui.passwordEntry.color = Color.white;
+            passwordString = string.Empty;
+            OnPasswordUpdated();
         }
         
     }
