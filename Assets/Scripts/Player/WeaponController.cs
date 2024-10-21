@@ -108,7 +108,7 @@ namespace Player
 			if (Input.GetButton("Fire1"))
 				Fire();
 			
-			if (Input.GetKeyDown("r"))
+			if (Input.GetKeyDown(KeyCode.R))
 				Reload();
 		}
 
