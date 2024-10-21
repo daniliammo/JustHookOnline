@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Mirror;
 using UnityEngine;
@@ -47,19 +48,15 @@ namespace Cars
         public Color neonSetsColor;
         public Color headLightsColor;
         public Color farLightsColor;
-        
-        // [Tooltip("Максимальное количество игроков в машине. (Включая водителя).")]
-        // public byte maxPlayersInTheVehicle;
 
         public PlaceInTheVehicle driverPlace;
         public PlaceInTheVehicle[] passengerPlaces;
         
         public Player.Player driver;
         public List<Player.Player> passengers;
-
-        public Rigidbody rigidbody;
-
-
+        public bool killPassengersAndDriverAfterVehicleDestroy;
+        
+        
         [Command(requiresAuthority = false)]
         public void CmdPlayMissileAimAlert()
         {
@@ -139,6 +136,7 @@ namespace Cars
             }
         }
 
+        [Pure]
         private PlaceInTheVehicle SearchPlaceByOwner(Player.Player owner)
         {
             foreach (var passengerPlace in passengerPlaces)
@@ -237,13 +235,17 @@ namespace Cars
         [Command (requiresAuthority = false)]
         public void CmdExplode(Player.Player killer)
         {
-            driver.CmdChangeHp((byte)driver.maxHp, killer.transform, killer.playerDisplayName);
+            CmdExplode();
+            driver.SetHp(driver.maxHp, killer.playerDisplayName);
             Exit(driver);
             
-            foreach (var passenger in passengers)
+            if(killPassengersAndDriverAfterVehicleDestroy)
             {
-                passenger.CmdChangeHp((byte)passenger.maxHp, killer.transform, killer.playerDisplayName);
-                Exit(passenger);
+                foreach (var passenger in passengers)
+                {
+                    passenger.SetHp(passenger.maxHp, killer.playerDisplayName);
+                    Exit(passenger);
+                }
             }
 
             RpcDisableAllLights();
