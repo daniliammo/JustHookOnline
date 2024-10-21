@@ -17,7 +17,9 @@ public class Missile : Explosion.Explosion
     
     private Quaternion _previousRotation;
     private Vector3 _previousTargetPosition;
-
+    
+    private Rigidbody _targetRigidbody;
+    
     public float lifeTime = 5;
     
     
@@ -25,15 +27,23 @@ public class Missile : Explosion.Explosion
     private void FixedUpdate()
     {
         lifeTime -= Time.fixedDeltaTime;
-
+        
         if (lifeTime < 0)
             Destroy(gameObject);
-        
-        _previousRotation = transform.rotation;
-        AdjustAngle();
-        SpeedAdjustment();
-        _previousTargetPosition = target.transform.position;
 
+        if (target) // Если цели нет, то ракета будет просто лететь вперед.
+        {
+            // Поворот к цели.
+            if (!_targetRigidbody)
+                _targetRigidbody = target.GetComponent<Rigidbody>();
+        
+            _previousRotation = transform.rotation;
+            AdjustAngle();
+            SpeedAdjustment();
+            _previousTargetPosition = target.transform.position;
+        }
+
+        // Движение вперёд.
         transform.Translate(Vector3.forward * (speed * Time.fixedDeltaTime));
     }
 
@@ -45,7 +55,7 @@ public class Missile : Explosion.Explosion
             {
                 var time = Vector3.Distance(target.transform.position, transform.position) / speed;
                 
-                _predictTargetPosition = target.rigidbody.position + target.rigidbody.linearVelocity * time;
+                _predictTargetPosition = target.GetComponent<Rigidbody>().position + target.GetComponent<Rigidbody>().linearVelocity * time;
                 
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(Vector3.forward, _predictTargetPosition - transform.position), maneuverability);
                 break;
