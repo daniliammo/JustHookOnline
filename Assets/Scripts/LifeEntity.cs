@@ -9,22 +9,22 @@ public class LifeEntity : NetworkBehaviour
     public EntityType entityType;
 
     [Header("Здоровье и регенерация")]
-    public byte hp = 100;
-    public byte maxHp = 255;
+    public int hp = 100;
+    public int maxHp = 255;
     public bool allowRegeneration = true;
     private bool _allowRegeneration = true;
+    // Регенерация
     public float regenerationRepeatRate = 2.5f;
     public float allowRegenerationAfterDamageTime = 3.5f;
-    public float regenerationAmount = 20;
+    public int regenerationAmount = 20;
     
     [Header("Возрождение")]
     public bool allowRevive = true;
     [Tooltip("Это поле нужно только тогда когда allowRevive = false")]
     public string gameObjectTagAfterDeath;
     public float reviveTime = 2.5f;
-
-    [HideInInspector]
-    public bool isDeath; // false по умолчанию.
+    
+    public bool IsDeath { get; private set; } // false по умолчанию.
 
     private NetworkStartPosition[] _spawnPoints;
     public FindObjectsInactive findSpawnPointsInactive;
@@ -40,52 +40,61 @@ public class LifeEntity : NetworkBehaviour
     public event OnEntityRevived OnRevive;
 
 
-    private void Start()
+    [Server]
+    private void Awake()
     {
         if(allowRegeneration)
             InvokeRepeating(nameof(Regeneration), 1, regenerationRepeatRate);
 
         if (entityType != EntityType.Player) return;
-        GetComponent<Player.Player>().StartPlayer();
         _spawnPoints = FindObjectsByType<NetworkStartPosition>(findSpawnPointsInactive, FindObjectsSortMode.None);
-    }
-
-    public void Damage(byte damage, string damagerName)
-    {
-        if(isDeath) return;
-        
-        SetHp((byte)(hp - damage), damagerName);
-
-        if (hp <= 0)
-            Death(damagerName);
     }
 
     private void Death(string damagerName)
     {
-        SetHp(0, damagerName);
+        CmdSetHp(0, damagerName);
         
         CancelInvoke(nameof(AllowRegeneration));
         Invoke(nameof(AllowRegeneration), 4);
         
         OnDeath?.Invoke(damagerName);
-        isDeath = true;
-
-        if (!allowRevive)
-        {
-            Destroy(this);
-            gameObject.tag = gameObjectTagAfterDeath;
-        }
+        IsDeath = true;
         
-        if(allowRevive)
-            Invoke(nameof(Revive), reviveTime);
+        switch (allowRevive)
+        {
+            case false:
+                gameObject.tag = gameObjectTagAfterDeath;
+                Destroy(this);
+                break;
+            case true:
+                Invoke(nameof(Revive), reviveTime);
+                break;
+        }
+    }
+
+    [Command (requiresAuthority = false)]
+    public void CmdSetHp(int newHp)
+    {
+        CmdSetHp(newHp, string.Empty);
     }
     
-    public void SetHp(byte newHp, string damagerName)
+    [Command (requiresAuthority = false)]
+    public void CmdSetHp(int newHp, string damagerName)
     {
-        if(isDeath) return; // Если сущность мертва, то менять хп уже нельзя.
+        if (IsDeath)
+        {
+            Debug.LogWarning("Сущность мертва. Хп не будет изменено");
+            return; // Если сущность мертва, то менять хп уже нельзя.
+        }
+
+        if (newHp == hp) return;
         
-        if(newHp > maxHp)
+        if (newHp >= maxHp)
+        {
             hp = maxHp;
+            OnHpChanged?.Invoke(damagerName);
+            return;
+        }
 
         if (newHp < hp) // Если хп сносится, то регенерация, прерывается и начинается заново через allowRegenerationAfterDamageTime.
         {
@@ -94,16 +103,19 @@ public class LifeEntity : NetworkBehaviour
             Invoke(nameof(AllowRegeneration), allowRegenerationAfterDamageTime);
         }
 
+        if (hp <= 0)
+            Death(damagerName);
+        
         hp = newHp;
         OnHpChanged?.Invoke(damagerName);
     }
     
     private void Regeneration()
     {
-        if (isDeath) return;
+        if (IsDeath) return;
         if (!_allowRegeneration) return;
 
-        SetHp((byte)(hp + regenerationAmount), string.Empty);
+        CmdSetHp(hp + regenerationAmount);
     }
     
     private void AllowRegeneration()
@@ -113,10 +125,9 @@ public class LifeEntity : NetworkBehaviour
     
     private void Revive()
     {
+        IsDeath = false;
         transform.position = _spawnPoints[Random.Range(0, _spawnPoints.Length)].transform.position;
-        SetHp(maxHp, string.Empty);
-
-        isDeath = false;
+        CmdSetHp(maxHp);
         OnRevive?.Invoke();
     }
     

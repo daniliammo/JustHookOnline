@@ -9,3 +9,10 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 157192
+  packageName: Mesh Combiner
+  packageVersion: 1.2
+  assetPath: Assets/Tools/MeshCombiner/Scripts/MeshCombiner.cs
+  uploadId: 399985

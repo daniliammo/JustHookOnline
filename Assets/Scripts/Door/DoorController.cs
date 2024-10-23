@@ -13,28 +13,18 @@ namespace Door
 
         public bool requirePassword;
     
-        [SyncVar]
-        public int hp;
-    
         public GameObject[] physicComponents;
     
     
-        [Server]
+        [Command (requiresAuthority = false)]
         private void Start()
         {
             _animator = GetComponent<Animator>();
+            OnDeath += RpcDestroyed;
         }
-    
-        [Command (requiresAuthority = false)]
-        public void CmdShooted(int damage)
-        {
-            hp -= damage;
-            if(hp <= 0)
-                RpcDestroyed();
-        }
-
+        
         [ClientRpc]
-        private void RpcDestroyed()
+        private void RpcDestroyed(string unused)
         {
             gameObject.tag = "Untagged";
         

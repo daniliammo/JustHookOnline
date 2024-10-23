@@ -4,7 +4,7 @@ namespace Utils
 {
     public struct FindGameObject 
     {
-	    public static bool FindParentGameObjectWithTag(Transform childGameObject, string targetTag, out GameObject parent)
+	    private static bool FindParentGameObjectWithTag(Transform childGameObject, string targetTag, out GameObject parent)
 		{
 			var currentParent = childGameObject.parent;
 
@@ -29,12 +29,12 @@ namespace Utils
 			return false;
 		}
 
-	    public static bool FindParentGameObjectWithTag(Transform childGameObject, string targetTag)
+	    private static bool FindParentGameObjectWithTag(Transform childGameObject, string targetTag)
 		{
 			return FindParentGameObjectWithTag(childGameObject, targetTag, out var unused);
 		}
-		
-		public static bool FindChildGameObjectWithTag(Transform parentGameObject, string targetTag, out GameObject child)
+
+	    private static bool FindChildGameObjectWithTag(Transform parentGameObject, string targetTag, out GameObject child)
 		{
 			// Проверяем, не совпадает ли сам родительский объект с искомым тегом
 			if (parentGameObject!.CompareTag(targetTag))
@@ -60,8 +60,8 @@ namespace Utils
 			child = null;
 			return false;
 		}
-		
-		public static bool FindChildGameObjectWithTag(Transform parentGameObject, string targetTag)
+
+	    private static bool FindChildGameObjectWithTag(Transform parentGameObject, string targetTag)
 		{
 			return FindChildGameObjectWithTag(parentGameObject, targetTag, out _);
 		}
@@ -85,6 +85,7 @@ namespace Utils
 				return true;
 			}
 
+			// Ничего не найдено:
 			x = null;
 			return false;
 		}

@@ -32,6 +32,7 @@ namespace Player
         private const byte MaxDistance = 255;
         private const byte HookPoolSpeed = 23;
         private const byte HookCableSpeed = 175;
+        private const byte HookDamage = 5;
         
         private float _startTime;
         private float _journeyLength;
@@ -48,16 +49,14 @@ namespace Player
         private bool _isSafeHook = true;
         // True когда крюк зацепился за пол. Если крюк на полу, то отцепится когда игрок подлетит к нему.
         private bool _isHookOnFloor;
-        // True когда игрок бросил крюк и крюк летит обратно к игроку.
         private bool _isHookCanceling;
-        // True когда крюк летит к цели и еще не зацепился.
         private bool _isHookOnAir;
-        // True когда игрок летит к крюку
         internal bool IsHooking;
         // Если true, то рисуется линия от игрока к крюку
         private bool _drawRope;
+        private bool x;
         
-
+        
         private void Start()
         {
             _player = GetComponent<Player>();
@@ -95,7 +94,9 @@ namespace Player
                         StopGrapple();
                         _isHookOnAir = false;
                     }
-
+                    
+                    Physics.Raycast(_camera.position, _camera.forward, out _hit,
+                        MaxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
                     InvokeRepeating(nameof(Test), 0, 0.05f);
                 }
 
@@ -121,8 +122,10 @@ namespace Player
         {
             if(!_isHookCanceling)
             {
+                x = true;
                 CancelInvoke(nameof(Test));
                 JustHook();
+                x = false;
             }
         }
         
@@ -284,12 +287,16 @@ namespace Player
 
         private void StartGrapple() 
         {
-            if(_player.isDeath) return;
-            if(_ui.menu.isPaused) return;
+            if (_player.IsDeath) return;
+            if (_ui.menu.isPaused) return;
+
+            if (!x)
+            {
+                if (!Physics.Raycast(_camera.position, _camera.forward, out _hit,
+                        MaxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return;
+            }
             
-            if (!Physics.Raycast(_camera.position, _camera.forward, out _hit,
-                    MaxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return;
-            
+
             if(_hit.transform.CompareTag("DeadZone") && _hit.transform.CompareTag("Boundary")) return;
             
             CmdPlayHookShotSound();
@@ -336,8 +343,9 @@ namespace Player
             _hookGameObject.transform.LookAt(_camera);
             _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
             
-            if (_hit.collider.CompareTag("Player") && !_hit.collider.CompareTag("PlayerBulletFlyBy"))
-                _weaponController.DamagePlayer(_hit, 5);
+            if (FindGameObject.Find(_hit.transform, "Player", out var player)
+                && !_hit.collider.CompareTag("PlayerBulletFlyBy"))
+                _weaponController.DamageEntity(player.GetComponent<LifeEntity>(), _hit, HookDamage);
             
             if (!_hit.collider.CompareTag("Player"))
                 _weaponController.CmdSpawnBulletHolePrefab(_hit.point, Quaternion.Euler(Vector3.Angle(_hit.normal, Vector3.up), 0, 0));

@@ -29,8 +29,6 @@ namespace Player
         
         private UIObjectsLinks _ui;
         private ControlSettings _controlSettings;
-        
-        private const float Smoothing = 1.5f;
 
         private bool _isFlashLightAllowed;
         
@@ -78,7 +76,7 @@ namespace Player
             _camera.transform.SetParent(transform, false);
         }
 
-        private void RestoreCameraPosition(Transform killer)
+        private void RestoreCameraPosition(string unused)
         {
             _camera.transform.SetParent(null, false);
             _camera.transform.SetLocalPositionAndRotation(Vector3.zero, new Quaternion());

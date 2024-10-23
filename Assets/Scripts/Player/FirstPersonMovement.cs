@@ -60,7 +60,7 @@ namespace Player
         private void Update()
         {
             if (!isOwned) return;
-            if (_player.isDeath) return;
+            if (_player.IsDeath) return;
             if (_ui.menu.isPaused) return;
             if (_hookController.IsHooking) return;
             if (!_groundCheck.isGrounded && !allowToWalkOnAir) return;

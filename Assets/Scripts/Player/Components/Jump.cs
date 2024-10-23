@@ -27,7 +27,7 @@ namespace Player.Components
         private void LateUpdate()
         {
             if (!isOwned) return;
-            if(_player.isDeath) return;
+            if(_player.IsDeath) return;
             if(_hookController.IsHooking) return;
             
             if (Input.GetButtonDown("Jump"))

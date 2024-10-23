@@ -8,8 +8,8 @@ public class DeadZone : MonoBehaviour
 	{
 		if (other.transform.CompareTag("Player"))
 		{
-			var player = other.transform.GetComponent<Player.Player>();
-			player.Death("Зона Смерти");
+			var player = other.transform.GetComponent<LifeEntity>();
+			player.CmdSetHp(0, "Зона Смерти");
 		}
 
 		if (!other.transform.CompareTag("Player"))

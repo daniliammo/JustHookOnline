@@ -39,8 +39,8 @@ namespace UI
 			entry2.callback.AddListener(_ => { _weaponController.OnFireButtonUp(); });
 			shootButoonEventTrigger.triggers.Add(entry2);
 
-			// Reload button
-			_ui.reloadButton.onClick.AddListener(_weaponController.Reload);
+			// CmdReload button
+			_ui.reloadButton.onClick.AddListener(_weaponController.CmdReload);
 			
 			
 			// Hook

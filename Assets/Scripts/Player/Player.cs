@@ -3,45 +3,23 @@ using GameSettings;
 using Mirror;
 using UI;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Player
 {
-	public class Player : NetworkBehaviour
+	public class Player : LifeEntity
 	{
 
+		[Header("Игрок")]
 		public TextMesh nickname;
 
 		[SyncVar(hook = nameof(DisplayPlayerName))]
 		public string playerDisplayName;
-
-		[SyncVar] 
-		public int hp;
-
-		[SyncVar] // Увеличение максимального хп в дальнейших обновлениях
-		public int maxHp = 100;
-
-		[SyncVar] 
-		public bool isDeath;
-
-		public delegate void PlayerDied(Transform killer);
-		public event PlayerDied OnDeath;
 		
 		public delegate void PlayerGotIntoTheVehicle(Vehicle vehicle);
 		public event PlayerGotIntoTheVehicle OnGotIntoTheVehicle;
 		
 		public delegate void PlayerExitOutOfVehicle();
 		public event PlayerExitOutOfVehicle OnExitOutOfVehicle;
-		
-		public delegate void PlayerRevived();
-		public event PlayerRevived OnRevive;
-
-		[SyncVar]
-		private bool _allowRegeneration = true;
-
-		public float regenerationRepeatRate;
-		
-		private NetworkStartPosition[] _spawnPoints;
 
 		private UIObjectsLinks _ui;
 		private Animator _animator;
@@ -55,10 +33,14 @@ namespace Player
 		private KillMessages _killMessages;
 		
 
-		private void Start()
+		public void Start()
 		{
 			GetComponents();
 
+			OnDeath += Death;
+			OnRevive += Revive;
+			OnHpChanged += UpdateHpText;
+			
 			if (isLocalPlayer)
 			{
 				CmdSendName(PlayerPrefs.GetString("Nickname"));
@@ -67,8 +49,7 @@ namespace Player
 				FindFirstObjectByType<TimeController>().CmdSyncTime();
 				_ui.localPlayer = this;
 			}
-
-			InvokeRepeating(nameof(Regeneration), 1, regenerationRepeatRate); // Вызываем регенерацию каждую секунду
+			
 			CheckPlayerPrefsKeys();
 		}
 		
@@ -83,11 +64,15 @@ namespace Player
 			_playerJoinMessages = FindFirstObjectByType<PlayerJoinMessages>();
 			_nicknameSetter = FindFirstObjectByType<NicknameSetter>();
 			_ui = FindFirstObjectByType<UIObjectsLinks>();
-			_spawnPoints = FindObjectsByType<NetworkStartPosition>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 			_animator = GetComponent<Animator>();
 			_hook = GetComponent<Hook>();
 			_weaponController = GetComponent<WeaponController>();
 			_killMessages = FindFirstObjectByType<KillMessages>();
+		}
+
+		private void UpdateHpText(string unused)
+		{
+			CmdInvokeRpcMethod(nameof(TargetRpcUpdateHpText), 0);
 		}
 		
 		[Command (requiresAuthority = false)]
@@ -100,60 +85,16 @@ namespace Player
 		{
 			nickname.text = newName;
 		}
-
-		[Command (requiresAuthority = false)]
-		private void Regeneration()
-		{
-			if(isDeath) return;
-			if(!_allowRegeneration) return;
-			
-			var x = hp + 25;
-			hp = x > maxHp ? maxHp : x;
-			
-			UpdateHpText();
-		}
-		
-		private void AllowRegeneration()
-		{
-			_allowRegeneration = true;
-		}
-
-		[Command (requiresAuthority = false)]
-		public void CmdChangeHp(byte amount, Transform damager, string damagerName)
-		{
-			if (isDeath) return;
-
-			if(hp <= 0) return;
-			_allowRegeneration = false;
-			
-			RpcChangeHp(amount, damager, damagerName);
-			
-			CancelInvoke(nameof(AllowRegeneration)); // Останавливаем вызовы метода AllowRegeneration
-			Invoke(nameof(AllowRegeneration), 4); // Разрешаем регенерацию через 4 секунды
-			
-			UpdateHpText();
-		}
-
-		[ClientRpc] // Никогда не вызывайте этот метод без CmdChangeHp так как измененное здоровье не будет отображаться в UI.
-		private void RpcChangeHp(byte amount, Transform damager, string damagerName)
-		{
-			hp -= amount;
-			if (hp <= 0 && !isDeath)
-				Death(damagerName, damager);
-		}
 		
 		[TargetRpc]
-		private void UpdateHpText()
+		private void TargetRpcUpdateHpText()
 		{
 			_ui.sliderValueChanger.ChangeSliderValue(hp, _ui.hpSlider);
 		}
 		
-		public void Death(string killerName, Transform killer = null)
+		private void Death(string killerName)
 		{
-			OnDeath?.Invoke(killer);
-			isDeath = true;
 			_animator.Play("Death");
-			Invoke(nameof(Revive), 2);
 
 			if (!isLocalPlayer) return;
 			PlayerPrefs.SetInt("Deads", PlayerPrefs.GetInt("Deads") + 1);
@@ -164,23 +105,15 @@ namespace Player
 		
 		private void Revive()
 		{
-			transform.position = _spawnPoints[Random.Range(0, _spawnPoints.Length)].transform.position;
-			
 			_animator.Play("idle");
-			
-			hp = maxHp;
 
 			_weaponController.StartWeapon();
 			_hook.Stop();
 			
-			CmdInvokeRpcMethod(nameof(UpdateHpText), 0);
-			
-			isDeath = false;
-			OnRevive?.Invoke();
+			CmdInvokeRpcMethod(nameof(TargetRpcUpdateHpText), 0);
 		}
 
 		#region Vehicle
-
 		public void GotIntoVehicle(Vehicle vehicle)
 		{
 			OnGotIntoTheVehicle?.Invoke(vehicle);
@@ -190,10 +123,7 @@ namespace Player
 		{
 			OnExitOutOfVehicle?.Invoke();
 		}
-
 		#endregion
-		
-
 		
 		[Command (requiresAuthority = false)]
 		private void CmdInvokeRpcMethod(string methodName, float time)

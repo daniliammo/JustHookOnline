@@ -1,3 +1,4 @@
+using Door;
 using Mirror;
 using UI;
 using UnityEngine;
@@ -9,7 +10,6 @@ namespace Player
 	{
 
 		// TODO: Сделать комментарии
-
 		private UIObjectsLinks _ui;
 
 		private Transform _camera;
@@ -51,9 +51,10 @@ namespace Player
 		private AudioSource _playerFX;
 		public AudioSource[] gunShot;
 		
+		// TODO: Реализация
 		private bool _isFireLightAllowed;
 		
-
+		
 		private void Start()
 		{
 			GetComponents();
@@ -109,7 +110,7 @@ namespace Player
 				Fire();
 			
 			if (Input.GetKeyDown(KeyCode.R))
-				Reload();
+				CmdReload();
 		}
 
 		public void OnFireButtonDown()
@@ -124,43 +125,59 @@ namespace Player
 		
 		private void Fire()
 		{
-			if(!isOwned) return;
-			if(_isReloading) return;
-			if(_isFire) return;
-			if(_player.isDeath) return;
-			if(_ui.menu.isPaused) return;
+			if (!isOwned) return;
+			if (_isReloading) return;
+			if (_isFire) return;
+			if (_player.IsDeath) return;
+			if (_ui.menu.isPaused) return;
 			if (_ammo <= 0)
 			{
-				Reload();
+				CmdReload();
 				return;
 			}
 			
 			_isFire = true;
+			_ammo -= 1;
+			_gunAnimator.Play("Fire");
 			
+			// Создание объекта с эффектом выстрела.
+			CmdSpawnMuzzleFlashPrefab(muzzleFlashPosition.position, muzzleFlashPosition.rotation);
+			
+			// Логика выстрела.
+			CmdCastRayCast(_camera.position, _camera.forward);
+			
+			// Создание объекта с эффектами летящей пули.
+			CmdSpawnBulletParticlePrefab(muzzleFlashPosition.position, Vector3.zero);
+			
+			Invoke(nameof(StopFire), _fireRate);
+
+			CmdFire();
+		}
+
+		[Command (requiresAuthority = false)]
+		private void CmdFire()
+		{
+			RpcFire();
+			TargetRpcFire();
+		}
+		
+		[ClientRpc]
+		private void RpcFire()
+		{
 			if (!gunShot[0].isPlaying)
 				gunShot[0].Play();
 			else if (!gunShot[1].isPlaying)
 				gunShot[1].Play();
 			else if (!gunShot[2].isPlaying)
 				gunShot[2].Play();
-			
-			CmdSpawnMuzzleFlashPrefab(muzzleFlashPosition.position, muzzleFlashPosition.rotation);
-			
-			// Луч
-			CmdCastRayCast(_camera.position, _camera.forward);
-			
-			// Спавн обьекта с партиклами летящей пули
-			CmdSpawnBulletParticlePrefab(muzzleFlashPosition.position, Vector3.zero);
-			
-			_ammo -= 1;
-			_ui.ammoText.text = _ammo.ToString();
-			
-			_gunAnimator.Play("Fire");
-			
-			Invoke(nameof(StopFire), _fireRate);
 		}
-
-		[Server]
+		
+		[TargetRpc]
+		private void TargetRpcFire()
+		{
+			_ui.ammoText.text = _ammo.ToString();
+		}
+		
 		private void BreakingThrough(Vector3 direction, byte damageModifier)
 		{
 			Vector3 forwardMultiplier;
@@ -191,7 +208,6 @@ namespace Player
 			
 			if (FindGameObject.Find(_hit.transform, "Glass", out var glass))
 			{
-				print(glass.name);
 				glass.GetComponent<BreakableWindow>().RpcBreakWindow();
 				BreakingThrough(direction, 1);
 				return;
@@ -209,15 +225,21 @@ namespace Player
 				return;
 			}
 			
-			if (FindGameObject.Find(_hit.transform, "Player") &&
-			    !FindGameObject.Find(_hit.transform,
-				    "PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
+			if (FindGameObject.Find(_hit.transform, "Player", out var player) 
+			    && !_hit.collider.CompareTag("PlayerBulletFlyBy")) // Если обьект в который попали имеет тэг игрока
 			{
-				DamagePlayer(_hit, _damage);
+				DamageEntity(player.GetComponent<LifeEntity>(), _hit, _damage);
 				BreakingThrough(direction, 7);
 				return;
 			}
-
+			
+			// if (FindGameObject.Find(_hit.transform, "LifeEntity", out var outObject)) // Если обьект в который попали имеет тэг игрока
+			// {
+			// 	DamageEntity(outObject.GetComponent<LifeEntity>(), _hit, _damage);
+			// 	BreakingThrough(direction, 7);
+			// 	return;
+			// }
+			
 			if (FindGameObject.Find(_hit.transform, "PlayerBulletFlyBy"))
 			{
 				_bulletFlyBySoundSpawner.CmdSpawnBulletFlyBySound(_hit.point, new Quaternion());
@@ -257,7 +279,7 @@ namespace Player
 			if(FindGameObject.Find(_hit.transform, "Interactable", out var findedGameObject)) // Door
 			{
 				BreakingThrough(direction, 7);
-				findedGameObject.GetComponent<DoorController>().CmdShooted(7);
+				findedGameObject.GetComponent<DoorController>().CmdSetHp(7);
 			}
 
 			if (!FindGameObject.Find(_hit.transform, "Player") &&
@@ -268,46 +290,53 @@ namespace Player
 				
 				// Рикошет
 				if (Vector3.Angle(_hit.normal, _camera.forward) <= 105)
-				{
-					// Луч
-					var old_hit_point = _hit.point;
-
-					CastRayCast(_hit.point, Vector3.Reflect(direction, _hit.normal));
-
-					CmdSpawnBulletHolePrefab(_hit.point, Quaternion.Euler(Vector3.Angle(_hit.normal, Vector3.up), 0, 0));
-					
-					// Спавн обьекта с партиклами летящей пули
-					CmdSpawnBulletParticlePrefab(old_hit_point, _hit.point);
-				}
+					Ricochet(direction);
 			}
 		}
-        
-		[Server]
-		public void DamagePlayer(RaycastHit hit, byte damage)
+
+		private void Ricochet(Vector3 oldDirection)
 		{
-			var shootedPlayer = hit.collider.GetComponent<Player>();
-			
-			shootedPlayer.CmdChangeHp(damage, transform, _player.playerDisplayName);
+			// Луч
+			var old_hit_point = _hit.point;
+
+			CastRayCast(_hit.point, Vector3.Reflect(oldDirection, _hit.normal));
+
+			CmdSpawnBulletHolePrefab(_hit.point, Quaternion.Euler(Vector3.Angle(_hit.normal, Vector3.up), 0, 0));
+					
+			// Спавн обьекта с партиклами летящей пули
+			CmdSpawnBulletParticlePrefab(old_hit_point, _hit.point);
+		}
+		
+		[Command (requiresAuthority = false)]
+		public void DamageEntity(LifeEntity entity, RaycastHit hit, int damage)
+		{
+			entity.CmdSetHp(entity.hp - damage, _player.playerDisplayName);
 			
 			CmdSpawnBloodPrefab(hit.point, Quaternion.Euler(Vector3.Angle(hit.normal, Vector3.up), 0, 0));
 			
-			_hitMarkerController.EnableAndDisableMarker(shootedPlayer.isDeath);
+			TargetRpcDamageEntity(entity);
+		}
+
+		[TargetRpc]
+		private void TargetRpcDamageEntity(LifeEntity entity)
+		{
+			_hitMarkerController.EnableAndDisableMarker(entity.IsDeath);
 			
 			_hitSoundsController.PlayHitBassSound();
 			_hitSoundsController.PlayHitMarkerSound();
 			
+			// Сущность убита.
+			if(!entity.IsDeath || entity.hp > 0) return;
+			if(entity.TryGetComponent<Player>(out var player))
+				_hitMarkerController.SetPlayerKilledText(player.playerDisplayName);
 			
-			if(!shootedPlayer.isDeath || shootedPlayer.hp > 0) return;
-
-			_hitMarkerController.SetPlayerKilledText(shootedPlayer.playerDisplayName);
-			
-			// Звук колокольчика
+			// Звук колокольчика.
 			_hitSoundsController.PlayBellSound();
 			
 			PlayerPrefs.SetInt("Kills", PlayerPrefs.GetInt("Kills") + 1);
 			print("Kills:" + PlayerPrefs.GetInt("Kills"));
 		}
-
+		
 		#region Network Methods
 		[Command (requiresAuthority = false)]
 		// ReSharper disable once MemberCanBeMadeStatic.Local
@@ -357,36 +386,63 @@ namespace Player
 			
 			_isFire = false;
 			if(_ammo == 0)
-				Reload();
+				CmdReload();
 		}
 		
-		public void Reload()
+		#region CmdReload
+		[Command (requiresAuthority = false)]
+		public void CmdReload()
 		{
-			if(!isOwned) return;
-			if(_isReloading) return;
-			if(_ammo == _fullAmmo) return;
-			if(_player.isDeath) return;
-			if(_ui.menu.isPaused) return;
+			if (!isOwned) return;
+			if (_isReloading) return;
+			if (_ammo == _fullAmmo) return;
+			if (_player.IsDeath) return;
+			if (_ui.menu.isPaused) return;
 			
 			_isReloading = true;
 			
-			_ui.reloadText.SetActive(true);
-			
-			_gunAnimator.Play("Reload");
-			
 			Invoke(nameof(StopReload), _reloadTime);
+			
+			RpcReload();
+			TargetRpcReload();
+		}
+		
+		[ClientRpc]
+		private void RpcReload()
+		{
+			_gunAnimator.Play("CmdReload");
 		}
 
+		[TargetRpc]
+		private void TargetRpcReload()
+		{
+			_ui.reloadText.SetActive(true);
+		}
+		
 		private void StopReload()
 		{
 			if(!isOwned) return;
 			
 			_ammo = _fullAmmo;
-			_ui.ammoText.text = _ammo.ToString();
-			_ui.reloadText.SetActive(false);
 			_isReloading = false;
+			
+			RpcStopReload();
+			TargetRpcStopReload();
+		}
+
+		[ClientRpc]
+		private void RpcStopReload()
+		{
 			_gunAnimator.Play("Idle");
 		}
+
+		[TargetRpc]
+		private void TargetRpcStopReload()
+		{
+			_ui.ammoText.text = _ammo.ToString();
+			_ui.reloadText.SetActive(false);
+		}
+		#endregion
 		
 	}
 }

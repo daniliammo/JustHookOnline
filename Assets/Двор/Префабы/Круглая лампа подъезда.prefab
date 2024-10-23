@@ -5920,7 +5920,7 @@ MonoBehaviour:
   preCalculate: 0
   addTorques: 1
   hideSplintersInHierarchy: 0
-  useCollision: 1
+  useCollision: 0
   health: 0
   destroyPhysicsTime: 5
   destroyColliderWithPhysics: 1

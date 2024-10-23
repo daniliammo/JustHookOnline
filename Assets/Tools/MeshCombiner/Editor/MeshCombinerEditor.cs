@@ -8,8 +8,8 @@ public class MeshCombinerEditor : Editor
 {
 	public override void OnInspectorGUI()
 	{
-		var meshCombiner = (MeshCombiner)target;
-		var mesh = meshCombiner.GetComponent<MeshFilter>().sharedMesh;
+		MeshCombiner meshCombiner = (MeshCombiner)target;
+		Mesh mesh = meshCombiner.GetComponent<MeshFilter>().sharedMesh;
 
 		#region Script:
 		GUI.enabled = false;
@@ -18,7 +18,7 @@ public class MeshCombinerEditor : Editor
 		#endregion Script.
 
 		#region MeshFiltersToSkip array:
-		var meshFiltersToSkip = serializedObject.FindProperty("meshFiltersToSkip");
+		SerializedProperty meshFiltersToSkip = serializedObject.FindProperty("meshFiltersToSkip");
 		EditorGUI.BeginChangeCheck();
 		EditorGUILayout.PropertyField(meshFiltersToSkip, true);
 		if(EditorGUI.EndChangeCheck())
@@ -46,7 +46,7 @@ public class MeshCombinerEditor : Editor
 			"generates a UV map (required for the lightmap).\n\nCan be used only in the Editor."));
 
 		// The last (6) "Destroy Combined Children" Toggle:
-		var style = new GUIStyle(EditorStyles.toggle);
+		GUIStyle style = new GUIStyle(EditorStyles.toggle);
 		if(meshCombiner.DestroyCombinedChildren)
 		{
 			style.onNormal.textColor = new Color(1, 0.15f, 0);
@@ -63,7 +63,7 @@ public class MeshCombinerEditor : Editor
 
 		// Create style wherein text color will be red if folder path is not valid:
 		style = new GUIStyle(EditorStyles.textField);
-		var isValidPath = IsValidPath(meshCombiner.FolderPath);
+		bool isValidPath = IsValidPath(meshCombiner.FolderPath);
 		if(!isValidPath)
 		{
 			style.normal.textColor = Color.red;
@@ -75,9 +75,9 @@ public class MeshCombinerEditor : Editor
 		#endregion Path to the folder where combined Meshes will be saved.
 
 		#region Button which save/show combined Mesh:
-		var meshIsSaved = mesh != null && AssetDatabase.Contains(mesh);
-		GUI.enabled = mesh != null && (isValidPath || meshIsSaved); // Valid path is required for not saved Mesh.
-		var saveMeshButtonText = meshIsSaved ? "Show Saved Combined Mesh" : "Save Combined Mesh";
+		bool meshIsSaved = (mesh != null && AssetDatabase.Contains(mesh));
+		GUI.enabled = (mesh != null && (isValidPath || meshIsSaved)); // Valid path is required for not saved Mesh.
+		string saveMeshButtonText = (meshIsSaved) ? "Show Saved Combined Mesh" : "Save Combined Mesh";
 
 		if(GUILayout.Button(saveMeshButtonText))
 		{
@@ -89,30 +89,30 @@ public class MeshCombinerEditor : Editor
 
 	private bool IsValidPath(string folderPath)
 	{
-		var pattern = "[:*?\"<>|]"; // Prohibited characters.
-		var regex = new Regex(pattern);
-		return !regex.IsMatch(folderPath);
+		string pattern = "[:*?\"<>|]"; // Prohibited characters.
+		Regex regex = new Regex(pattern);
+		return (!regex.IsMatch(folderPath));
 	}
 
 	private string SaveCombinedMesh(Mesh mesh, string folderPath)
 	{
-		var meshIsSaved = AssetDatabase.Contains(mesh); // If is saved then only show it in the project view.
+		bool meshIsSaved = AssetDatabase.Contains(mesh); // If is saved then only show it in the project view.
 
 		#region Create directories if Mesh and path doesn't exists:
 		folderPath = folderPath.Replace('\\', '/');
 		if(!meshIsSaved && !AssetDatabase.IsValidFolder("Assets/"+folderPath))
 		{
-			var folderNames = folderPath.Split('/');
+			string[] folderNames = folderPath.Split('/');
 			folderNames = folderNames.Where((folderName) => !folderName.Equals("")).ToArray();
 			folderNames = folderNames.Where((folderName) => !folderName.Equals(" ")).ToArray();
 
 			folderPath = "/"; // Reset folder path.
-			for(var i = 0; i < folderNames.Length; i++)
+			for(int i = 0; i < folderNames.Length; i++)
 			{
 				folderNames[i] = folderNames[i].Trim();
 				if(!AssetDatabase.IsValidFolder("Assets"+folderPath+folderNames[i]))
 				{
-					var folderPathWithoutSlash = folderPath.Substring(0, folderPath.Length-1); // Delete last "/" character.
+					string folderPathWithoutSlash = folderPath.Substring(0, folderPath.Length-1); // Delete last "/" character.
 					AssetDatabase.CreateFolder("Assets"+folderPathWithoutSlash, folderNames[i]);
 				}
 				folderPath += folderNames[i]+"/";
@@ -124,8 +124,8 @@ public class MeshCombinerEditor : Editor
 		#region Save Mesh:
 		if(!meshIsSaved)
 		{
-			var meshPath = "Assets/"+folderPath+"/"+mesh.name+".asset";
-			var assetNumber = 1;
+			string meshPath = "Assets/"+folderPath+"/"+mesh.name+".asset";
+			int assetNumber = 1;
 			while(AssetDatabase.LoadAssetAtPath(meshPath, typeof(Mesh)) != null) // If Mesh with same name exists, change name.
 			{
 				meshPath = "Assets/"+folderPath+"/"+mesh.name+" ("+assetNumber+").asset";

@@ -65,9 +65,9 @@ namespace Explosion
 	                {
 		                if(hit.collider.CompareTag("Player"))
 		                {
-			                var player = t.GetComponent<Player.Player>();
+			                var player = t.GetComponent<LifeEntity>();
 			                var damage = CalcDamage(DamageType.Player, player.transform);
-			                player.CmdChangeHp(damage, transform, "Взрыв");
+			                player.CmdSetHp(damage, "Взрыв");
 			                continue;
 		                }
 
@@ -104,18 +104,18 @@ namespace Explosion
         }
 
         [Server]
-        private byte CalcDamage(DamageType damageType, Transform target)
+        private int CalcDamage(DamageType damageType, Transform target)
         {
 	        var normalizedDistance = Mathf.Clamp01(Vector3.Distance(target.position, transform.position) / radius);
-
+	        
 	        var damage = damageType switch
 	        {
 		        DamageType.Vehicle => maxDamageToVehicle * (1 - normalizedDistance),
 		        DamageType.Player => maxDamageToPlayer * (1 - normalizedDistance),
 		        _ => 0
 	        };
-
-	        return (byte)damage;
+	        
+	        return (int)damage;
         }
         
         [ClientRpc]

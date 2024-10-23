@@ -236,14 +236,14 @@ namespace Cars
         public void CmdExplode(Player.Player killer)
         {
             CmdExplode();
-            driver.SetHp(driver.maxHp, killer.playerDisplayName);
+            driver.CmdSetHp(driver.maxHp, killer.playerDisplayName);
             Exit(driver);
             
             if(killPassengersAndDriverAfterVehicleDestroy)
             {
                 foreach (var passenger in passengers)
                 {
-                    passenger.SetHp(passenger.maxHp, killer.playerDisplayName);
+                    passenger.CmdSetHp(passenger.maxHp, killer.playerDisplayName);
                     Exit(passenger);
                 }
             }
