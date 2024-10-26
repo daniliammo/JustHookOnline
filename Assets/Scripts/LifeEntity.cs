@@ -52,19 +52,18 @@ public class LifeEntity : NetworkBehaviour
 
     private void Death(string damagerName)
     {
-        CmdSetHp(0, damagerName);
+        IsDeath = true;
         
         CancelInvoke(nameof(AllowRegeneration));
-        Invoke(nameof(AllowRegeneration), 4);
+        Invoke(nameof(AllowRegeneration), reviveTime);
         
         OnDeath?.Invoke(damagerName);
-        IsDeath = true;
         
         switch (allowRevive)
         {
             case false:
                 gameObject.tag = gameObjectTagAfterDeath;
-                Destroy(this);
+                // Destroy(this);
                 break;
             case true:
                 Invoke(nameof(Revive), reviveTime);

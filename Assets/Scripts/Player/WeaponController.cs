@@ -12,7 +12,7 @@ namespace Player
 		// TODO: Сделать комментарии
 		private UIObjectsLinks _ui;
 
-		private Transform _camera;
+		internal Transform Camera;
 		
 		// Оружие
 		private bool _isReloading;
@@ -25,6 +25,7 @@ namespace Player
 		private byte _ammo;
 
 		private byte _damage;
+		
 		
 		private Player _player;
 		
@@ -78,7 +79,7 @@ namespace Player
 			
 			_ui = FindFirstObjectByType<UIObjectsLinks>();
 			
-			_camera = GameObject.FindGameObjectWithTag("MainCamera").transform;
+			Camera = GameObject.FindGameObjectWithTag("MainCamera").transform;
 
 			_bulletFlyBySoundSpawner = GetComponent<BulletFlyBySoundSpawner>();
 			
@@ -141,7 +142,7 @@ namespace Player
 			CmdSpawnMuzzleFlashPrefab(muzzleFlashPosition.position, muzzleFlashPosition.rotation);
 			
 			// Логика выстрела.
-			CmdCastRayCast(_camera.position, _camera.forward);
+			CmdCastRayCast(Camera.position, Camera.forward);
 			
 			// Создание объекта с эффектами летящей пули.
 			CmdSpawnBulletParticlePrefab(muzzleFlashPosition.position, Vector3.zero);
@@ -180,9 +181,9 @@ namespace Player
 			Vector3 forwardMultiplier;
 			
 			if (_hit.collider.CompareTag("Player"))
-				forwardMultiplier = _camera.forward / 1.25f;
+				forwardMultiplier = Camera.forward / 1.25f;
 			else
-				forwardMultiplier = _camera.forward / 10;
+				forwardMultiplier = Camera.forward / 10;
 			
 			var adjustedPoint = _hit.point + forwardMultiplier;
 			_damage -= damageModifier;
@@ -253,7 +254,7 @@ namespace Player
 
 			if (_hit.collider.CompareTag("ExplosiveBarrelFragments"))
 			{
-				_hit.rigidbody.linearVelocity = _camera.forward * 20;
+				_hit.rigidbody.linearVelocity = Camera.forward * 20;
 				
 				BreakingThrough(direction, 3);
 				return;
@@ -261,7 +262,7 @@ namespace Player
 
 			if(_hit.collider.CompareTag("PhysicalBody"))
 			{
-				_hit.rigidbody.linearVelocity = _camera.forward * 20;
+				_hit.rigidbody.linearVelocity = Camera.forward * 20;
 				
 				BreakingThrough(direction, 5);
 				return;
@@ -286,7 +287,7 @@ namespace Player
 				CmdSpawnBulletHolePrefab(_hit.point, Quaternion.Euler(Vector3.Angle(_hit.normal, Vector3.up), 0, 0));
 				
 				// Рикошет
-				if (Vector3.Angle(_hit.normal, _camera.forward) <= 105)
+				if (Vector3.Angle(_hit.normal, Camera.forward) <= 105)
 					Ricochet(direction);
 			}
 		}

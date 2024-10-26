@@ -22,11 +22,13 @@ namespace Player
         public AudioClip hookShot;
         public AudioClip hookCancel;
         public AudioClip hookLanding;
+        // Если True, то проигрывается звук стягивания крюка.
         private bool _playHookPool;
 
+        // Объект крюка который летит. Не префаб.
         private GameObject _hookGameObject;
+        // Позиция в которую должен полететь крюк.
         private GameObject _hookedPosition;
-        private Transform _camera;
 
         private const byte MaxDistance = 255;
         private const byte HookPoolSpeed = 23;
@@ -48,11 +50,18 @@ namespace Player
         private bool _isSafeHook = true;
         // True когда крюк зацепился за пол. Если крюк на полу, то отцепится когда игрок подлетит к нему.
         private bool _isHookOnFloor;
+        // True когда крюк возвращается к игроку.
         private bool _isHookCanceling;
+        // True когда крюк еще летит к цели.
         private bool _isHookOnAir;
+        // True когда игрок летит к крюку.
         internal bool IsHooking;
-        // Если true, то рисуется линия от игрока к крюку
+        // Если true, то рисуется линия от игрока к крюку.
         private bool _drawRope;
+        
+        // True когда игрок уже летит к крюку и пытается бросить крюк в другое место.
+        // Переменная для того что бы игра запоминала место в которое кидать крюк.
+        // TODO: Нормально назвать переменную.
         private bool x;
         
         
@@ -60,7 +69,8 @@ namespace Player
         {
             GetComponents();
             CheckPlayerPrefsKeys();
-            _isSafeHook = PlayerPrefsBoolean.GetBool("SafeHook");
+            // TODO: Раскомментировать как только будет реализация этих настроек в интерфейсе.
+            // _isSafeHook = PlayerPrefsBoolean.GetBool("SafeHook");
         }
 
         private void GetComponents()
@@ -71,8 +81,6 @@ namespace Player
             _weaponController = GetComponent<WeaponController>();
             
             _ui = FindFirstObjectByType<UIObjectsLinks>();
-            // ReSharper disable once PossibleNullReferenceException
-            _camera = Camera.main.transform;
         }
         
         private static void CheckPlayerPrefsKeys()
@@ -98,7 +106,7 @@ namespace Player
                         _isHookOnAir = false;
                     }
                     
-                    Physics.Raycast(_camera.position, _camera.forward, out _hit,
+                    Physics.Raycast(_weaponController.Camera.position, _weaponController.Camera.forward, out _hit,
                         MaxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
                     InvokeRepeating(nameof(Test), 0, 0.05f);
                 }
@@ -121,6 +129,7 @@ namespace Player
             DrawRope();
         }
 
+        // TODO: Нормально назвать функцию.
         private void Test()
         {
             if (!_isHookCanceling)
@@ -175,7 +184,7 @@ namespace Player
 
         private void CheckDistance()
         {
-            if (Physics.Raycast(_camera.position, _camera.forward, out var hit, MaxDistance,
+            if (Physics.Raycast(_weaponController.Camera.position, _weaponController.Camera.forward, out var hit, MaxDistance,
                     Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             {
                 if (hit.transform.CompareTag("DeadZone") || hit.transform.CompareTag("Boundary"))
@@ -270,7 +279,7 @@ namespace Player
             if (!_isHookOnFloor) return;
             if (!IsHooking) return;
             
-            // Если обьект в который попал крюк удален крюк должен полететь обратно
+            // Если объект в который попал крюк удален крюк должен полететь обратно
             if (!_hookedPosition)
                 StopGrapple();
             
@@ -298,7 +307,7 @@ namespace Player
 
             if (!x)
             {
-                if (!Physics.Raycast(_camera.position, _camera.forward, out _hit,
+                if (!Physics.Raycast(_weaponController.Camera.position, _weaponController.Camera.forward, out _hit,
                         MaxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return;
             }
             
@@ -323,7 +332,10 @@ namespace Player
 
             _hookGameObject = Instantiate(hookPrefab);
             
-            _hookGameObject.transform.LookAt(_camera);
+            _hookGameObject.transform.LookAt(_weaponController.Camera);
+            _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
+            
+            // _hookGameObject.transform.LookAt(_weaponController._camera);
             // _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
 
             // _hookGameObject.transform.LookAt(_camera);
@@ -346,7 +358,7 @@ namespace Player
             _playHookPool = true;
             IsHooking = true;
             
-            _hookGameObject.transform.LookAt(_camera);
+            _hookGameObject.transform.LookAt(_weaponController.Camera);
             _hookGameObject.transform.rotation = Quaternion.Euler(-_hookGameObject.transform.rotation.eulerAngles.x, _hookGameObject.transform.rotation.eulerAngles.y + 180, _hookGameObject.transform.rotation.eulerAngles.z);
             
             if (FindGameObject.Find(_hit.transform, "Player", out var player)
