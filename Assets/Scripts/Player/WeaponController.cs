@@ -389,7 +389,7 @@ namespace Player
 				CmdReload();
 		}
 		
-		#region CmdReload
+		#region Reload
 		[Command (requiresAuthority = false)]
 		public void CmdReload()
 		{
@@ -403,14 +403,8 @@ namespace Player
 			
 			Invoke(nameof(StopReload), _reloadTime);
 			
-			RpcReload();
+			_gunAnimator.Play("Reload");
 			TargetRpcReload();
-		}
-		
-		[ClientRpc]
-		private void RpcReload()
-		{
-			_gunAnimator.Play("CmdReload");
 		}
 
 		[TargetRpc]
@@ -426,14 +420,8 @@ namespace Player
 			_ammo = _fullAmmo;
 			_isReloading = false;
 			
-			RpcStopReload();
-			TargetRpcStopReload();
-		}
-
-		[ClientRpc]
-		private void RpcStopReload()
-		{
 			_gunAnimator.Play("Idle");
+			TargetRpcStopReload();
 		}
 
 		[TargetRpc]
