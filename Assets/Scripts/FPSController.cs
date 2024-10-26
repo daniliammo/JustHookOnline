@@ -24,5 +24,33 @@ public class FPSController : MonoBehaviour
         Application.targetFrameRate = 165;
 	    #endif
     }
+
+    #if !UNITY_EDITOR
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        switch (pauseStatus)
+        {
+            case true:
+                Application.targetFrameRate = 1;
+                break;
+            case false:
+                SetFPS();
+                break;
+        }
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        switch (hasFocus)
+        {
+            case true:
+                SetFPS();
+                break;
+            case false:
+                Application.targetFrameRate = 1;
+                break;
+        }
+    }
+    #endif
     
 }
