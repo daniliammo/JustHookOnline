@@ -58,6 +58,13 @@ namespace Player
         
         private void Start()
         {
+            GetComponents();
+            CheckPlayerPrefsKeys();
+            _isSafeHook = PlayerPrefsBoolean.GetBool("SafeHook");
+        }
+
+        private void GetComponents()
+        {
             _player = GetComponent<Player>();
             _lr = GetComponent<LineRenderer>();
             _rb = GetComponent<Rigidbody>();
@@ -66,11 +73,8 @@ namespace Player
             _ui = FindFirstObjectByType<UIObjectsLinks>();
             // ReSharper disable once PossibleNullReferenceException
             _camera = Camera.main.transform;
-
-            CheckPlayerPrefsKeys();
-            _isSafeHook = PlayerPrefsBoolean.GetBool("SafeHook");
         }
-
+        
         private static void CheckPlayerPrefsKeys()
         {
             if (!PlayerPrefs.HasKey("SafeHook"))
@@ -207,7 +211,9 @@ namespace Player
 
             var distCovered = (Time.time - _startTime) * HookCableSpeed;
             var fractionOfJourney = distCovered / _journeyLength;
-            if(!_hookedPosition)
+            
+            
+            if (!_hookedPosition)
             {
                 LineRendererSetPositionCount();
                 StopGrapple();
@@ -243,7 +249,7 @@ namespace Player
 
         private void FixedUpdate()
         {
-            if(!isOwned) return;
+            if (!isOwned) return;
             
             if (_isHookCanceling)
             {
@@ -265,7 +271,7 @@ namespace Player
             if (!IsHooking) return;
             
             // Если обьект в который попал крюк удален крюк должен полететь обратно
-            if(!_hookedPosition)
+            if (!_hookedPosition)
                 StopGrapple();
             
             var toGrapplePoint = _hookGameObject.transform.position - transform.position;
@@ -428,7 +434,7 @@ namespace Player
                     hookPool.Stop();
                     break;
                 case false:
-                    if(!hookPool.isPlaying)
+                    if (!hookPool.isPlaying)
                         hookPool.Play();
                     break;
             }
