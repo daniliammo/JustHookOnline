@@ -125,11 +125,8 @@ namespace Player
 		
 		private void Fire()
 		{
-			if (!isOwned) return;
-			if (_isReloading) return;
-			if (_isFire) return;
-			if (_player.IsDeath) return;
-			if (_ui.menu.isPaused) return;
+			if (!isOwned || _isReloading || _isFire || _player.IsDeath || _ui.menu.isPaused) return;
+
 			if (_ammo <= 0)
 			{
 				CmdReload();
@@ -380,12 +377,13 @@ namespace Player
 		
 		private void StopFire()
 		{
-			if(!isOwned) return;
+			if (!isOwned) return;
 			
 			_gunAnimator.Play("Idle");
 			
 			_isFire = false;
-			if(_ammo == 0)
+			
+			if (_ammo == 0)
 				CmdReload();
 		}
 		
@@ -393,11 +391,7 @@ namespace Player
 		[Command (requiresAuthority = false)]
 		public void CmdReload()
 		{
-			if (!isOwned) return;
-			if (_isReloading) return;
-			if (_ammo == _fullAmmo) return;
-			if (_player.IsDeath) return;
-			if (_ui.menu.isPaused) return;
+			if (!isOwned || _isReloading || _ammo == _fullAmmo || _player.IsDeath || _ui.menu.isPaused) return;
 			
 			_isReloading = true;
 			

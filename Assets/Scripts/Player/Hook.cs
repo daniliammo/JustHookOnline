@@ -7,9 +7,8 @@ namespace Player
 {
     public class Hook : NetworkBehaviour
     {
-
-        // TODO: Сделать переменную которая если будет true то когда игрок летит на крюке и пытается хукануть крюком в воздух то ничего не происходит и игрок продолжает лететь на крюке
-
+        
+        // TODO: Заменить вектора на float что бы прицел изменялся по пропорциям.
         public Vector2 minHookCrosshairSize;
         public Vector2 maxHookCrosshairSize;
         
@@ -86,7 +85,7 @@ namespace Player
             {
                 if (Input.GetMouseButtonDown(1))
                 {
-                    if(!_isHookOnAir)
+                    if (!_isHookOnAir)
                         StopGrapple();
 
                     if (_isHookOnAir)
@@ -103,7 +102,7 @@ namespace Player
                 // Бросить Крюк
                 if (Input.GetKeyDown(KeyCode.LeftControl))
                 {
-                    if(!_isHookOnAir)
+                    if (!_isHookOnAir)
                         StopGrapple();
 
                     if (_isHookOnAir)
@@ -120,7 +119,7 @@ namespace Player
 
         private void Test()
         {
-            if(!_isHookCanceling)
+            if (!_isHookCanceling)
             {
                 x = true;
                 CancelInvoke(nameof(Test));
@@ -132,12 +131,12 @@ namespace Player
         public void JustHook()
         {
             _isHookOnAir = false;
-            if(_isHookCanceling)
+            if (_isHookCanceling)
                 return;
             
-            if(!_isSafeHook)
+            if (!_isSafeHook)
             {
-                if(!_isHookOnAir)
+                if (!_isHookOnAir)
                     StopGrapple();
 
                 if (_isHookOnAir)
@@ -160,7 +159,7 @@ namespace Player
 
         public void Stop()
         {
-            if(_isHookCanceling)
+            if (_isHookCanceling)
             {
                 _isHookCanceling = false;
                 Destroy(_hookGameObject);
@@ -245,6 +244,7 @@ namespace Player
         private void FixedUpdate()
         {
             if(!isOwned) return;
+            
             if (_isHookCanceling)
             {
                 _hookGameObject.transform.position = Vector3.MoveTowards(_hookGameObject.transform.position, transform.position, HookCableSpeed * Time.fixedDeltaTime);
@@ -258,11 +258,11 @@ namespace Player
                 }
             }
             
-            if(_isHookOnAir && _hookGameObject || _isHookCanceling)
+            if (_isHookOnAir && _hookGameObject || _isHookCanceling)
                 _hookGameObject.transform.Rotate(new Vector3(0, 0, 14.4f));
 
-            if(!_isHookOnFloor) return;
-            if(!IsHooking) return;
+            if (!_isHookOnFloor) return;
+            if (!IsHooking) return;
             
             // Если обьект в который попал крюк удален крюк должен полететь обратно
             if(!_hookedPosition)
@@ -297,7 +297,7 @@ namespace Player
             }
             
 
-            if(_hit.transform.CompareTag("DeadZone") && _hit.transform.CompareTag("Boundary")) return;
+            if (_hit.transform.CompareTag("DeadZone") && _hit.transform.CompareTag("Boundary")) return;
             
             CmdPlayHookShotSound();
             
@@ -354,7 +354,7 @@ namespace Player
         public void StopGrapple()
         {
             CmdPlayOrStopHookPoolSound(true);
-            if(IsHooking || _isHookOnAir)
+            if (IsHooking || _isHookOnAir)
             {
                 _isHookOnAir = false;
                 _isHookCanceling = true;
