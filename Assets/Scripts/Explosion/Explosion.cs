@@ -47,7 +47,8 @@ namespace Explosion
         {
             RpcExplode();
             
-	        var colliders = Physics.OverlapSphere(transform.position, radius);
+            // ReSharper disable once Unity.PreferNonAllocApi
+            var colliders = Physics.OverlapSphere(transform.position, radius);
 	        foreach (var t in colliders)
 	        {
 		        if (t.CompareTag("Glass"))

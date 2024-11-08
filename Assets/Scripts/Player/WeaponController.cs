@@ -48,7 +48,7 @@ namespace Player
 		private HitSoundsController _hitSoundsController;
 		
 		// Звуки
-		[Header("Звуки")] 
+		[Header("Звуки")]
 		private AudioSource _playerFX;
 		public AudioSource[] gunShot;
 		
