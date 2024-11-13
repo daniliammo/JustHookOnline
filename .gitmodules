@@ -1,6 +1,0 @@
-[submodule "/home/daniliammo/UnityProjects/JustHookOnline/Assets/Tools/MeshCombiner"]
-	path = /home/daniliammo/UnityProjects/JustHookOnline/Assets/Tools/MeshCombiner
-	url = https://github.com/dawid-t/Mesh-Combiner
-[submodule "/home/daniliammo/UnityProjects/JustHookOnline/Assets/Tools/Mirror"]
-	path = /home/daniliammo/UnityProjects/JustHookOnline/Assets/Tools/Mirror
-	url = https://github.com/MirrorNetworking/Mirror
