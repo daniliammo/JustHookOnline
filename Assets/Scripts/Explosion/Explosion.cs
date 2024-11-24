@@ -64,7 +64,7 @@ namespace Explosion
 	                        out var hit, radius, Physics.DefaultRaycastLayers,
 	                        QueryTriggerInteraction.Ignore))
 	                {
-		                if(hit.collider.CompareTag("Player"))
+		                if (hit.collider.CompareTag("Player"))
 		                {
 			                var player = t.GetComponent<LifeEntity>();
 			                var damage = CalcDamage(DamageType.Player, player.transform);
