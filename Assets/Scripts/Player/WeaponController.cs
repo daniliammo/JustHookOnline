@@ -105,7 +105,7 @@ namespace Player
 		
 		private void Update()
 		{
-			if(RealInput.IsTouchSupported) return;
+			if (RealInput.IsTouchSupported) return;
 			
 			if (Input.GetButton("Fire1"))
 				Fire();
@@ -201,7 +201,7 @@ namespace Player
 			Physics.Raycast(origin, direction, out _hit, Mathf.Infinity);
 			// ReSharper disable all Unity.PerformanceCriticalCodeInvocation
 
-			if(FindGameObject.Find(_hit.transform, "Boundary") || FindGameObject.Find(_hit.transform, "DeadZone")) 
+			if (FindGameObject.Find(_hit.transform, "Boundary") || FindGameObject.Find(_hit.transform, "DeadZone")) 
 				return;
 			
 			if (FindGameObject.Find(_hit.transform, "Glass", out var glass))
@@ -211,7 +211,7 @@ namespace Player
 				return;
 			}
 
-			if(FindGameObject.Find(_hit.transform, "Lamp", out var lampGameObject))
+			if (FindGameObject.Find(_hit.transform, "Lamp", out var lampGameObject))
 			{
 				if(lampGameObject.TryGetComponent<Lamp>(out var lamp))
 					lamp.CmdBreakLamp();
@@ -260,7 +260,7 @@ namespace Player
 				return;
 			}
 
-			if(_hit.collider.CompareTag("PhysicalBody"))
+			if (_hit.collider.CompareTag("PhysicalBody"))
 			{
 				_hit.rigidbody.linearVelocity = Camera.forward * 20;
 				
@@ -274,7 +274,7 @@ namespace Player
 				return;
 			}
 
-			if(FindGameObject.Find(_hit.transform, "Interactable", out var findedGameObject)) // Door
+			if (FindGameObject.Find(_hit.transform, "Interactable", out var findedGameObject)) // Door
 			{
 				BreakingThrough(direction, 7);
 				findedGameObject.GetComponent<DoorController>().CmdSetHp(7);
@@ -410,7 +410,7 @@ namespace Player
 		
 		private void StopReload()
 		{
-			if(!isOwned) return;
+			if (!isOwned) return;
 			
 			_ammo = _fullAmmo;
 			_isReloading = false;
