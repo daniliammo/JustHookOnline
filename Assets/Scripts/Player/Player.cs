@@ -47,6 +47,7 @@ namespace Player
 				_nicknameSetter.OnNicknameChanged += CmdSendName;
 				_playerJoinMessages.CmdSendPlayerJoinMessage(PlayerPrefs.GetString("Nickname"));
 				FindFirstObjectByType<TimeController>().CmdSyncTime();
+				FindFirstObjectByType<Match>().CmdSyncConfig();
 				_ui.localPlayer = this;
 			}
 			
