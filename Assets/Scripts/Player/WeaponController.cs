@@ -21,11 +21,15 @@ namespace Player
 
 		private float _reloadTime;
 		
-		private byte _fullAmmo;
-		private byte _ammo;
+		private byte _maxAmmoMagazine;
+		private byte _currentAmmoInMagazine;
+		private short _allAmmo;
 
 		private byte _damage;
 		
+		private	Grenade _currentGrenade;
+		private bool _allowGrenade = true;
+		public float grenadeCooldownTime = 3;
 		
 		private Player _player;
 		
@@ -93,14 +97,14 @@ namespace Player
 		public void StartWeapon()
 		{
 			// TODO: Сделать определение значений переменных автоматически под каждое оружие
-			_fullAmmo = 30;
-			_ammo = _fullAmmo;
+			_maxAmmoMagazine = 30;
+			_currentAmmoInMagazine = _maxAmmoMagazine;
 			_reloadTime = 1.5f;
-			_fireRate = 0.08f;
-			_damage = 15;
+			_fireRate = 0.1f;
+			_damage = 30;
 			
-			_ui.fullAmmoText.text = _fullAmmo.ToString();
-			_ui.ammoText.text = _ammo.ToString();
+			_ui.fullAmmoText.text = _maxAmmoMagazine.ToString();
+			_ui.ammoText.text = _currentAmmoInMagazine.ToString();
 		}
 		
 		private void Update()
@@ -112,8 +116,34 @@ namespace Player
 			
 			if (Input.GetKeyDown(KeyCode.R))
 				CmdReload();
+			
+			if (Input.GetKeyDown(KeyCode.G))
+				ThrowGrenade();
+				
 		}
 
+		private void ThrowGrenade()
+		{
+			if (!_allowGrenade) return;
+			
+			var grenade = Instantiate(_currentGrenade, Camera.transform.position, Camera.transform.rotation);
+			grenade.GetComponent<Rigidbody>().AddForce(Camera.forward * 1052);
+            
+			StartGrenadeCooldown();
+		}
+		
+		private void StartGrenadeCooldown()
+		{
+			// _ui.sliderValueChanger.ChangeFillAmount(_ui.grenadeImage, grenadeCooldownTime);
+			_allowGrenade = false;
+			Invoke(nameof(EndGrenadeCooldown), grenadeCooldownTime);
+		}
+
+		private void EndGrenadeCooldown()
+		{
+			_allowGrenade = true;
+		}
+		
 		public void OnFireButtonDown()
 		{
 			InvokeRepeating(nameof(Fire), 0.0001f, 0.0001f);
@@ -128,14 +158,14 @@ namespace Player
 		{
 			if (!isOwned || _isReloading || _isFire || _player.IsDeath || _ui.menu.isPaused) return;
 
-			if (_ammo <= 0)
+			if (_currentAmmoInMagazine <= 0)
 			{
 				CmdReload();
 				return;
 			}
 			
 			_isFire = true;
-			_ammo -= 1;
+			_currentAmmoInMagazine -= 1;
 			_gunAnimator.Play("Fire");
 			
 			// Создание объекта с эффектом выстрела.
@@ -173,7 +203,7 @@ namespace Player
 		[TargetRpc]
 		private void TargetRpcFire()
 		{
-			_ui.ammoText.text = _ammo.ToString();
+			_ui.ammoText.text = _currentAmmoInMagazine.ToString();
 		}
 		
 		private void BreakingThrough(Vector3 direction, byte damageModifier)
@@ -384,7 +414,7 @@ namespace Player
 			
 			_isFire = false;
 			
-			if (_ammo == 0)
+			if (_currentAmmoInMagazine == 0)
 				CmdReload();
 		}
 		
@@ -392,7 +422,7 @@ namespace Player
 		[Command (requiresAuthority = false)]
 		public void CmdReload()
 		{
-			if (!isOwned || _isReloading || _ammo == _fullAmmo || _player.IsDeath || _ui.menu.isPaused) return;
+			if (!isOwned || _isReloading || _currentAmmoInMagazine == _maxAmmoMagazine || _player.IsDeath || _ui.menu.isPaused) return;
 			
 			_isReloading = true;
 			
@@ -412,7 +442,7 @@ namespace Player
 		{
 			if (!isOwned) return;
 			
-			_ammo = _fullAmmo;
+			_currentAmmoInMagazine = _maxAmmoMagazine;
 			_isReloading = false;
 			
 			_gunAnimator.Play("Idle");
@@ -422,7 +452,7 @@ namespace Player
 		[TargetRpc]
 		private void TargetRpcStopReload()
 		{
-			_ui.ammoText.text = _ammo.ToString();
+			_ui.ammoText.text = _currentAmmoInMagazine.ToString();
 			_ui.reloadText.SetActive(false);
 		}
 		#endregion
