@@ -20,6 +20,7 @@ public class LifeEntity : NetworkBehaviour
     
     [Header("Возрождение")]
     public bool allowRevive = true;
+    
     [Tooltip("Это поле нужно только тогда когда allowRevive = false")]
     public string gameObjectTagAfterDeath;
     public float reviveTime = 2.5f;
