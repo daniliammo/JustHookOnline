@@ -35,6 +35,7 @@ namespace Player
 
 		public void Start()
 		{
+			StartEntity();
 			GetComponents();
 
 			OnDeath += Death;

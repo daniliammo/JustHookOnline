@@ -42,9 +42,9 @@ public class LifeEntity : NetworkBehaviour
 
 
     [Server]
-    private void Awake()
+    protected void StartEntity()
     {
-        if(allowRegeneration)
+        if (allowRegeneration)
             InvokeRepeating(nameof(Regeneration), 1, regenerationRepeatRate);
 
         if (entityType != EntityType.Player) return;
@@ -56,6 +56,7 @@ public class LifeEntity : NetworkBehaviour
         IsDeath = true;
         
         CancelInvoke(nameof(AllowRegeneration));
+        CancelInvoke(nameof(Regeneration));
         Invoke(nameof(AllowRegeneration), reviveTime);
         
         OnDeath?.Invoke(damagerName);
