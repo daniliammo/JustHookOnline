@@ -12,10 +12,9 @@ namespace UI
     public class Menu : GameSettingsClass
     {
         
-        private NetworkController _networkController;
-        
         public bool isPaused;
         
+        public NetworkController networkController;
         public GameObject pause;
         public GameObject joiningToGamePanel;
         public GameObject disconnectPanel;
@@ -26,7 +25,7 @@ namespace UI
         
         private void Start()
         {
-            _networkController = FindFirstObjectByType<NetworkController>();
+            // networkController = FindFirstObjectByType<NetworkController>();
             
             CheckPlayerPrefsKeys(new Dictionary<string, bool>{{"NetworkSettings:CloseGameOnDisconnect", false}});
             
@@ -42,7 +41,7 @@ namespace UI
         
         private void OnClientStop()
         {
-            if(PlayerPrefsBoolean.GetBool("NetworkSettings:CloseGameOnDisconnect"))
+            if (PlayerPrefsBoolean.GetBool("NetworkSettings:CloseGameOnDisconnect"))
             {
                 Application.Quit();
                 #if UNITY_EDITOR
@@ -88,14 +87,14 @@ namespace UI
         
         public void OnStartHostButtonClicked()
         {
-            _networkController.StartHost();
+            networkController.StartHost();
         }
         
         public void OnJoinButtonClicked()
         {
             var ip = ipAddressText.text.Length == 0 ? "127.0.0.1" : ipAddressText.text;
             
-            _networkController.StartClient(ip);
+            networkController.StartClient(ip);
             
             joiningToGamePanel.SetActive(true);
             joiningToIpAddress.text = ip;
@@ -103,23 +102,23 @@ namespace UI
 
         public void OnCancelConnectionButtonClicked()
         {
-            _networkController.StopNetwork();
+            networkController.StopNetwork();
         }
         
         public void OnJoinToRandomGameButtonClicked()
         {
-            if(_networkController.DiscoveredServers.Count == 0) 
+            if(networkController.DiscoveredServers.Count == 0) 
                 return;
 
             var server =
-                _networkController.DiscoveredServers[Random.Range(0, _networkController.DiscoveredServers.Count)];
+                networkController.DiscoveredServers[Random.Range(0, networkController.DiscoveredServers.Count)];
             
             var address = server.EndPoint.Address.ToString();
             
             joiningToGamePanel.SetActive(true);
             joiningToIpAddress.text = address;
             
-            _networkController.StartClient(address);
+            networkController.StartClient(address);
         }
         
         public void OnExitGameButtonClicked()
@@ -133,7 +132,7 @@ namespace UI
 
         public void OnRestartSceneButtonClicked()
         {
-            _networkController.StopNetwork();
+            networkController.StopNetwork();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
         

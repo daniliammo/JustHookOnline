@@ -11,8 +11,8 @@ namespace Utils
         
         public readonly Dictionary<long, ServerResponse> DiscoveredServers = new();
         
-        private NetworkManager _networkManager;
-        private NetworkDiscovery _networkDiscovery;
+        public NetworkManager networkManager;
+        public NetworkDiscovery networkDiscovery;
         public TMP_Text serversList;
         // public TMP_Text fastConnectButtonText;
 
@@ -21,10 +21,7 @@ namespace Utils
         
         private void Start()
         {
-            _networkManager = FindFirstObjectByType<NetworkManager>();
-            _networkDiscovery = FindFirstObjectByType<NetworkDiscovery>();
-            
-            _networkDiscovery.StartDiscovery();
+            networkDiscovery.StartDiscovery();
             InvokeRepeating(nameof(FindServers), 0, 1);
             
             Application.quitting += StopNetwork;
@@ -58,14 +55,14 @@ namespace Utils
         
         public void StartClient(string ip)
         {
-            _networkManager.networkAddress = ip;
-            _networkManager.StartClient();
+            networkManager.networkAddress = ip;
+            networkManager.StartClient();
         }
 
         public void StartHost()
         {
-            _networkManager.StartHost();
-            _networkDiscovery.AdvertiseServer();
+            networkManager.StartHost();
+            networkDiscovery.AdvertiseServer();
         }
         
         public void StopNetwork()
@@ -73,7 +70,7 @@ namespace Utils
             if (NetworkServer.active && NetworkClient.isConnected)
             {
                 NetworkManager.singleton.StopHost();
-                _networkDiscovery.StopDiscovery();
+                networkDiscovery.StopDiscovery();
             }
             
             if(NetworkClient.isConnected)
