@@ -427,7 +427,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   entityType: 0
-  hp: 100
+  hp: 52
   maxHp: 100
   allowRegeneration: 1
   regenerationRepeatRate: 3.5
@@ -470,6 +470,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  grenadeCooldownTime: 3
   gun: {fileID: 7051573726986065128}
   muzzleFlashPrefab: {fileID: 1336949550903370, guid: 4543ab5e3d405ec40a8d4e9aa5165030, type: 3}
   muzzleFlashPosition: {fileID: 12510550492726572}
