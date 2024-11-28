@@ -42,7 +42,7 @@ public class LifeEntity : NetworkBehaviour
 
 
     [Server]
-    protected void StartEntity()
+    private void Start()
     {
         if (allowRegeneration)
             InvokeRepeating(nameof(Regeneration), 1, regenerationRepeatRate);

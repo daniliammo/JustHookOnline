@@ -44,7 +44,7 @@ public class TerrainMaker
     
     public void MakeTerrain()
     {
-        if(!TerrainGameObject)
+        if (!TerrainGameObject)
         {
             TerrainGameObject = new GameObject
             {
@@ -95,7 +95,7 @@ public class TerrainMaker
         heightsGenerator.Generate();
         heightsGenerator.SetHeightsFromMainThread();
         
-        if(TreePrototypes.Length > 0)
+        if (TreePrototypes.Length > 0)
         {
             var treeGenerator = new TreeGenerator(TerrainData,
                 (uint)Random.Range(777, 7777777),

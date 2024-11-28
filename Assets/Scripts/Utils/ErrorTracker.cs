@@ -51,7 +51,7 @@ namespace Utils
 		private static void CreateLogFile()
 		{
 			#if !UNITY_ANDROID
-			if(!File.Exists(LOGPath))
+			if (!File.Exists(LOGPath))
 				File.Create(LOGPath);
 			#endif
 		}

@@ -99,7 +99,7 @@ namespace Player
         private void Update()
         {
             if (!isOwned) return;
-            if(_ui.menu.isPaused) return;
+            if (_ui.menu.isPaused) return;
             
             // Если есть тачскрин, то вызывается метод TouchInput(); и функция дальше не выполняется
             if (RealInput.IsTouchSupported)
@@ -129,7 +129,7 @@ namespace Player
         [ClientRpc]
         private void RpcEnableFlashlight()
         {
-            if(!_isFlashLightAllowed) return;
+            if (!_isFlashLightAllowed) return;
             spotLight.enabled = !spotLight.enabled;
         }
         

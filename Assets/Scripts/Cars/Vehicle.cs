@@ -72,26 +72,26 @@ namespace Cars
         [Command (requiresAuthority = false)]
         public void CmdPlayMissileAlert()
         {
-            if(_missiles.Count < 0 && !rocketAlert) return;
+            if (_missiles.Count < 0 && !rocketAlert) return;
 
             var distances = _missiles.Select(missile => Vector3.Distance(missile.transform.position, transform.position)).ToList();
 
             var min = distances[0];
             var minDistance = distances.Prepend(min).Min();
 
-            if(minDistance < 15)
+            if (minDistance < 15)
                 RpcPlayMissileAlert(5);
             
-            if(minDistance < 30)
+            if (minDistance < 30)
                 RpcPlayMissileAlert(4);
             
-            if(minDistance < 40)
+            if (minDistance < 40)
                 RpcPlayMissileAlert(3);
             
-            if(minDistance < 65)
+            if (minDistance < 65)
                 RpcPlayMissileAlert(2);
             
-            if(minDistance < 90)
+            if (minDistance < 90)
                 RpcPlayMissileAlert(1);
             
             print(minDistance);
@@ -105,7 +105,7 @@ namespace Cars
         [Command (requiresAuthority = false)]
         public void CmdTryToSitOnADriverPlace(Player.Player passenger)
         {
-            if(!driverPlace.isEmployed)
+            if (!driverPlace.isEmployed)
                 PutThePlayerInThePlace(driverPlace, passenger);
         }
 
@@ -239,7 +239,7 @@ namespace Cars
             driver.CmdSetHp(driver.maxHp, killer.playerDisplayName);
             Exit(driver);
             
-            if(killPassengersAndDriverAfterVehicleDestroy)
+            if (killPassengersAndDriverAfterVehicleDestroy)
             {
                 foreach (var passenger in passengers)
                 {

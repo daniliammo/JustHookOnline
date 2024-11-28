@@ -76,7 +76,7 @@ namespace Utils
                 _networkDiscovery.StopDiscovery();
             }
             
-            if(NetworkClient.isConnected)
+            if (NetworkClient.isConnected)
                 NetworkManager.singleton.StopClient();
         }
         

@@ -20,7 +20,7 @@ namespace Interactable
 
         private void Awake()
         {
-            if(!password.All(char.IsDigit))
+            if (!password.All(char.IsDigit))
                 Debug.LogWarning($"Пароль {password} невозможно ввести так как интерфейс разрешает вводить только цифры." +
                                  "\nДверь никогда не откроют.");
             
@@ -49,10 +49,10 @@ namespace Interactable
         [Command (requiresAuthority = false)]
         public void CheckPassword(string passwd)
         {
-            if(passwd != password)
+            if (passwd != password)
                 RpcPlayIncorrectPasswordSound();
         
-            if(passwd == password)
+            if (passwd == password)
             {
                 RpcPlayCorrectPasswordSound();
                 Invoke(nameof(Interact), 1);

@@ -15,7 +15,7 @@ namespace Player
         [Server]
         private void Start()
         {
-            if(lifeTime <= 0)
+            if (lifeTime <= 0)
             {
                 Debug.LogWarning("Grenade lifetime is zero");
                 return;

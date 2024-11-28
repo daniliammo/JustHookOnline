@@ -72,7 +72,7 @@ namespace GameSettings
         public void SaveNickname()
         {
             var nickname = nicknameInputField.text;
-            if(nickname.Length == 0) return;
+            if (nickname.Length == 0) return;
             OnNicknameChanged?.Invoke(nickname);
             PlayerPrefs.SetString("Nickname", nickname);
         }

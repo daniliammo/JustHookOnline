@@ -69,7 +69,7 @@ namespace Player
         {
             if (!other.CompareTag("Interactable")) return;
             
-            if(currentInteractable == other.GetComponent<Interactable.Interactable>())
+            if (currentInteractable == other.GetComponent<Interactable.Interactable>())
             {
                 switch (currentInteractable!.interactType)
                 {
@@ -89,7 +89,7 @@ namespace Player
         
         private void Update()
         {
-            if(!currentInteractable) return;
+            if (!currentInteractable) return;
             
             if (Input.GetKeyDown(KeyCode.E) && _isWritingPassword)
             {
@@ -125,52 +125,52 @@ namespace Player
         {
             if (!_isWritingPassword) return;
             
-            if(Input.GetKeyDown(KeyCode.Alpha0))
+            if (Input.GetKeyDown(KeyCode.Alpha0))
             {
                 passwordString += '0';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha1))
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 passwordString += '1';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha2))
+            if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 passwordString += '2';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha3))
+            if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 passwordString += '3';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha4))
+            if (Input.GetKeyDown(KeyCode.Alpha4))
             {
                 passwordString += '4';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha5))
+            if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 passwordString += '5';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha6))
+            if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                 passwordString += '6';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha7))
+            if (Input.GetKeyDown(KeyCode.Alpha7))
             {
                 passwordString += '7';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha8))
+            if (Input.GetKeyDown(KeyCode.Alpha8))
             {
                 passwordString += '8';
                 OnPasswordUpdated();
             }
-            if(Input.GetKeyDown(KeyCode.Alpha9))
+            if (Input.GetKeyDown(KeyCode.Alpha9))
             {
                 passwordString += '9';
                 OnPasswordUpdated();
@@ -188,10 +188,10 @@ namespace Player
             
             var passwd = currentInteractable!.intercom.password;
             
-            if(passwordString.Length == passwd.Length)
+            if (passwordString.Length == passwd.Length)
             {
                 currentInteractable!.intercom.CheckPassword(passwordString);
-                if(passwordString != passwd)
+                if (passwordString != passwd)
                 {
                     _ui.passwordEntry.color = Color.red;
                     _isWritingPassword = false;

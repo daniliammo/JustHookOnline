@@ -36,7 +36,7 @@ namespace Cars
                 if (!RandomBoolean.GetRandomBoolean(spawnChance))
                     continue;
 
-                if(i > maxVehicles)
+                if (i > maxVehicles)
                     return;
                 
                 var carPrefab = carPrefabs[Random.Range(0, carPrefabs.Length)];

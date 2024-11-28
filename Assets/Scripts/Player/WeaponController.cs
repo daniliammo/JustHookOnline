@@ -27,7 +27,7 @@ namespace Player
 
 		private byte _damage;
 		
-		private	Grenade _currentGrenade;
+		public Grenade grenade;
 		private bool _allowGrenade = true;
 		public float grenadeCooldownTime = 3;
 		
@@ -126,7 +126,7 @@ namespace Player
 		{
 			if (!_allowGrenade) return;
 			
-			var grenade = Instantiate(_currentGrenade, Camera.transform.position, Camera.transform.rotation);
+			var grenade = Instantiate(this.grenade, Camera.transform.position, Camera.transform.rotation);
 			grenade.GetComponent<Rigidbody>().AddForce(Camera.forward * 1052);
             
 			StartGrenadeCooldown();
@@ -243,7 +243,7 @@ namespace Player
 
 			if (FindGameObject.Find(_hit.transform, "Lamp", out var lampGameObject))
 			{
-				if(lampGameObject.TryGetComponent<Lamp>(out var lamp))
+				if (lampGameObject.TryGetComponent<Lamp>(out var lamp))
 					lamp.CmdBreakLamp();
 				else
 					Debug.LogError($"Не получилось получить компонент Lamp на объекте: {lampGameObject.name}." 
@@ -354,8 +354,8 @@ namespace Player
 			_hitSoundsController.PlayHitMarkerSound();
 			
 			// Сущность убита.
-			if(!entity.IsDeath || entity.hp > 0) return;
-			if(entity.TryGetComponent<Player>(out var player))
+			if (!entity.IsDeath || entity.hp > 0) return;
+			if (entity.TryGetComponent<Player>(out var player))
 				_hitMarkerController.SetPlayerKilledText(player.playerDisplayName);
 			
 			// Звук колокольчика.
@@ -379,7 +379,7 @@ namespace Player
 			var prefab = Instantiate(bulletParticlePrefab, position, muzzleFlashPosition.rotation);
 			NetworkServer.Spawn(prefab);
 			
-			if(look != Vector3.zero)
+			if (look != Vector3.zero)
 				prefab.transform.LookAt(look);
 		}
 		

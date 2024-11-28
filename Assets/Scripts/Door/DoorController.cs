@@ -46,19 +46,19 @@ namespace Door
         [Command (requiresAuthority = false)]
         public void CmdOpenDoor()
         {
-            if(doorStatus == DoorStatus.Opened) return;
+            if (doorStatus == DoorStatus.Opened) return;
         
             _animator.Play("Open");
             doorStatus = DoorStatus.Opened;
         
-            if(requirePassword)
+            if (requirePassword)
                 Invoke(nameof(CmdCloseDoor), 15);
         }
     
         [Command (requiresAuthority = false)]
         public void CmdCloseDoor()
         {
-            if(doorStatus == DoorStatus.Closed) return;
+            if (doorStatus == DoorStatus.Closed) return;
         
             doorStatus = DoorStatus.Closed;
             _animator.Play("Close");

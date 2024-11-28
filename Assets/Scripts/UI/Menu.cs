@@ -106,7 +106,7 @@ namespace UI
         
         public void OnJoinToRandomGameButtonClicked()
         {
-            if(_networkController.DiscoveredServers.Count == 0) 
+            if (_networkController.DiscoveredServers.Count == 0) 
                 return;
 
             var server =

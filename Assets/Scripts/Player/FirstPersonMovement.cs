@@ -25,7 +25,7 @@ namespace Player
         private Player _player;
         private GroundCheck _groundCheck;
 
-        public bool allowToWalkOnAir = false;
+        private bool _allowToWalkOnAir;
         
         
         private void Start()
@@ -34,6 +34,8 @@ namespace Player
             _player = GetComponent<Player>();
             _hookController = GetComponent<Hook>();
             _groundCheck = GetComponent<GroundCheck>();
+
+            _allowToWalkOnAir = FindFirstObjectByType<Match>().config.allowWalkOnAir;
             
             _ui = FindFirstObjectByType<UIObjectsLinks>();
             _joystick = FindFirstObjectByType<Joystick>();
@@ -63,7 +65,7 @@ namespace Player
             if (_player.IsDeath) return;
             if (_ui.menu.isPaused) return;
             if (_hookController.IsHooking) return;
-            if (!_groundCheck.isGrounded && !allowToWalkOnAir) return;
+            if (!_groundCheck.isGrounded && !_allowToWalkOnAir) return;
             
             if (_isOnLadder)
             {

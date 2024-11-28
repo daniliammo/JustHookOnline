@@ -31,11 +31,15 @@ namespace Player
 		private NicknameSetter _nicknameSetter;
 
 		private KillMessages _killMessages;
-		
+
+
+		public Player()
+		{
+			Start();
+		}
 
 		public void Start()
 		{
-			StartEntity();
 			GetComponents();
 
 			OnDeath += Death;

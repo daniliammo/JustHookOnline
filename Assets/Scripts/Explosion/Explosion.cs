@@ -94,7 +94,7 @@ namespace Explosion
 			                        out var hit, radius, Physics.DefaultRaycastLayers,
 			                        QueryTriggerInteraction.Ignore))
 		                    {
-			                    if(hit.transform.CompareTag("ExplosiveBarrel"))
+			                    if (hit.transform.CompareTag("ExplosiveBarrel"))
 									t.GetComponent<ExplosiveBarrel>().CmdShooted((int)Vector3.Distance(transform.position, t.transform.position), hit.point, gameObject.transform.position);
 		                    }
 	                    }
@@ -145,7 +145,7 @@ namespace Explosion
             explosionGameObjectAudioSource.clip = _eL.audioClips[Random.Range(0, _eL.audioClips.Length)];
             explosionGameObjectAudioSource.Play();
 
-            if(fireBehaviour != FireBehaviour.NoFire && Physics.Raycast(transform.position, Vector3.down, 0.15f))
+            if (fireBehaviour != FireBehaviour.NoFire && Physics.Raycast(transform.position, Vector3.down, 0.15f))
             {
 	            GameObject fireGameObject = null;
 	            
