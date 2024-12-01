@@ -35,10 +35,10 @@ namespace Player
 
 		public Player()
 		{
-			Start();
+			OnEntityStarted += StartPlayer;
 		}
 
-		public void Start()
+		private void StartPlayer()
 		{
 			GetComponents();
 

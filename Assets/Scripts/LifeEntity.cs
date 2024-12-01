@@ -31,6 +31,9 @@ public class LifeEntity : NetworkBehaviour
     public FindObjectsInactive findSpawnPointsInactive;
     
     // Используйте эти ивенты для чистого и правильного кода.
+    public delegate void EntityStarted();
+    public event EntityStarted OnEntityStarted;
+    
     public delegate void HpChanged(string damagerName);
     public event HpChanged OnHpChanged;
 
@@ -49,6 +52,8 @@ public class LifeEntity : NetworkBehaviour
 
         if (entityType != EntityType.Player) return;
         _spawnPoints = FindObjectsByType<NetworkStartPosition>(findSpawnPointsInactive, FindObjectsSortMode.None);
+        
+        OnEntityStarted?.Invoke();
     }
 
     private void Death(string damagerName)

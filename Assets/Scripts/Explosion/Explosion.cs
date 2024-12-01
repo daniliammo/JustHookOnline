@@ -35,8 +35,7 @@ namespace Explosion
         
         private ExplosionLinks _eL;
 	    
-
-        [Server]
+        
         private void Start()
         {
 	        _eL = FindFirstObjectByType<ExplosionLinks>();

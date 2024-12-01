@@ -454,7 +454,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  allowToWalkOnAir: 0
 --- !u!114 &1728175027713046738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,6 +469,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  grenadePrefab: {fileID: 8401811772859801755, guid: 890b51a20e11dd248be1071c22339f82, type: 3}
   grenadeCooldownTime: 3
   gun: {fileID: 7051573726986065128}
   muzzleFlashPrefab: {fileID: 1336949550903370, guid: 4543ab5e3d405ec40a8d4e9aa5165030, type: 3}

@@ -27,7 +27,7 @@ namespace Player
 
 		private byte _damage;
 		
-		public Grenade grenade;
+		public GameObject grenadePrefab;
 		private bool _allowGrenade = true;
 		public float grenadeCooldownTime = 3;
 		
@@ -118,18 +118,24 @@ namespace Player
 				CmdReload();
 			
 			if (Input.GetKeyDown(KeyCode.G))
-				ThrowGrenade();
-				
+				TryThrowGrenade();
 		}
 
-		private void ThrowGrenade()
+		private void TryThrowGrenade()
 		{
 			if (!_allowGrenade) return;
 			
-			var grenade = Instantiate(this.grenade, Camera.transform.position, Camera.transform.rotation);
-			grenade.GetComponent<Rigidbody>().AddForce(Camera.forward * 1052);
+			CmdThrowGrenade();
             
 			StartGrenadeCooldown();
+		}
+
+		[Command (requiresAuthority = false)]
+		private void CmdThrowGrenade()
+		{
+			var prefab = Instantiate(grenadePrefab, Camera.transform.position, Camera.transform.rotation);
+			NetworkServer.Spawn(prefab);
+			prefab.GetComponent<Rigidbody>().AddForce(Camera.forward * 3000);
 		}
 		
 		private void StartGrenadeCooldown()
